@@ -31,7 +31,8 @@ public class Node
         Value = value;
     }
 
-    public void setValue(String value) {
+    public void setValue(String value)
+    {
         Value = value;
     }
 
@@ -46,7 +47,8 @@ public class Node
         return Value;
     }
 
-    public String ToStringWithLocationAndPreposition() {
+    public String ToStringWithLocationAndPreposition()
+    {
         return ToString() + "-" + getCoordinates() + getPrepositionForString();
     }
 
@@ -78,7 +80,7 @@ public class Node
         z = coordinates[2];
     }
 
-    public string getCoordinates() 
+    public string getCoordinates()
     {
         return x + "." + y + "." + z;
     }
