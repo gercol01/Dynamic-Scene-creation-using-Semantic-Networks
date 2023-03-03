@@ -49,7 +49,7 @@ public class Node
 
     public String ToStringWithLocationAndPreposition()
     {
-        return ToString() + "-" + getCoordinates() + getPrepositionForString();
+        return ToString() + "*" + getCoordinates() + "*" + getPrepositionForString();
     }
 
     public String ToStringPrep()
@@ -70,6 +70,11 @@ public class Node
     public int getLevel()
     {
         return Level;
+    }
+
+    public Node Copy()
+    {
+        return (Node)this.MemberwiseClone();
     }
 
     public void setCoordinates(int[] coordinates)
@@ -136,7 +141,7 @@ public class Node
 
     public string getPrepositionForString()
     {
-        return "-" + Preposition;
+        return Preposition;
     }
 
     public void setPreposition(string preposition)

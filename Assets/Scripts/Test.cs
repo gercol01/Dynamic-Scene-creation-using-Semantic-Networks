@@ -100,9 +100,22 @@ public class Test : MonoBehaviour
             //check if the object is already created
             if (GameObject.Find(name + "(Clone)") != null)
             {
-                //update the position
-                GameObject obj = GameObject.Find(name + "(Clone)");
-                obj.transform.position = coordinates;
+                //check what type of object it is
+                string objectType1 = temporaryNode.getObjectType();
+
+                //if the object type is a cube
+                if (string.Equals(objectType1, "Cube", StringComparison.CurrentCultureIgnoreCase))
+                {
+                    //giving the cube the name
+                    enemy.name = name;
+
+                    //spawn the parent object with specified coordinates
+                    Instantiate(enemy, coordinates, enemy.transform.rotation);
+                }
+
+                ////update the position
+                //GameObject obj = GameObject.Find(name + "(Clone)");
+                //obj.transform.position = coordinates;
             }
             else
             {
@@ -183,6 +196,12 @@ public class Test : MonoBehaviour
             else if (String.Equals(words[0], "Move", StringComparison.OrdinalIgnoreCase))
             {
                 flag = 3;
+            }
+
+            //if the command is Change, flag to 4
+            else if (String.Equals(words[0], "Change", StringComparison.OrdinalIgnoreCase))
+            {
+                flag = 4;
             }
 
             //if the command is none of the above, flag to -1
@@ -297,28 +316,42 @@ public class Test : MonoBehaviour
 
                         if (resultCheckNameChild == false) //object is unique
                         {
-                            //check if it collides with any other object
-                            StartCoroutine(checkSceneCollidersChild(parentNode, childNode));
+                            //create a copy of the current Tree
+                            IDictionary<Node, Node[]> tempTree = TreeSet.ToDictionary(entry => entry.Key, entry => entry.Value);
 
-                            yield return new WaitForSeconds(creationDelay);
+                            //add the new records
+                            graphObject.addChildren(tempTree, parentNode, childNode);
 
-                            if (found == true)
-                            {
-                                found = false;//reset the found flag
+                            //calculate the new coordinates
+                            graphObject.setCoordinates(tempTree);
 
-                                Boolean resultAddChildren = graphObject.addChildren(TreeSet, parentNode, childNode); //adding the first node to the tree - it has no children
+                            //pass the correct parentNode with coordinates
+                            foreach (KeyValuePair<Node, Node[]> entry in tempTree)
+                            { 
+                                //get name of the parent
+                                string name1 = entry.Key.ToString();
 
-                                if (resultAddChildren == false)
+                                //checking if the key has been found
+                                if (entry.Key.ToString().Equals(childNode.ToString()))
                                 {
-                                    placeholder.text = "Could not add node!";
-                                    placeholder.color = Color.red;
-                                }
+                                    //check if it collides with any other object
+                                    StartCoroutine(checkSceneCollidersParent(entry.Key));
 
-                            }
-                            else
-                            {
-                                placeholder.text = "Could not add node!";
-                                placeholder.color = Color.red;
+                                    yield return new WaitForSeconds(creationDelay);
+
+                                    if (found == true)
+                                    {
+                                        found = false;//reset the found flag
+
+                                        //if correct make current tree equal to the new tree
+                                        TreeSet = tempTree;
+                                    }
+                                    else
+                                    {
+                                        placeholder.text = "Could not add node!";
+                                        placeholder.color = Color.red;
+                                    }
+                                }
                             }
                         }
                         else
@@ -386,6 +419,9 @@ public class Test : MonoBehaviour
                 if (checkResult)
                 {
                     deleteNode(Tree, delNode);
+
+                    //letting the frame pass
+                    yield return new WaitForSeconds(creationDelay);
                 }
                 else {
                     placeholder.text = "Could not add node!";
@@ -408,62 +444,283 @@ public class Test : MonoBehaviour
                 //contains the coordinates 
                 string[] coordinatesXYZ = { };
 
-                //split the string into x, y and z coordnates
+                //split the string into x, y and z coordinates
                 coordinatesXYZ = coordinates.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
 
                 //setting the coordinates
                 parentNode.setCoordinates(coordinatesXYZ.Select(int.Parse).ToArray());
 
-                //first thing to check is if the parent node can be moved, check collisions
-                StartCoroutine(checkSceneCollidersParent(parentNode));
+                //create a temporary tree and recalculate the coordinates
+                //create a copy of the current Tree
+                IDictionary<Node, Node[]> tempTree = TreeSet.ToDictionary(entry => entry.Key, entry => entry.Value);
 
-                yield return new WaitForSeconds(creationDelay);
+                //add the new records
+                changeTree(tempTree, parentNode);
 
-                if (found == true)
+                //calculate the new coordinates
+                setCoordinates(tempTree);
+
+                //check that the object to be moved exists
+                Boolean resultCheckExist = checkExist(TreeSet, parentNode);
+
+                if (resultCheckExist)//if the parent object exists
                 {
-                    found = false;//reset the found flag
+                    //List to store all the nodes involved
+                    List<Node> nodesToMove = new List<Node>();
 
-                    Boolean create = true;//boolean to see if there are collisions in all children
-
-                    //create a copy of the Tree
-                    IDictionary<Node, Node[]> tree = TreeSet;
-
-                    //get the children of the parent node
-                    Node[] temp = tree[parentNode];
-
-                    //recalculate the coordinates of the children in relation to the parent node
-                    foreach (Node node in temp)
+                    //add the parentNode as the start
+                    foreach (KeyValuePair<Node, Node[]> entry in tempTree)
                     {
-                        Node tempNode = node;
-                        calculatePrepositionCoordinates(parentNode, tempNode);
-
-                        //check the collisions of the children
-                        StartCoroutine(checkSceneCollidersParent(tempNode));
-
-                        yield return new WaitForSeconds(creationDelay);
-
-                        var x = 0;
-
-                        if (found == false) //if there is a collision, the rest of the children are ignored
+                        //first thing to do is spawn the parent
+                        if (entry.Key.ToString().Equals(parentNode.ToString()))
                         {
-                            create = false;
-                            break;
+                            Node newNodeCopy = entry.Key.Copy();
+                            nodesToMove.Add(newNodeCopy);
                         }
                     }
 
-                    //if there are no collisions at all
-                    if (create == true)
-                    {
-                        //update the Tree
-                        TreeSet = tree;
+                    //get all the objects involved through iteration
+
+                    //start with the children of the parentNode
+                    Node[] temp = tempTree[parentNode];
+
+                    //getting the first nodes from the array
+                    foreach (Node tempNode in temp) {
+                        Node newNodeCopy = tempNode.Copy();
+                        nodesToMove.Add(newNodeCopy);
                     }
-                    else {
-                        placeholder.text = "Could not add node!";
-                        placeholder.color = Color.red;
+
+                    //list to compare
+                    List<Node> nodesToMoveCopy = new List<Node>(nodesToMove);
+
+                    Boolean repeat = true;
+
+                    while (repeat) {
+                        foreach (Node tNode in nodesToMove)
+                        {
+                            //get the children and add them to the list
+                            Node[] temporary = tempTree[tNode];
+
+                            //check if it has children
+                            foreach (Node tempNode in temporary)
+                            {
+                                //check if the nodes are not already in the list
+                                Boolean checkNode = nodesToMove.Contains(tempNode);
+
+                                if (checkNode == false)
+                                {
+                                    Node newNodeCopy = tempNode.Copy();
+                                    nodesToMoveCopy.Add(newNodeCopy);//add the new children (if any)
+                                }
+                                
+                            }
+                        }
+
+                        if (nodesToMove.Count == nodesToMoveCopy.Count) {
+                            repeat = false;
+                        }
+                        else
+                        {
+                            //update the list with the new Nodes
+                            nodesToMove = new List<Node>(nodesToMoveCopy);
+                            repeat = true;
+                        }
+                    }
+
+                    //check that the new coordinates are not the same as the old coordinates
+                    GameObject obj = GameObject.Find(parentNode.ToString() + "temp(Clone)");
+
+                    //current position of the object
+                    Vector3 currentPosition = obj.transform.position;
+
+                    int x = parentNode.returnX();
+                    int y = parentNode.returnY();
+                    int z = parentNode.returnZ();
+
+
+                    if (currentPosition != new Vector3(x, y, z))
+                    { //if they are not equal
+                      ////check that the object to be moved exists
+                      //Boolean resultCheckExist = checkExist(TreeSet, parentNode);
+
+                        if (resultCheckExist)//if the object exists
+                        {
+                            Boolean create = true;
+
+                            //loop through the nodes to be moved
+
+                            foreach (Node node in nodesToMove)
+                            {
+                                //change name as it is a temporary duplicate
+                                node.setValue(node.ToString() + "Copy");
+
+                                //check that the nodes can be moved
+                                StartCoroutine(checkSceneCollidersParent(node));
+
+                                yield return new WaitForSeconds(creationDelay);//handing control to Update()
+
+                                if (found == true)//the node can be moved
+                                {
+                                    found = false;//reset the found flag
+
+                                    create = true;//boolean to see if there are collisions in all children
+                                }
+                                else
+                                {
+                                    //the objects will not be moved as there is a collision
+                                    create = false;
+
+                                    placeholder.text = "Could not add node!";
+                                    placeholder.color = Color.red;
+
+                                    break;
+                                }
+                            }
+
+                            //if there are no collisions at all
+                            if (create == true)
+                            {
+                                //the objects can be moved
+
+                                //delete the copies of the objects
+                                foreach (Node node in nodesToMove) {
+                                    GameObject objToDelete = GameObject.Find(node.ToString() + "temp(Clone)");
+
+                                    //destroying the object
+                                    Destroy(objToDelete);
+
+                                    yield return new WaitForSeconds(creationDelay);
+
+                                    //find the object
+                                    String originalObject = node.ToString().Replace("Copy", "");
+
+                                    GameObject objToUpdate = GameObject.Find(originalObject + "temp(Clone)");
+                                    objToUpdate.transform.position = new Vector3(node.returnX(), node.returnY(), node.returnZ());
+
+                                    yield return new WaitForSeconds(creationDelay);
+
+                                    //find the created
+                                    if (GameObject.Find(originalObject + "(Clone)")) {
+                                        GameObject objToMove = GameObject.Find(originalObject + "(Clone)");
+                                        objToMove.transform.position = new Vector3(node.returnX(), node.returnY(), node.returnZ());
+
+                                        yield return new WaitForSeconds(creationDelay);
+                                    }
+                                }
+
+                                //update the Tree
+                                TreeSet = tempTree;
+                            }
+                            else
+                            {
+                                placeholder.text = "Could not add node!";
+                                placeholder.color = Color.red;
+                            }
+
+
+                            //if (found == true)//the parent can be moved
+                            //{
+                            //    found = false;//reset the found flag
+
+                            //    Boolean create = true;//boolean to see if there are collisions in all children
+
+                            //    //create a copy of the Tree
+                            //    IDictionary<Node, Node[]> tree = TreeSet.ToDictionary(entry => entry.Key, entry => entry.Value);
+
+                            //    //get the children of the parent node
+                            //    Node[] temp = tree[parentNode];
+
+                            //    //copy of the temp array, used to address the parent Node
+                            //    Node[] myCopy = new Node[temp.Length];
+                            //    Array.Copy(temp, myCopy, temp.Length);
+
+                            //    //recalculate the coordinates of the children in relation to the parent node
+                            //    foreach (Node node in temp)
+                            //    {
+                            //        Node tempNode = node;
+                            //        calculatePrepositionCoordinates(parentNode, tempNode);
+
+                            //        //check the collisions of the children
+                            //        StartCoroutine(checkSceneCollidersParent(tempNode));
+
+                            //        yield return new WaitForSeconds(creationDelay); //handing control to Update()
+
+                            //        if (found == false) //if there is a collision, the rest of the children are ignored
+                            //        {
+                            //            create = false;
+                            //            break;
+                            //        }
+                            //    }
+
+                            //    //if there are no collisions at all
+                            //    if (create == true)
+                            //    {
+                            //        //update the coordinates of the parent node in the tree
+                            //        tree[temp] = parentNode;
+
+                            //        //update the coordinates of the child node in the tree
+
+
+                            //        //update the Tree
+                            //        TreeSet = tree;
+                            //    }
+                            //    else
+                            //    {
+                            //        placeholder.text = "Could not add node!";
+                            //        placeholder.color = Color.red;
+                            //    }
+                            //}
+                            //else
+                            //{
+                            //    placeholder.text = "Could not add node!";
+                            //    placeholder.color = Color.red;
+                            //}
+                        }
+                        else
+                        {
+                            placeholder.text = "Could not add node!";
+                            placeholder.color = Color.red;
+                        }
+                    }
+                }
+
+                ////create a copy of the old parent node for later
+                //Node parentNodeCopy = parentNode.Copy();
+                else
+                {
+                    placeholder.text = "Could not add node!";
+                    placeholder.color = Color.red;
+                }
+            }
+            else if (words.Length == 4 && flag == 4)//if the command is a Change command and consists of 4 words, ex: Change cube_1 to red
+            {
+                string objectToChange = words[1];
+
+                string color = words[3];
+
+                // Next, create a new Color variable
+                Color newColor;
+
+                if (GameObject.Find(objectToChange + "(Clone)")) {
+                    // First, get a reference to the GameObject you want to change the color of
+                    GameObject myObject = GameObject.Find(objectToChange + "(Clone)");
+
+                    // Next, get a reference to the object's Renderer component
+                    Renderer myRenderer = myObject.GetComponent<Renderer>();
+
+                    // Then, use the ColorUtility class to convert the string to a Color value
+                    if (ColorUtility.TryParseHtmlString(color, out newColor))
+                    {
+                        // If the string was successfully parsed, you can now use the newColor value to set the color of your GameObject
+                        myRenderer.material.color = newColor;
+                    }
+                    else
+                    {
+                        Console.WriteLine("Test");
                     }
                 }
                 else {
-                    placeholder.text = "Could not add node!";
+                    placeholder.text = "Incorrect input!";
                     placeholder.color = Color.red;
                 }
             }
@@ -472,6 +729,7 @@ public class Test : MonoBehaviour
                 placeholder.text = "Incorrect input!";
                 placeholder.color = Color.red;
             }
+            
 
             //reset the box after adding the command
             commandBox.text = "";
@@ -626,7 +884,11 @@ public class Test : MonoBehaviour
                         //spawn the parent object with specified coordinates
                         Instantiate(cube, coordinates1, cube.transform.rotation);
 
-                        int a = 0;
+                        //giving the cube the name
+                        enemy.name = name1 + "temp";
+
+                        //spawn the parent object with specified coordinates
+                        Instantiate(enemy, coordinates1, enemy.transform.rotation);
                     }
                     else if (string.Equals(objectType1, "Sphere", StringComparison.CurrentCultureIgnoreCase))
                     {
@@ -718,6 +980,12 @@ public class Test : MonoBehaviour
                                 //spawn the parent object
                                 Instantiate(cube, coordinates2, cube.transform.rotation);
 
+                                //giving the cube the name
+                                enemy.name = name2 + "temp";
+
+                                //spawn the parent object with specified coordinates
+                                Instantiate(enemy, coordinates2, enemy.transform.rotation);
+
                             }
                             else if (string.Equals(objectType2, "Sphere", StringComparison.CurrentCultureIgnoreCase))
                             {
@@ -738,7 +1006,6 @@ public class Test : MonoBehaviour
                         }
                     }
                 }
-
             }
         }
     }
@@ -776,9 +1043,12 @@ public class Test : MonoBehaviour
             //found
             found = true;
 
-            //if found, change the tag to Final from Enemy
-            GameObject obj = GameObject.FindWithTag("Enemy");
-            obj.tag = "Final";
+            if (GameObject.FindWithTag("Enemy")) {
+                //if found, change the tag to Final from Enemy
+                GameObject obj = GameObject.FindWithTag("Enemy");
+                obj.tag = "Final";
+            }
+            
         }
         else
         {
@@ -798,7 +1068,6 @@ public class Test : MonoBehaviour
         //check if the parent node exists
         if (Tree.ContainsKey(node))
         {
-            calculatePrepositionCoordinates(node, childnode);
 
             //passing the attributes to the global temporary node
             temporaryNode = childnode;
@@ -835,6 +1104,110 @@ public class Test : MonoBehaviour
         ////destroy the object after anyways
         //GameObject obj = GameObject.FindWithTag("Enemy");
         //Destroy(obj);
+    }
+
+    public void changeTree(IDictionary<Node, Node[]> tree, Node node) {
+        //iterate through the tree
+        foreach (KeyValuePair<Node, Node[]> entry in tree)
+        {
+            //first thing to do is spawn the parent
+            if (entry.Key.ToString().Equals(node.ToString())) {
+                int x = node.returnX();
+                int y = node.returnY();
+                int z = node.returnZ();
+
+                //adding the coordinates
+                int[] coordinates = new int[3] { x,y,z};
+
+                entry.Key.setCoordinates(coordinates);
+            }
+        }
+
+
+        ////get the current children of the parentNode
+        //Node[] currentChildren = TreeSet[node];
+
+        ////iterate through the Tree, delete all instances of the node
+        //tree.Remove(node);
+
+        ////add a new record in the Tree with the children, it should be updated with the new coordinates
+
+        //tree[node] = currentChildren;
+
+        //foreach (Node currentNode in currentChildren) {
+        //    addChildren(tempTree, node, currentNode);
+        //}
+        
+    }
+
+    public void setCoordinates(IDictionary<Node, Node[]> tree)
+    {
+        //check if the tree has objects in it
+        if (tree.Count() == 0)
+        {
+            placeholder.text = "No objects have been created";
+            placeholder.color = Color.red;
+        }
+        else
+        {
+            //iterate through the Tree
+            foreach (KeyValuePair<Node, Node[]> entry in tree)
+            {
+                //first thing to do is spawn the parent
+
+                //get name of the parent
+                string name1 = entry.Key.ToString();
+
+
+                //checking if it has children
+                if (entry.Value.Length != 0)
+                {
+                    //iterate through the children
+                    foreach (Node child in entry.Value)
+                    {
+                        //spawn the children objects
+
+                        //get name of the child
+                        string name2 = child.ToString();
+
+                        //get the coordinates - this is done by calling preposition method
+                        //check which type of method is needed depending on the preposition of the object
+
+                        string preposition = child.getPreposition();
+
+                        //if the preposition is 'between', that means that the that it has two parents
+                        if (preposition.Equals("between"))
+                        {
+
+                            //array to store the parents of the node
+                            Node[] parents = new Node[] { };
+
+                            //there should be 2 records in dictionary if the preposition is 'between'
+                            foreach (KeyValuePair<Node, Node[]> possibleParent in tree)
+                            {
+                                //get the values of the current record
+                                Node[] tempArray = possibleParent.Value;
+
+                                //checking if the child is in the list of values of the current record
+                                if (tempArray.Contains(child))
+                                {
+                                    //if found, that means a parent has been found
+                                    parents = parents.Append(possibleParent.Key).ToArray();
+                                }
+                            }
+
+                            //calculate the coordinates
+                            calculatePrepositionCoordinates2Parents(parents[0], parents[1], child);
+                        }
+                        else
+                        {
+                            //calculate the coordinates
+                            calculatePrepositionCoordinates(entry.Key, child);
+                        }
+                    }
+                }
+            }
+        }
     }
 
     //method to create an object
@@ -956,6 +1329,14 @@ public class Test : MonoBehaviour
         }
     }
 
+    IEnumerator CheckAllNodes(Node[] nodesArray)
+    {
+        foreach (Node node in nodesArray)
+        {
+            yield return StartCoroutine(checkSceneCollidersParent(node));
+        }
+    }
+
     public void deleteNode(IDictionary<Node, Node[]> tree, Node node) {
         IDictionary<Node, Node[]> tempTree = tree.ToDictionary(entry => entry.Key,
                                                entry => entry.Value);
@@ -1006,6 +1387,26 @@ public class Test : MonoBehaviour
         GameObject objTemp = GameObject.Find(node.ToString() + "temp" + "(Clone)");
         Destroy(objTemp);
     }
+
+    //public IEnumerator MoveNode(Node parentNode, int[] newPosition)
+    //{
+    //    // Move the parent object to the new position
+    //    GameObject parentObj = GameObject.Find(parentNode.ToString() + "(Clone)");
+    //    parentObj.transform.position = Vector3(newPosition[0], newPosition[0], newPosition[0]);
+
+    //    // Move the child objects with the parent
+    //    foreach (Node childNode in TreeSet[parentNode])
+    //    {
+    //        GameObject childObj = GameObject.Find(childNode.ToString() + "(Clone)");
+    //        childObj.transform.SetParent(parentObj.transform, true);
+    //    }
+
+    //    // Wait for a frame to allow the child objects to update their positions
+    //    yield return null;
+    //}
+
+
+
 
     //public void deleteNode(IDictionary<Node, Node[]> tree, Node node) {
     //    IDictionary<Node, Node[]> tempTree = tree;
@@ -1185,7 +1586,7 @@ public class Test : MonoBehaviour
         else
         {
             //the new Tree which has a format of string, string
-            IDictionary<string, string> Tree = new Dictionary<string, string>();
+            IDictionary<string, string> StringTree = new Dictionary<string, string>();
 
             //check if the Tree is empty 
 
@@ -1196,13 +1597,13 @@ public class Test : MonoBehaviour
             {
                 ValueArrayToString = string.Join("|", Array.ConvertAll(entry.Value, item => item.ToStringWithLocationAndPreposition())); //turning the value array into a string divided by '|'
                 KeyToString = entry.Key.ToStringWithLocationAndPreposition(); //turning the Node to a string
-                Tree.Add(KeyToString, ValueArrayToString); //adding a record but in string format
+                StringTree.Add(KeyToString, ValueArrayToString); //adding a record but in string format
             }
 
             //Method to convert the Semantic Tree into a String
-            TreeStringSave = string.Join(Environment.NewLine, Tree);
+            TreeStringSave = string.Join(Environment.NewLine, StringTree);
 
-            //remove \r\n
+            //remove \r\n and replace with "&"
             TreeStringSave = TreeStringSave.Replace("\r\n", "&");
 
             //remove spaces
@@ -1214,11 +1615,13 @@ public class Test : MonoBehaviour
     public void ViewSemanticNetwork()
     {
         //Instantiate the TreeString
-        TreeToString(Tree);
+        TreeToStringExtended(Tree);
 
         //Connect to MSAGL
         ProcessStartInfo psi = new ProcessStartInfo(@"C:\Users\User\Desktop\MSAGL2\MSAGL2\bin\Release\MSAGL2.exe");
-        psi.Arguments = TreeString;                                                                                                                                    //psi.WorkingDirectory = @"C:\Users\User\Desktop\MSAGL2\MSAGL2\bin\Release\MSAGL2.exe"; //or directory where you put the winapp 
+        psi.Arguments = TreeStringSave;
+        
+        //psi.WorkingDirectory = @"C:\Users\User\Desktop\MSAGL2\MSAGL2\bin\Release\MSAGL2.exe"; //or directory where you put the winapp 
         Process.Start(psi);
 
         ////Connect to MSAGL
@@ -1266,7 +1669,7 @@ public class Test : MonoBehaviour
                 string removeBrackets = record.Replace("[", "");
                 removeBrackets = removeBrackets.Replace("]", "");
 
-                //split the record into key and values
+                //split the record into the key and values
                 string[] KeyAndValue = removeBrackets.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
 
                 //creating the parent node its values will be set later
@@ -1276,23 +1679,23 @@ public class Test : MonoBehaviour
                 //iterate through the keys and values
                 for (int i = 0; i < KeyAndValue.Length; i++)
                 {
-                    //split the key/value into name, coordinates and preposition
-                    string[] NameCoordinatesPreposition = KeyAndValue[i].Split(new[] { '-' }, StringSplitOptions.RemoveEmptyEntries);
-
-                    //setting objectType
-                    string[] objectTypeWithNo = NameCoordinatesPreposition[0].Split(new[] { '_' }, StringSplitOptions.RemoveEmptyEntries);
-
-                    //setting preposition
-                    string preposition = NameCoordinatesPreposition[2];
-
-                    //setting coordinatesString
-                    string coordinatesString = NameCoordinatesPreposition[1];
-                    string[] coordinates = coordinatesString.Split(new[] { '.' }, StringSplitOptions.RemoveEmptyEntries);
-                    int[] intCoordinates = Array.ConvertAll(coordinates, int.Parse);
-
                     //if it is the first node it is the parent node, i.e. the key
                     if (i == 0)
                     {
+                        //split the key/value into name, coordinates and preposition
+                        string[] NameCoordinatesPreposition = KeyAndValue[i].Split(new[] { '*' }, StringSplitOptions.RemoveEmptyEntries);
+
+                        //setting objectType from the name, Ex: cube_1
+                        string[] objectTypeWithNo = NameCoordinatesPreposition[0].Split(new[] { '_' }, StringSplitOptions.RemoveEmptyEntries);
+
+                        //setting preposition, Ex: on, null etc
+                        string preposition = NameCoordinatesPreposition[2];
+
+                        //setting coordinatesString
+                        string coordinatesString = NameCoordinatesPreposition[1];
+                        string[] coordinates = coordinatesString.Split(new[] { '.' }, StringSplitOptions.RemoveEmptyEntries);
+                        int[] intCoordinates = Array.ConvertAll(coordinates, int.Parse);
+
                         //setting value
                         parent.setValue(NameCoordinatesPreposition[0]);
                         parent.setObjectType(objectTypeWithNo[0]);
@@ -1302,8 +1705,10 @@ public class Test : MonoBehaviour
                         //check if the Tree already contains the node
                         if (Tree.ContainsKey(parent) == false)
                         {
+                            Node newNodeCopy = parent.Copy();
+
                             //Add the node to the Tree
-                            Boolean resultAddChildren = graphObject.addChildren(Tree, parent, null); //adding the first node to the tree - it has no children
+                            Boolean resultAddChildren = graphObject.addChildren(Tree, newNodeCopy, null); //adding the first node to the tree - it has no children
 
                             if (resultAddChildren == false)
                             {
@@ -1314,23 +1719,47 @@ public class Test : MonoBehaviour
                     }
                     else //else it is a child node, i.e. a value
                     {
-                        //creating the child node
-                        Node child = new Node(NameCoordinatesPreposition[0]);
+                        //creating the child node its values will be set later
+                        Node child = new Node(name);
 
-                        //setting the variables
-                        child.setObjectType(objectTypeWithNo[0]);
-                        child.setPreposition(preposition);
-                        child.setCoordinates(intCoordinates);
+                        //split the values by the '|'
+                        string[] values = KeyAndValue[i].Split(new[] { '|' }, StringSplitOptions.RemoveEmptyEntries);
 
-                        //check if the Tree already contains the node
-                        if (Tree.ContainsKey(child) == false)
-                        {
-                            Boolean resultAddChildren = graphObject.addChildren(Tree, parent, child);
+                        foreach (string value in values){
+                            //split the key/value into name, coordinates and preposition
+                            string[] NameCoordinatesPreposition = value.Split(new[] { '*' }, StringSplitOptions.RemoveEmptyEntries);
 
-                            if (resultAddChildren == false)
+                            //setting objectType from the name, Ex: cube_1
+                            string[] objectTypeWithNo = NameCoordinatesPreposition[0].Split(new[] { '_' }, StringSplitOptions.RemoveEmptyEntries);
+
+                            //setting preposition, Ex: on, null etc
+                            string preposition = NameCoordinatesPreposition[2];
+
+                            //setting coordinatesString
+                            string coordinatesString = NameCoordinatesPreposition[1];
+                            string[] coordinates = coordinatesString.Split(new[] { '.' }, StringSplitOptions.RemoveEmptyEntries);
+                            int[] intCoordinates = Array.ConvertAll(coordinates, int.Parse);
+
+                            //setting value
+                            child.setValue(NameCoordinatesPreposition[0]);
+                            child.setObjectType(objectTypeWithNo[0]);
+                            child.setPreposition(preposition);
+                            child.setCoordinates(intCoordinates);
+
+                            //check if the Tree already contains the node
+                            if (Tree.ContainsKey(child) == false)
                             {
-                                placeholder.text = "Could not add relationship!";
-                                placeholder.color = Color.red;
+                                Node newNodeCopyParent = parent.Copy();
+
+                                Node newNodeCopy = child.Copy();
+
+                                Boolean resultAddChildren = graphObject.addChildren(Tree, newNodeCopyParent, newNodeCopy);
+
+                                if (resultAddChildren == false)
+                                {
+                                    placeholder.text = "Could not add relationship!";
+                                    placeholder.color = Color.red;
+                                }
                             }
                         }
                     }
