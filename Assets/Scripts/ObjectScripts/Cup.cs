@@ -5,25 +5,25 @@ using UnityEngine;
 public class Cup : ObjectDim //the cup handle is on the left
 {
     //on, under
-    private readonly float height = 0.44f;
+    protected float height = 0.8f;
 
     //infront, behind
-    private readonly float width = 0.9f;
+    protected float width = 0.4f;
 
     //left, right
-    private readonly float length = 0.9f;
+    protected float length = 0.4f;
 
-    public float getHeight()
+    public override float getHeight()
     {
         return height;
     }
 
-    public float getWidth()
+    public override float getWidth()
     {
         return width;
     }
 
-    public float getLength()
+    public override float getLength()
     {
         return length;
     }

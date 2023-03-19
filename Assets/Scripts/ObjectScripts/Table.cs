@@ -4,14 +4,14 @@ using UnityEngine;
 
 public class Table: ObjectDim //looking at the shortest side
 {
-    //on, under
+    //used for on, under
     protected float height = 1.52f;
 
-    //infront, behind
-    protected float width = 3.25f;
+    //used for infront, behind
+    protected float width = 2f;
 
-    //left,right
-    protected float length = 2.25f;
+    //used for left,right
+    protected float length = 1.1f;
 
     public override float getHeight()
     {

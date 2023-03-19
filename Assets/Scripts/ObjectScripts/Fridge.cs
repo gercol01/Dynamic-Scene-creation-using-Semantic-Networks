@@ -5,25 +5,24 @@ using UnityEngine;
 public class Fridge : ObjectDim //looking at the fridge doors
 {
     //on, under
-    private readonly float height = 4f;
+    protected float height = 4f;
 
     //infront, behind
-    private readonly float width = 1.45f;
+    protected float width = 1f;
 
     //left, right
-    private readonly float length = 1.45f;
-
-    public float getHeight()
+    protected float length = 1f;
+    public override float getHeight()
     {
         return height;
     }
 
-    public float getWidth()
+    public override float getWidth()
     {
         return width;
     }
 
-    public float getLength()
+    public override float getLength()
     {
         return length;
     }

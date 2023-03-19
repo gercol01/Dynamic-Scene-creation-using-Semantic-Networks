@@ -2,28 +2,28 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Chair : ObjectDim //looking at the front legs
+public class Chair : ObjectDim //backrest is on the left
 {
     //on, under
-    private readonly float height = 1.05f;
+    protected float height = 1.05f;
 
     //infront, behind
-    private readonly float width = 1f;
+    protected float width = 0.5f;
 
     //left, right
-    private readonly float length = 1f;
+    protected float length = 0.5f;
 
-    public float getHeight()
+    public override float getHeight()
     {
         return height;
     }
 
-    public float getWidth()
+    public override float getWidth()
     {
         return width;
     }
 
-    public float getLength()
+    public override float getLength()
     {
         return length;
     }

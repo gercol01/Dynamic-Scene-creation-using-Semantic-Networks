@@ -24,7 +24,7 @@ public class Node
     protected Nullable<float> y = null;
     protected Nullable<float> z = null;
 
-    protected int rotation = 0; //initialised to 0
+    protected float rotation = 0; //initialised to 0
 
     protected ObjectDim Obj = new ObjectDim(); //object 
 
@@ -158,7 +158,51 @@ public class Node
         }
         else if (string.Equals(obj, "sofa", StringComparison.CurrentCultureIgnoreCase))
         {
-            Obj = new Table();
+            Obj = new Sofa();
+        }
+        else if (string.Equals(obj, "armchair", StringComparison.CurrentCultureIgnoreCase))
+        {
+            Obj = new Armchair();
+        }
+        else if (string.Equals(obj, "bed", StringComparison.CurrentCultureIgnoreCase))
+        {
+            Obj = new Bed();
+        }
+        else if (string.Equals(obj, "carpet", StringComparison.CurrentCultureIgnoreCase))
+        {
+            Obj = new Carpet();
+        }
+        else if (string.Equals(obj, "chair", StringComparison.CurrentCultureIgnoreCase))
+        {
+            Obj = new Chair();
+        }
+        else if (string.Equals(obj, "cup", StringComparison.CurrentCultureIgnoreCase))
+        {
+            Obj = new Cup();
+        }
+        else if (string.Equals(obj, "lamp", StringComparison.CurrentCultureIgnoreCase))
+        {
+            Obj = new Lamp();
+        }
+        else if (string.Equals(obj, "nightstand", StringComparison.CurrentCultureIgnoreCase))
+        {
+            Obj = new Nightstand();
+        }
+        else if (string.Equals(obj, "oven", StringComparison.CurrentCultureIgnoreCase))
+        {
+            Obj = new Oven();
+        }
+        else if (string.Equals(obj, "vase", StringComparison.CurrentCultureIgnoreCase))
+        {
+            Obj = new vase();
+        }
+        else if (string.Equals(obj, "wallvertical", StringComparison.CurrentCultureIgnoreCase))
+        {
+            Obj = new WallVertical();
+        }
+        else if (string.Equals(obj, "wallhorizontal", StringComparison.CurrentCultureIgnoreCase))
+        {
+            Obj = new WallHorizontal();
         }
     }
 
@@ -177,11 +221,11 @@ public class Node
         return Value.GetHashCode();
     }
 
-    public int getRotation() {
+    public float getRotation() {
         return rotation;
     }
 
-    public void setRotation(int Rotation) {
+    public void setRotation(float Rotation) {
         rotation = Rotation;
     }
 

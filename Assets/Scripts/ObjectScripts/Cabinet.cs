@@ -5,25 +5,25 @@ using UnityEngine;
 public class Cabinet : ObjectDim //looking at the drawers
 {
     //on, under
-    private readonly float height = 2.25f;
+    protected float height = 2.25f;
 
     //infront, behind
-    private readonly float width = 1.25f;
+    protected float width = 1.25f;
 
     //left,right
-    private readonly float length = 1.45f;
+    protected float length = 1.45f;
 
-    public float getHeight()
+    public override float getHeight()
     {
         return height;
     }
 
-    public float getWidth()
+    public override float getWidth()
     {
         return width;
     }
 
-    public float getLength()
+    public override float getLength()
     {
         return length;
     }

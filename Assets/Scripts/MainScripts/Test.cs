@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class Test : MonoBehaviour
@@ -18,6 +19,7 @@ public class Test : MonoBehaviour
     public Button saveSceneButton; //save scene object
     public Button loadSceneButton; //load scene button
 
+    //camera buttons
     public Button topCameraButton; //change to top camera button
     public Button frontCameraButton; //change to top camera button
     public Button backCameraButton; //change to top camera button
@@ -26,17 +28,23 @@ public class Test : MonoBehaviour
     public Button cameraButton; //to access the camera menu
     public Button minCameraButton; //to minimise the camera menu
 
+    //collision box button
+    public Button collisionBoxButton; //button used to enable/disable the collision boxes
+
+    //cameras
     public Camera topCamera;
     public Camera frontCamera;
     public Camera backCamera;
     public Camera leftCamera;
     public Camera rightCamera;
 
+    //GUI elements
     GameObject Menu;
     GameObject CameraMenu;
     GameObject maxButton;
     GameObject minButton;
 
+    //materials
     public Material Fabric;
     public Material MetalDark;
     public Material MetalLight;
@@ -44,31 +52,74 @@ public class Test : MonoBehaviour
     public Material WoodLight;
     public Material UtilityMaterial;
 
+    //a utility array used to store objects when rotating, moving etc
+    public List<string> listOfObjects = new List<string>();
+
+    public void AddStringToList(string newString)
+    {
+        listOfObjects.Add(newString);
+    }
+
+    public void RemoveStringFromList(string stringToRemove)
+    {
+        listOfObjects.Remove(stringToRemove);
+    }
+
+    public string[] GetListAsArray()
+    {
+        return listOfObjects.ToArray();
+    }
+
     //list of all the specific materials
     List<string> colorList = new List<string> { "wood_dark", "wood_light", "metal_dark", "metal_light", "fabric"};
 
     //list of all the objects
-    List<string> objectList = new List<string> { "table", "chair", "sofa", "fridge", "cup" , "cube"};
+    List<string> objectList = new List<string> { "table", "chair", "sofa", "fridge", "armchair" , "vase", "oven", "lamp", "bed", "cup", "nightstand", "carpet"};
 
     public GameObject cube; //cube object
     public GameObject sphere; //cube object
     public GameObject cylinder; //cube object
+
+    //Gameobjects
     public GameObject fridge; //fridge object
     public GameObject cup; //cup object
+    public GameObject vase; //vase object
     public GameObject sofa; //sofa object
     public GameObject chair; //chair object
     public GameObject table; //table object
+    public GameObject armchair; //armchair object
+    public GameObject bed; //armchair object
+    public GameObject lamp; //lamp object
+    public GameObject nightstand; //nightstand object
+    public GameObject oven; //nightstand object
+    public GameObject carpet; //nightstand object
 
+
+    public GameObject wallVertical; //wall object
+    public GameObject wallHorizontal; //wall object
+
+    //enemy Gameobjects
     public GameObject enemyCube;
     public GameObject enemyFridge; //fridge object
     public GameObject enemyCup; //cup object
     public GameObject enemySofa; //sofa object
     public GameObject enemyChair; //chair object
     public GameObject enemyTable; //table object
+    public GameObject enemyArmchair; //armchair object
+    public GameObject enemyBed; //armchair object
+    public GameObject enemyLamp; //lamp object
+    public GameObject enemyNightstand; //nightstand object
+    public GameObject enemyOven; //nightstand object
+    public GameObject enemyCarpet; //nightstand object
+    public GameObject enemyVase; //nightstand object
 
+    public GameObject enemyWallVertical; //wall object
+    public GameObject enemyWallHorizontal; //wall object
 
-    public Node temporaryNode;//used in the update method
-
+    private GameObject[] gameObjects; //a list of all the current Object GameObjects in the scene
+    public Material materialCollisionBox; //the collision box material
+    private Boolean collisionBoxFlag = true; //the collision box flag
+    
     //Placeholder field
     public Text placeholder;
 
@@ -105,10 +156,12 @@ public class Test : MonoBehaviour
         }
     }
 
+    //Update method parameters
     public float creationDelay = 2.0f; // delay between object creation
     private bool canCreate = false; // flag to check if the object can be created
     private bool canCreateTrue = false; // flag to check if the true object can be created
     private bool found = false;// flag used to check if the object has been destroyed or not
+    public Node temporaryNode;//used in the update method
 
     // Start is called before the first frame update
     void Start()
@@ -121,7 +174,7 @@ public class Test : MonoBehaviour
         CameraMenu = GameObject.Find("CameraCanvas");
         CameraMenu.SetActive(false);
 
-
+        //initialising the front camera as the default camera
         frontCamera.enabled = true;
 
         //setting the cameras to false
@@ -173,6 +226,111 @@ public class Test : MonoBehaviour
                     //spawn the parent object with specified coordinates
                     Instantiate(table, coordinates, rotation);
                 }
+                //if the object type is a table
+                else if (string.Equals(objectType1, "Fridge", StringComparison.CurrentCultureIgnoreCase))
+                {
+                    //giving the table the name
+                    fridge.name = name;
+
+                    //spawn the parent object with specified coordinates
+                    Instantiate(fridge, coordinates, rotation);
+                }
+                else if (string.Equals(objectType1, "Armchair", StringComparison.CurrentCultureIgnoreCase))
+                {
+                    //giving the table the name
+                    armchair.name = name;
+
+                    //spawn the parent object with specified coordinates
+                    Instantiate(armchair, coordinates, rotation);
+                }
+                else if (string.Equals(objectType1, "Bed", StringComparison.CurrentCultureIgnoreCase))
+                {
+                    //giving the table the name
+                    bed.name = name;
+
+                    //spawn the parent object with specified coordinates
+                    Instantiate(bed, coordinates, rotation);
+                }
+                else if (string.Equals(objectType1, "Carpet", StringComparison.CurrentCultureIgnoreCase))
+                {
+                    //giving the table the name
+                    carpet.name = name;
+
+                    //spawn the parent object with specified coordinates
+                    Instantiate(carpet, coordinates, rotation);
+                }
+                else if (string.Equals(objectType1, "Chair", StringComparison.CurrentCultureIgnoreCase))
+                {
+                    //giving the table the name
+                    chair.name = name;
+
+                    //spawn the parent object with specified coordinates
+                    Instantiate(chair, coordinates, rotation);
+                }
+                else if (string.Equals(objectType1, "Cup", StringComparison.CurrentCultureIgnoreCase))
+                {
+                    //giving the table the name
+                    cup.name = name;
+
+                    //spawn the parent object with specified coordinates
+                    Instantiate(cup, coordinates, rotation);
+                }
+                else if (string.Equals(objectType1, "Lamp", StringComparison.CurrentCultureIgnoreCase))
+                {
+                    //giving the table the name
+                    lamp.name = name;
+
+                    //spawn the parent object with specified coordinates
+                    Instantiate(lamp, coordinates, rotation);
+                }
+                else if (string.Equals(objectType1, "Nightstand", StringComparison.CurrentCultureIgnoreCase))
+                {
+                    //giving the table the name
+                    nightstand.name = name;
+
+                    //spawn the parent object with specified coordinates
+                    Instantiate(nightstand, coordinates, rotation);
+                }
+                else if (string.Equals(objectType1, "Oven", StringComparison.CurrentCultureIgnoreCase))
+                {
+                    //giving the table the name
+                    oven.name = name;
+
+                    //spawn the parent object with specified coordinates
+                    Instantiate(oven, coordinates, rotation);
+                }
+                else if (string.Equals(objectType1, "Sofa", StringComparison.CurrentCultureIgnoreCase))
+                {
+                    //giving the table the name
+                    sofa.name = name;
+
+                    //spawn the parent object with specified coordinates
+                    Instantiate(sofa, coordinates, rotation);
+                }
+                else if (string.Equals(objectType1, "Vase", StringComparison.CurrentCultureIgnoreCase))
+                {
+                    //giving the table the name
+                    vase.name = name;
+
+                    //spawn the parent object with specified coordinates
+                    Instantiate(vase, coordinates, rotation);
+                }
+                else if (string.Equals(objectType1, "wallhorizontal", StringComparison.CurrentCultureIgnoreCase))
+                {
+                    //giving the table the name
+                    wallHorizontal.name = name;
+
+                    //spawn the parent object with specified coordinates
+                    Instantiate(wallHorizontal, coordinates, rotation);
+                }
+                else if (string.Equals(objectType1, "wallvertical", StringComparison.CurrentCultureIgnoreCase))
+                {
+                    //giving the table the name
+                    wallVertical.name = name;
+
+                    //spawn the parent object with specified coordinates
+                    Instantiate(wallVertical, coordinates, rotation);
+                }
 
                 ////update the position
                 //GameObject obj = GameObject.Find(name + "(Clone)");
@@ -190,7 +348,7 @@ public class Test : MonoBehaviour
                     enemyCube.name = name;
 
                     //spawn the parent object with specified coordinates
-                    Instantiate(enemyCube, coordinates, rotation);
+                    Instantiate(cube, coordinates, rotation);
                 }
                 //if the object type is a table
                 else if (string.Equals(objectType1, "Table", StringComparison.CurrentCultureIgnoreCase))
@@ -200,6 +358,111 @@ public class Test : MonoBehaviour
 
                     //spawn the parent object with specified coordinates
                     Instantiate(table, coordinates, rotation);
+                }
+                //if the object type is a table
+                else if (string.Equals(objectType1, "Fridge", StringComparison.CurrentCultureIgnoreCase))
+                {
+                    //giving the table the name
+                    fridge.name = name;
+
+                    //spawn the parent object with specified coordinates
+                    Instantiate(fridge, coordinates, rotation);
+                }
+                else if (string.Equals(objectType1, "Armchair", StringComparison.CurrentCultureIgnoreCase))
+                {
+                    //giving the table the name
+                    armchair.name = name;
+
+                    //spawn the parent object with specified coordinates
+                    Instantiate(armchair, coordinates, rotation);
+                }
+                else if (string.Equals(objectType1, "Bed", StringComparison.CurrentCultureIgnoreCase))
+                {
+                    //giving the table the name
+                    bed.name = name;
+
+                    //spawn the parent object with specified coordinates
+                    Instantiate(bed, coordinates, rotation);
+                }
+                else if (string.Equals(objectType1, "Carpet", StringComparison.CurrentCultureIgnoreCase))
+                {
+                    //giving the table the name
+                    carpet.name = name;
+
+                    //spawn the parent object with specified coordinates
+                    Instantiate(carpet, coordinates, rotation);
+                }
+                else if (string.Equals(objectType1, "Chair", StringComparison.CurrentCultureIgnoreCase))
+                {
+                    //giving the table the name
+                    chair.name = name;
+
+                    //spawn the parent object with specified coordinates
+                    Instantiate(chair, coordinates, rotation);
+                }
+                else if (string.Equals(objectType1, "Cup", StringComparison.CurrentCultureIgnoreCase))
+                {
+                    //giving the table the name
+                    cup.name = name;
+
+                    //spawn the parent object with specified coordinates
+                    Instantiate(cup, coordinates, rotation);
+                }
+                else if (string.Equals(objectType1, "Lamp", StringComparison.CurrentCultureIgnoreCase))
+                {
+                    //giving the table the name
+                    lamp.name = name;
+
+                    //spawn the parent object with specified coordinates
+                    Instantiate(lamp, coordinates, rotation);
+                }
+                else if (string.Equals(objectType1, "Nightstand", StringComparison.CurrentCultureIgnoreCase))
+                {
+                    //giving the table the name
+                    nightstand.name = name;
+
+                    //spawn the parent object with specified coordinates
+                    Instantiate(nightstand, coordinates, rotation);
+                }
+                else if (string.Equals(objectType1, "Oven", StringComparison.CurrentCultureIgnoreCase))
+                {
+                    //giving the table the name
+                    oven.name = name;
+
+                    //spawn the parent object with specified coordinates
+                    Instantiate(oven, coordinates, rotation);
+                }
+                else if (string.Equals(objectType1, "Sofa", StringComparison.CurrentCultureIgnoreCase))
+                {
+                    //giving the table the name
+                    sofa.name = name;
+
+                    //spawn the parent object with specified coordinates
+                    Instantiate(sofa, coordinates, rotation);
+                }
+                else if (string.Equals(objectType1, "Vase", StringComparison.CurrentCultureIgnoreCase))
+                {
+                    //giving the table the name
+                    vase.name = name;
+
+                    //spawn the parent object with specified coordinates
+                    Instantiate(vase, coordinates, rotation);
+                }
+                else if (string.Equals(objectType1, "wallhorizontal", StringComparison.CurrentCultureIgnoreCase))
+                {
+                    //giving the table the name
+                    wallHorizontal.name = name;
+
+                    //spawn the parent object with specified coordinates
+                    Instantiate(wallHorizontal, coordinates, rotation);
+                }
+                else if (string.Equals(objectType1, "wallvertical", StringComparison.CurrentCultureIgnoreCase))
+                {
+                    //giving the table the name
+                    wallVertical.name = name;
+
+                    //spawn the parent object with specified coordinates
+                    Instantiate(wallVertical, coordinates, rotation);
                 }
             }
 
@@ -247,6 +510,7 @@ public class Test : MonoBehaviour
                     //spawn the parent object with specified coordinates
                     Instantiate(enemyTable, coordinates, rotation);
                 }
+                
 
                 ////update the position
                 //GameObject obj = GameObject.Find(name + "(Clone)");
@@ -275,6 +539,111 @@ public class Test : MonoBehaviour
                     //spawn the parent object with specified coordinates
                     Instantiate(enemyTable, coordinates, rotation);
                 }
+                //if the object type is a table
+                else if (string.Equals(objectType1, "Fridge", StringComparison.CurrentCultureIgnoreCase))
+                {
+                    //giving the table the name
+                    enemyFridge.name = name;
+
+                    //spawn the parent object with specified coordinates
+                    Instantiate(enemyFridge, coordinates, rotation);
+                }
+                else if (string.Equals(objectType1, "Armchair", StringComparison.CurrentCultureIgnoreCase))
+                {
+                    //giving the table the name
+                    enemyArmchair.name = name;
+
+                    //spawn the parent object with specified coordinates
+                    Instantiate(enemyArmchair, coordinates, rotation);
+                }
+                else if (string.Equals(objectType1, "Bed", StringComparison.CurrentCultureIgnoreCase))
+                {
+                    //giving the table the name
+                    enemyBed.name = name;
+
+                    //spawn the parent object with specified coordinates
+                    Instantiate(enemyBed, coordinates, rotation);
+                }
+                else if (string.Equals(objectType1, "Carpet", StringComparison.CurrentCultureIgnoreCase))
+                {
+                    //giving the table the name
+                    enemyCarpet.name = name;
+
+                    //spawn the parent object with specified coordinates
+                    Instantiate(enemyCarpet, coordinates, rotation);
+                }
+                else if (string.Equals(objectType1, "Chair", StringComparison.CurrentCultureIgnoreCase))
+                {
+                    //giving the table the name
+                    enemyChair.name = name;
+
+                    //spawn the parent object with specified coordinates
+                    Instantiate(enemyChair, coordinates, rotation);
+                }
+                else if (string.Equals(objectType1, "Cup", StringComparison.CurrentCultureIgnoreCase))
+                {
+                    //giving the table the name
+                    enemyCup.name = name;
+
+                    //spawn the parent object with specified coordinates
+                    Instantiate(enemyCup, coordinates, rotation);
+                }
+                else if (string.Equals(objectType1, "Lamp", StringComparison.CurrentCultureIgnoreCase))
+                {
+                    //giving the table the name
+                    enemyLamp.name = name;
+
+                    //spawn the parent object with specified coordinates
+                    Instantiate(enemyLamp, coordinates, rotation);
+                }
+                else if (string.Equals(objectType1, "Nightstand", StringComparison.CurrentCultureIgnoreCase))
+                {
+                    //giving the table the name
+                    enemyNightstand.name = name;
+
+                    //spawn the parent object with specified coordinates
+                    Instantiate(enemyNightstand, coordinates, rotation);
+                }
+                else if (string.Equals(objectType1, "Oven", StringComparison.CurrentCultureIgnoreCase))
+                {
+                    //giving the table the name
+                    enemyOven.name = name;
+
+                    //spawn the parent object with specified coordinates
+                    Instantiate(enemyOven, coordinates, rotation);
+                }
+                else if (string.Equals(objectType1, "Sofa", StringComparison.CurrentCultureIgnoreCase))
+                {
+                    //giving the table the name
+                    enemySofa.name = name;
+
+                    //spawn the parent object with specified coordinates
+                    Instantiate(enemySofa, coordinates, rotation);
+                }
+                else if (string.Equals(objectType1, "Vase", StringComparison.CurrentCultureIgnoreCase))
+                {
+                    //giving the table the name
+                    enemyVase.name = name;
+
+                    //spawn the parent object with specified coordinates
+                    Instantiate(enemyVase, coordinates, rotation);
+                }
+                else if (string.Equals(objectType1, "wallhorizontal", StringComparison.CurrentCultureIgnoreCase))
+                {
+                    //giving the table the name
+                    enemyWallHorizontal.name = name;
+
+                    //spawn the parent object with specified coordinates
+                    Instantiate(enemyWallHorizontal, coordinates, rotation);
+                }
+                else if (string.Equals(objectType1, "wallvertical", StringComparison.CurrentCultureIgnoreCase))
+                {
+                    //giving the table the name
+                    enemyWallVertical.name = name;
+
+                    //spawn the parent object with specified coordinates
+                    Instantiate(enemyWallVertical, coordinates, rotation);
+                }
             }
 
             //resetting the flag
@@ -302,6 +671,8 @@ public class Test : MonoBehaviour
         rightCameraButton.onClick.AddListener(() => SwitchRightCamera());
 
         cameraButton.onClick.AddListener(() => getCameras());
+
+        collisionBoxButton.onClick.AddListener(() => ChangeCollisionBoxStatus());
     }
 
     public void SwitchTopCamera()
@@ -420,7 +791,7 @@ public class Test : MonoBehaviour
             }
 
             //if the command is Rotate, flag to 5
-            else if (String.Equals(words[0], "Rotate", StringComparison.OrdinalIgnoreCase))
+            else if (String.Equals(words[0], "Rotate", StringComparison.OrdinalIgnoreCase) && String.Equals(words[1], "simple", StringComparison.OrdinalIgnoreCase))
             {
                 flag = 5;
             }
@@ -436,7 +807,8 @@ public class Test : MonoBehaviour
             outputCommands.text = outputCommands.text + commandBox.text + "\n";
 
             //only called for the start nodes
-            if (words.Length == 4 && flag == 0)//if the command is an Add command, that means that it is a start node, ex: Add cube_1 at 2,0,0
+            //if the command is an Add command, that means that it is a start node, ex: Add cube_1 at 2,0,0
+            if (words.Length == 4 && flag == 0)
             {
                 //getting the name of the object
                 string parent = words[1];
@@ -484,6 +856,42 @@ public class Test : MonoBehaviour
                     {
                         parentNode.setObject("fridge");
                     }
+                    else if (objectTypeWithNo[0].Equals("bed", StringComparison.OrdinalIgnoreCase))
+                    {
+                        parentNode.setObject("bed");
+                    }
+                    else if (objectTypeWithNo[0].Equals("armchair", StringComparison.OrdinalIgnoreCase))
+                    {
+                        parentNode.setObject("armchair");
+                    }
+                    else if (objectTypeWithNo[0].Equals("carpet", StringComparison.OrdinalIgnoreCase))
+                    {
+                        parentNode.setObject("carpet");
+                    }
+                    else if (objectTypeWithNo[0].Equals("lamp", StringComparison.OrdinalIgnoreCase))
+                    {
+                        parentNode.setObject("lamp");
+                    }
+                    else if (objectTypeWithNo[0].Equals("vase", StringComparison.OrdinalIgnoreCase))
+                    {
+                        parentNode.setObject("vase");
+                    }
+                    else if (objectTypeWithNo[0].Equals("nightstand", StringComparison.OrdinalIgnoreCase))
+                    {
+                        parentNode.setObject("nightstand");
+                    }
+                    else if (objectTypeWithNo[0].Equals("oven", StringComparison.OrdinalIgnoreCase))
+                    {
+                        parentNode.setObject("oven");
+                    }
+                    else if (objectTypeWithNo[0].Equals("wallvertical", StringComparison.OrdinalIgnoreCase))
+                    {
+                        parentNode.setObject("wallvertical");
+                    }
+                    else if (objectTypeWithNo[0].Equals("wallhorizontal", StringComparison.OrdinalIgnoreCase))
+                    {
+                        parentNode.setObject("wallhorizontal");
+                    }
 
                     //set the initial rotation to 0
                     parentNode.setRotation(0);
@@ -506,6 +914,10 @@ public class Test : MonoBehaviour
                             found = false;
 
                             Boolean resultAddChildren = graphObject.addChildren(TreeSet, parentNode, null); //adding the first node to the tree - it has no children
+
+                            //when adding a new object collisions are set to true
+                            collisionBoxFlag = true;
+                            CollisionBoxStatus();
 
                             if (resultAddChildren == false)
                             {
@@ -532,7 +944,9 @@ public class Test : MonoBehaviour
                 }
 
             }
-            else if (words.Length == 4 && flag == 1)//if the command is a Create command and consists of 4 words, that means that it is a single relationship, ex: Create Book_1 under Tree_1
+
+            //if the command is a Create command and consists of 4 words, that means that it is a single relationship, ex: Create Book_1 under Tree_1
+            else if (words.Length == 4 && flag == 1)
             {
                 //the parent node
                 string parent = words[3];
@@ -577,6 +991,42 @@ public class Test : MonoBehaviour
                 else if (objectTypeWithNo[0].Equals("fridge", StringComparison.OrdinalIgnoreCase))
                 {
                     childNode.setObject("fridge");
+                }
+                else if (objectTypeWithNo[0].Equals("bed", StringComparison.OrdinalIgnoreCase))
+                {
+                    childNode.setObject("bed");
+                }
+                else if (objectTypeWithNo[0].Equals("armchair", StringComparison.OrdinalIgnoreCase))
+                {
+                    childNode.setObject("armchair");
+                }
+                else if (objectTypeWithNo[0].Equals("carpet", StringComparison.OrdinalIgnoreCase))
+                {
+                    childNode.setObject("carpet");
+                }
+                else if (objectTypeWithNo[0].Equals("lamp", StringComparison.OrdinalIgnoreCase))
+                {
+                    childNode.setObject("lamp");
+                }
+                else if (objectTypeWithNo[0].Equals("vase", StringComparison.OrdinalIgnoreCase))
+                {
+                    childNode.setObject("vase");
+                }
+                else if (objectTypeWithNo[0].Equals("nightstand", StringComparison.OrdinalIgnoreCase))
+                {
+                    childNode.setObject("nightstand");
+                }
+                else if (objectTypeWithNo[0].Equals("oven", StringComparison.OrdinalIgnoreCase))
+                {
+                    childNode.setObject("oven");
+                }
+                else if (objectTypeWithNo[0].Equals("wallvertical", StringComparison.OrdinalIgnoreCase))
+                {
+                    childNode.setObject("wallvertical");
+                }
+                else if (objectTypeWithNo[0].Equals("wallhorizontal", StringComparison.OrdinalIgnoreCase))
+                {
+                    childNode.setObject("wallhorizontal");
                 }
 
                 //check if the parent itself exists
@@ -625,6 +1075,10 @@ public class Test : MonoBehaviour
 
                                         //if correct make current tree equal to the new tree
                                         TreeSet = tempTree;
+
+                                        //when adding a new object collisions are set to true
+                                        collisionBoxFlag = true;
+                                        CollisionBoxStatus();
                                     }
                                     else
                                     {
@@ -653,7 +1107,9 @@ public class Test : MonoBehaviour
                 }
 
             }
-            else if (words.Length == 6 && flag == 1)//if the command is a Create command and consists of 6 words, that means that it is a double relationship, ex: Create Book_1 under Tree_1 and Man_1
+
+            //if the command is a Create command and consists of 6 words, that means that it is a double relationship, ex: Create Book_1 under Tree_1 and Man_1
+            else if (words.Length == 6 && flag == 1)
             {
                 //TO BE REWRITTEN
 
@@ -687,7 +1143,9 @@ public class Test : MonoBehaviour
                 graphObject.addChildren(Tree, parentNode1, childNode);
                 graphObject.addChildren(Tree, parentNode2, childNode);
             }
-            else if (words.Length == 2 && flag == 2)//if the command is a Delete command and consists of 2 words, ex: Delete cube_1
+
+            //if the command is a Delete command and consists of 2 words, ex: Delete cube_1
+            else if (words.Length == 2 && flag == 2)
             {
                 //the first parent node
                 string delete = words[1];
@@ -711,7 +1169,9 @@ public class Test : MonoBehaviour
                     placeholder.color = Color.red;
                 }
             }
-            else if (words.Length == 4 && flag == 3)//if the command is a Move command and consists of 4 words, ex: Move cube_1 to 2,0,0, Move cube_1 on cube_3
+
+            //if the command is a Move command and consists of 4 words, ex: Move cube_1 to 2,0,0, Move cube_1 on cube_3
+            else if (words.Length == 4 && flag == 3)
             {
                 Boolean collisions = false;
 
@@ -811,6 +1271,11 @@ public class Test : MonoBehaviour
                             nodesToMove = new List<Node>(nodesToMoveCopy);
                             repeat = true;
                         }
+                    }
+
+                    //update the list of objects that are exempt from collisions
+                    foreach (Node node in nodesToMove) {
+                        listOfObjects.Add(node.ToString());
                     }
 
                     //check that the new coordinates are not the same as the old coordinates
@@ -979,8 +1444,13 @@ public class Test : MonoBehaviour
                     placeholder.text = "Could not add node!";
                     placeholder.color = Color.red;
                 }
+
+                //reset the list of objects
+                listOfObjects.Clear();
             }
-            else if (words.Length == 4 && flag == 4)//if the command is a Change color command and consists of 4 words, ex: Change cube_1 to red
+
+            //if the command is a Change color command and consists of 4 words, ex: Change cube_1 to red
+            else if (words.Length == 4 && flag == 4)
             {
                 //the object to change
                 string objectToChange = words[1];
@@ -998,8 +1468,10 @@ public class Test : MonoBehaviour
                     // First, get a reference to the GameObject you want to change the color of
                     GameObject myObject = GameObject.Find(objectToChange + "(Clone)");
 
+                    GameObject childObject = myObject.transform.GetChild(0).gameObject;
+
                     // Next, get a reference to the object's Renderer component
-                    Renderer myRenderer = myObject.GetComponent<Renderer>();
+                    Renderer myRenderer = childObject.GetComponent<Renderer>();
 
                     //check if the color is a specific color
                     if (colorList.Any(x => x.Equals(color, StringComparison.OrdinalIgnoreCase)))
@@ -1051,27 +1523,357 @@ public class Test : MonoBehaviour
                 }
             }
 
-            else if (words.Length == 4 && flag == 5)//if the command is a Rotate command, ex: Rotate table_1 by 180
+            //if the command is a (Simple) Rotate command, ex: Rotate simple table_1 by 180
+            else if (words.Length == 5 && flag == 5)
             {
+                //check on which axis it is being rotated
+
                 Boolean collisions = false;
 
-                //the parent node
-                string parent = words[1];
+                //the parent node name
+                string parent = words[2];
+
+                //Add to the list of exempt objects
+                listOfObjects.Add(parent);
 
                 //creating the parent node
                 Node parentNode = new Node(parent);
 
-                //getting the rotation ex: 180
-                string rotation = words[3];
+                //check if the object to be rotated exists
+                Boolean checkObjectExist = checkExist(Tree, parentNode);
 
-                //setting the rotation
-                parentNode.setRotation(int.Parse(rotation));
+                //if the object exists
+                if (checkObjectExist)
+                {
+                    //getting the rotation ex: 180
+                    string rotation = words[4];
 
-                //create a temporary tree and recalculate the rotation
-                //create a copy of the current Tree
-                IDictionary<Node, Node[]> tempTree = TreeSet.ToDictionary(entry => entry.Key, entry => entry.Value);
+                    //normalise the rotation
+                    float rotationInteger = float.Parse(rotation) % 360;
+
+                    //get the current rotation of the gameobject
+                    GameObject obj = GameObject.Find(parentNode.ToString() + "temp(Clone)");
+
+                    //current rotation of the object
+                    Quaternion currentRotationQuaternion = obj.transform.rotation;
+
+                    //get the rotation on the y-axis only
+                    float currentRotation = currentRotationQuaternion.eulerAngles.y;
+
+                    //normalise the current rotation, 450 same as 90
+                    currentRotation = currentRotation % 360;
+
+                    //rotation to be
+                    float futureRotation = currentRotation + rotationInteger;
+
+                    //check if they are the same
+                    if (currentRotation != futureRotation) {
+
+                        //setting the rotation
+                        parentNode.setRotation(rotationInteger);
+
+                        //create a temporary tree and recalculate the rotation
+                        //create a copy of the current Tree
+                        IDictionary<Node, Node[]> tempTree = TreeSet.ToDictionary(entry => entry.Key, entry => entry.Value);
+
+                        //change the rotation of the parentNode
+                        changeTreeRotations(tempTree, parentNode);
+
+                        //get the node from the temptree with coordinates, object type etc.
+                        foreach (KeyValuePair<Node, Node[]> entry in tempTree)
+                        {
+                            //check the name of each node
+                            if (entry.Key.ToString().Equals(parentNode.ToString()))
+                            {
+                                //create a copy and add it to the list
+                                parentNode = entry.Key.Copy();
+                            }
+                        }
+
+                        //flag to show if the rotation can be done or not
+                        Boolean create = true;
+
+                        //change name as it is a temporary duplicate
+                        parentNode.setValue(parentNode.ToString() + "Copy");
+
+                        //check that the nodes can be moved
+                        StartCoroutine(checkSceneCollidersParent(parentNode));
+
+                        yield return new WaitForSeconds(creationDelay);//handing control to Update()
+
+                        if (found == true)//the node can be moved
+                        {
+                            found = false;//reset the found flag
+
+                            create = true;//boolean to see if there are collisions in all children
+                        }
+                        else
+                        {
+                            //the objects will not be moved as there is a collision
+                            create = false;
+
+                            placeholder.text = "Could not add node!";
+                            placeholder.color = Color.red;
+                        }
+
+                        //if there are no collisions at all
+                        if (create == true)
+                        {
+                            //the objects can be moved
+                            GameObject objToDelete = GameObject.Find(parentNode.ToString() + "temp(Clone)");
+
+                            //destroying the object
+                            Destroy(objToDelete);
+
+                            yield return new WaitForSeconds(creationDelay);
+
+                            //find the object
+                            String originalObject = parentNode.ToString().Replace("Copy", "");
+
+                            GameObject objToUpdate = GameObject.Find(originalObject + "temp(Clone)");
+                            objToUpdate.transform.rotation = Quaternion.Euler(0f, parentNode.getRotation(), 0f);
+
+                            yield return new WaitForSeconds(creationDelay);
+
+                            //find the created object
+                            if (GameObject.Find(originalObject + "(Clone)"))
+                            {
+                                GameObject objToMove = GameObject.Find(originalObject + "(Clone)");
+                                objToMove.transform.rotation = Quaternion.Euler(0f, parentNode.getRotation(), 0f);
+
+                                yield return new WaitForSeconds(creationDelay);
+                            }
+
+                            //update the Tree
+                            TreeSet = tempTree;
+                        }
+                        else
+                        {
+                            placeholder.text = "Could not add node!";
+                            placeholder.color = Color.red;
+                        }
+                    }
+                }
+                else
+                {
+                    placeholder.text = "Could not add node!";
+                    placeholder.color = Color.red;
+                }
+
+                //reset the object list
+                listOfObjects.Clear();
             }
-            else if (words.Length == 5 && flag == 5)//if the command is a Rotate command, ex: Rotate left table_1 by 90
+
+            //if the command is a (Compound) Rotate command, ex: Rotate compound table_1 by 180
+            else if (words.Length == 5 && flag == 6)
+            {
+                //check on which axis it is being rotated
+
+                Boolean collisions = false;
+
+                //the parent node name
+                string parent = words[2];
+
+                //creating the parent node
+                Node parentNode = new Node(parent);
+
+                //check if the object to be rotated exists
+                Boolean checkObjectExist = checkExist(Tree, parentNode);
+
+                //if the object exists
+                if (checkObjectExist)
+                {
+                    //getting the rotation ex: 180
+                    string rotation = words[4];
+
+                    //normalise the rotation
+                    float rotationInteger = float.Parse(rotation) % 360;
+
+                    //get the current rotation of the gameobject
+                    GameObject obj = GameObject.Find(parentNode.ToString() + "temp(Clone)");
+
+                    //current rotation of the object
+                    Quaternion currentRotationQuaternion = obj.transform.rotation;
+
+                    //get the rotation on the y-axis only
+                    float currentRotation = currentRotationQuaternion.eulerAngles.y;
+
+                    //normalise the current rotation, 450 same as 90
+                    currentRotation = currentRotation % 360;
+
+                    //rotation to be
+                    float futureRotation = currentRotation + rotationInteger;
+
+                    //check if they are the same
+                    if (currentRotation != futureRotation)
+                    {
+
+                        //setting the rotation
+                        parentNode.setRotation(rotationInteger);
+
+                        //create a temporary tree and recalculate the rotation
+                        //create a copy of the current Tree
+                        IDictionary<Node, Node[]> tempTree = TreeSet.ToDictionary(entry => entry.Key, entry => entry.Value);
+
+                        //change the rotation of the parentNode
+                        changeTreeRotations(tempTree, parentNode);
+
+                        //calculate the new rotations
+                        setRotations(tempTree);
+
+                        //List to store all the nodes involved
+                        List<Node> nodesToRotate = new List<Node>();
+
+                        //add the parentNode
+                        foreach (KeyValuePair<Node, Node[]> entry in tempTree)
+                        {
+                            //check the name of each node
+                            if (entry.Key.ToString().Equals(parentNode.ToString()))
+                            {
+                                //create a copy and add it to the list
+                                Node newNodeCopy = entry.Key.Copy();
+                                nodesToRotate.Add(newNodeCopy);
+                            }
+                        }
+
+                        //get all the objects involved through iteration
+
+                        //start with the children of the parentNode
+                        Node[] temp = tempTree[parentNode];
+
+                        //getting the first nodes from the array
+                        foreach (Node tempNode in temp)
+                        {
+                            Node newNodeCopy = tempNode.Copy();
+                            nodesToRotate.Add(newNodeCopy);
+                        }
+
+                        //list to compare
+                        List<Node> nodesToMoveCopy = new List<Node>(nodesToRotate);
+
+                        Boolean repeat = true;
+
+                        while (repeat)
+                        {
+                            foreach (Node tNode in nodesToRotate)
+                            {
+                                //get the children and add them to the list
+                                Node[] temporary = tempTree[tNode];
+
+                                //check if it has children
+                                foreach (Node tempNode in temporary)
+                                {
+                                    //check if the nodes are not already in the list
+                                    Boolean checkNode = nodesToRotate.Contains(tempNode);
+
+                                    if (checkNode == false)
+                                    {
+                                        Node newNodeCopy = tempNode.Copy();
+                                        nodesToMoveCopy.Add(newNodeCopy);//add the new children (if any)
+                                    }
+
+                                }
+                            }
+
+                            if (nodesToRotate.Count == nodesToMoveCopy.Count)
+                            {
+                                repeat = false;
+                            }
+                            else
+                            {
+                                //update the list with the new Nodes
+                                nodesToRotate = new List<Node>(nodesToMoveCopy);
+                                repeat = true;
+                            }
+                        }
+
+
+                        Boolean create = true;
+
+                        //loop through the nodes to be moved
+
+                        foreach (Node node in nodesToRotate)
+                        {
+                            //change name as it is a temporary duplicate
+                            node.setValue(node.ToString() + "Copy");
+
+                            //check that the nodes can be moved
+                            StartCoroutine(checkSceneCollidersParent(node));
+
+                            yield return new WaitForSeconds(creationDelay);//handing control to Update()
+
+                            if (found == true)//the node can be moved
+                            {
+                                found = false;//reset the found flag
+
+                                create = true;//boolean to see if there are collisions in all children
+                            }
+                            else
+                            {
+                                //the objects will not be moved as there is a collision
+                                create = false;
+
+                                placeholder.text = "Could not add node!";
+                                placeholder.color = Color.red;
+
+                                break;
+                            }
+                        }
+
+                        //if there are no collisions at all
+                        if (create == true)
+                        {
+                            //the objects can be moved
+
+                            //delete the copies of the objects
+                            foreach (Node node in nodesToRotate)
+                            {
+                                GameObject objToDelete = GameObject.Find(node.ToString() + "temp(Clone)");
+
+                                //destroying the object
+                                Destroy(objToDelete);
+
+                                yield return new WaitForSeconds(creationDelay);
+
+                                //find the object
+                                String originalObject = node.ToString().Replace("Copy", "");
+
+                                GameObject objToUpdate = GameObject.Find(originalObject + "temp(Clone)");
+                                objToUpdate.transform.rotation = Quaternion.Euler(0f, node.getRotation(), 0f);
+
+                                yield return new WaitForSeconds(creationDelay);
+
+                                //find the created
+                                if (GameObject.Find(originalObject + "(Clone)"))
+                                {
+                                    GameObject objToMove = GameObject.Find(originalObject + "(Clone)");
+                                    objToMove.transform.rotation = Quaternion.Euler(0f, node.getRotation(), 0f);
+
+                                    yield return new WaitForSeconds(creationDelay);
+                                }
+                            }
+
+                            //update the Tree
+                            TreeSet = tempTree;
+                        }
+                        else
+                        {
+                            placeholder.text = "Could not add node!";
+                            placeholder.color = Color.red;
+                        }
+
+
+                    }
+                }
+                else
+                {
+                    placeholder.text = "Could not add node!";
+                    placeholder.color = Color.red;
+                }
+            }
+
+            //if the command is a Rotate command, ex: Rotate left table_1 by 90
+            else if (words.Length == 5 && flag == 5)
             {
                 Boolean collisions = false;
 
@@ -1283,7 +2085,9 @@ public class Test : MonoBehaviour
                     placeholder.color = Color.red;
                 }
             }
-            else//if the command is not a valid input
+
+            //if the command is not a valid input
+            else
             {
                 placeholder.text = "Incorrect input!";
                 placeholder.color = Color.red;
@@ -1481,6 +2285,282 @@ public class Test : MonoBehaviour
                             found = false;//reset the found flag
                         }
                     }
+                    //if the object type is a table
+                    else if (string.Equals(objectType1, "Table", StringComparison.CurrentCultureIgnoreCase))
+                    {
+                        //create the collision boxes 
+                        StartCoroutine(checkSceneCollidersParent(entry.Key));
+
+                        yield return new WaitForSeconds(creationDelay);
+
+                        if (found == true)
+                        {
+                            found = false;//reset the found flag
+                        }
+
+                        //create the object in real time to check for later
+                        StartCoroutine(checkSceneCollidersParentTrue(entry.Key));
+
+                        yield return new WaitForSeconds(creationDelay);
+
+                        if (found == true)
+                        {
+                            found = false;//reset the found flag
+                        }
+                    }
+                    //if the object type is a table
+                    else if (string.Equals(objectType1, "Armchair", StringComparison.CurrentCultureIgnoreCase))
+                    {
+                        //create the collision boxes 
+                        StartCoroutine(checkSceneCollidersParent(entry.Key));
+
+                        yield return new WaitForSeconds(creationDelay);
+
+                        if (found == true)
+                        {
+                            found = false;//reset the found flag
+                        }
+
+                        //create the object in real time to check for later
+                        StartCoroutine(checkSceneCollidersParentTrue(entry.Key));
+
+                        yield return new WaitForSeconds(creationDelay);
+
+                        if (found == true)
+                        {
+                            found = false;//reset the found flag
+                        }
+                    }
+                    //if the object type is a table
+                    else if (string.Equals(objectType1, "Bed", StringComparison.CurrentCultureIgnoreCase))
+                    {
+                        //create the collision boxes 
+                        StartCoroutine(checkSceneCollidersParent(entry.Key));
+
+                        yield return new WaitForSeconds(creationDelay);
+
+                        if (found == true)
+                        {
+                            found = false;//reset the found flag
+                        }
+
+                        //create the object in real time to check for later
+                        StartCoroutine(checkSceneCollidersParentTrue(entry.Key));
+
+                        yield return new WaitForSeconds(creationDelay);
+
+                        if (found == true)
+                        {
+                            found = false;//reset the found flag
+                        }
+                    }
+                    //if the object type is a table
+                    else if (string.Equals(objectType1, "Carpet", StringComparison.CurrentCultureIgnoreCase))
+                    {
+                        //create the collision boxes 
+                        StartCoroutine(checkSceneCollidersParent(entry.Key));
+
+                        yield return new WaitForSeconds(creationDelay);
+
+                        if (found == true)
+                        {
+                            found = false;//reset the found flag
+                        }
+
+                        //create the object in real time to check for later
+                        StartCoroutine(checkSceneCollidersParentTrue(entry.Key));
+
+                        yield return new WaitForSeconds(creationDelay);
+
+                        if (found == true)
+                        {
+                            found = false;//reset the found flag
+                        }
+                    }
+                    //if the object type is a table
+                    else if (string.Equals(objectType1, "Chair", StringComparison.CurrentCultureIgnoreCase))
+                    {
+                        //create the collision boxes 
+                        StartCoroutine(checkSceneCollidersParent(entry.Key));
+
+                        yield return new WaitForSeconds(creationDelay);
+
+                        if (found == true)
+                        {
+                            found = false;//reset the found flag
+                        }
+
+                        //create the object in real time to check for later
+                        StartCoroutine(checkSceneCollidersParentTrue(entry.Key));
+
+                        yield return new WaitForSeconds(creationDelay);
+
+                        if (found == true)
+                        {
+                            found = false;//reset the found flag
+                        }
+                    }
+                    //if the object type is a table
+                    else if (string.Equals(objectType1, "Cup", StringComparison.CurrentCultureIgnoreCase))
+                    {
+                        //create the collision boxes 
+                        StartCoroutine(checkSceneCollidersParent(entry.Key));
+
+                        yield return new WaitForSeconds(creationDelay);
+
+                        if (found == true)
+                        {
+                            found = false;//reset the found flag
+                        }
+
+                        //create the object in real time to check for later
+                        StartCoroutine(checkSceneCollidersParentTrue(entry.Key));
+
+                        yield return new WaitForSeconds(creationDelay);
+
+                        if (found == true)
+                        {
+                            found = false;//reset the found flag
+                        }
+                    }
+                    //if the object type is a table
+                    else if (string.Equals(objectType1, "Fridge", StringComparison.CurrentCultureIgnoreCase))
+                    {
+                        //create the collision boxes 
+                        StartCoroutine(checkSceneCollidersParent(entry.Key));
+
+                        yield return new WaitForSeconds(creationDelay);
+
+                        if (found == true)
+                        {
+                            found = false;//reset the found flag
+                        }
+
+                        //create the object in real time to check for later
+                        StartCoroutine(checkSceneCollidersParentTrue(entry.Key));
+
+                        yield return new WaitForSeconds(creationDelay);
+
+                        if (found == true)
+                        {
+                            found = false;//reset the found flag
+                        }
+                    }
+                    //if the object type is a table
+                    else if (string.Equals(objectType1, "Lamp", StringComparison.CurrentCultureIgnoreCase))
+                    {
+                        //create the collision boxes 
+                        StartCoroutine(checkSceneCollidersParent(entry.Key));
+
+                        yield return new WaitForSeconds(creationDelay);
+
+                        if (found == true)
+                        {
+                            found = false;//reset the found flag
+                        }
+
+                        //create the object in real time to check for later
+                        StartCoroutine(checkSceneCollidersParentTrue(entry.Key));
+
+                        yield return new WaitForSeconds(creationDelay);
+
+                        if (found == true)
+                        {
+                            found = false;//reset the found flag
+                        }
+                    }
+                    //if the object type is a table
+                    else if (string.Equals(objectType1, "Nightstand", StringComparison.CurrentCultureIgnoreCase))
+                    {
+                        //create the collision boxes 
+                        StartCoroutine(checkSceneCollidersParent(entry.Key));
+
+                        yield return new WaitForSeconds(creationDelay);
+
+                        if (found == true)
+                        {
+                            found = false;//reset the found flag
+                        }
+
+                        //create the object in real time to check for later
+                        StartCoroutine(checkSceneCollidersParentTrue(entry.Key));
+
+                        yield return new WaitForSeconds(creationDelay);
+
+                        if (found == true)
+                        {
+                            found = false;//reset the found flag
+                        }
+                    }
+                    //if the object type is a table
+                    else if (string.Equals(objectType1, "Oven", StringComparison.CurrentCultureIgnoreCase))
+                    {
+                        //create the collision boxes 
+                        StartCoroutine(checkSceneCollidersParent(entry.Key));
+
+                        yield return new WaitForSeconds(creationDelay);
+
+                        if (found == true)
+                        {
+                            found = false;//reset the found flag
+                        }
+
+                        //create the object in real time to check for later
+                        StartCoroutine(checkSceneCollidersParentTrue(entry.Key));
+
+                        yield return new WaitForSeconds(creationDelay);
+
+                        if (found == true)
+                        {
+                            found = false;//reset the found flag
+                        }
+                    }
+                    //if the object type is a table
+                    else if (string.Equals(objectType1, "Sofa", StringComparison.CurrentCultureIgnoreCase))
+                    {
+                        //create the collision boxes 
+                        StartCoroutine(checkSceneCollidersParent(entry.Key));
+
+                        yield return new WaitForSeconds(creationDelay);
+
+                        if (found == true)
+                        {
+                            found = false;//reset the found flag
+                        }
+
+                        //create the object in real time to check for later
+                        StartCoroutine(checkSceneCollidersParentTrue(entry.Key));
+
+                        yield return new WaitForSeconds(creationDelay);
+
+                        if (found == true)
+                        {
+                            found = false;//reset the found flag
+                        }
+                    }
+                    //if the object type is a table
+                    else if (string.Equals(objectType1, "Vase", StringComparison.CurrentCultureIgnoreCase))
+                    {
+                        //create the collision boxes 
+                        StartCoroutine(checkSceneCollidersParent(entry.Key));
+
+                        yield return new WaitForSeconds(creationDelay);
+
+                        if (found == true)
+                        {
+                            found = false;//reset the found flag
+                        }
+
+                        //create the object in real time to check for later
+                        StartCoroutine(checkSceneCollidersParentTrue(entry.Key));
+
+                        yield return new WaitForSeconds(creationDelay);
+
+                        if (found == true)
+                        {
+                            found = false;//reset the found flag
+                        }
+                    }
                     else if (string.Equals(objectType1, "Sphere", StringComparison.CurrentCultureIgnoreCase))
                     {
                         //giving the sphere the name
@@ -1615,6 +2695,259 @@ public class Test : MonoBehaviour
 
                                 ////spawn the parent object with specified coordinates
                                 //Instantiate(enemyTable, coordinates2, enemyTable.transform.rotation);
+                            }
+                            //if the object type is a table
+                            else if (string.Equals(objectType2, "Armchair", StringComparison.CurrentCultureIgnoreCase))
+                            {
+                                //create the collision boxes 
+                                StartCoroutine(checkSceneCollidersParent(child));
+
+                                yield return new WaitForSeconds(creationDelay);
+
+                                if (found == true)
+                                {
+                                    found = false;//reset the found flag
+                                }
+
+                                //create the object in real time to check for later
+                                StartCoroutine(checkSceneCollidersParentTrue(child));
+
+                                yield return new WaitForSeconds(creationDelay);
+
+                                if (found == true)
+                                {
+                                    found = false;//reset the found flag
+                                }
+                            }
+                            //if the object type is a table
+                            else if (string.Equals(objectType2, "Bed", StringComparison.CurrentCultureIgnoreCase))
+                            {
+                                //create the collision boxes 
+                                StartCoroutine(checkSceneCollidersParent(child));
+
+                                yield return new WaitForSeconds(creationDelay);
+
+                                if (found == true)
+                                {
+                                    found = false;//reset the found flag
+                                }
+
+                                //create the object in real time to check for later
+                                StartCoroutine(checkSceneCollidersParentTrue(child));
+
+                                yield return new WaitForSeconds(creationDelay);
+
+                                if (found == true)
+                                {
+                                    found = false;//reset the found flag
+                                }
+                            }
+                            //if the object type is a table
+                            else if (string.Equals(objectType2, "Carpet", StringComparison.CurrentCultureIgnoreCase))
+                            {
+                                //create the collision boxes 
+                                StartCoroutine(checkSceneCollidersParent(child));
+
+                                yield return new WaitForSeconds(creationDelay);
+
+                                if (found == true)
+                                {
+                                    found = false;//reset the found flag
+                                }
+
+                                //create the object in real time to check for later
+                                StartCoroutine(checkSceneCollidersParentTrue(child));
+
+                                yield return new WaitForSeconds(creationDelay);
+
+                                if (found == true)
+                                {
+                                    found = false;//reset the found flag
+                                }
+                            }
+                            //if the object type is a table
+                            else if (string.Equals(objectType2, "Chair", StringComparison.CurrentCultureIgnoreCase))
+                            {
+                                //create the collision boxes 
+                                StartCoroutine(checkSceneCollidersParent(child));
+
+                                yield return new WaitForSeconds(creationDelay);
+
+                                if (found == true)
+                                {
+                                    found = false;//reset the found flag
+                                }
+
+                                //create the object in real time to check for later
+                                StartCoroutine(checkSceneCollidersParentTrue(child));
+
+                                yield return new WaitForSeconds(creationDelay);
+
+                                if (found == true)
+                                {
+                                    found = false;//reset the found flag
+                                }
+                            }
+                            //if the object type is a table
+                            else if (string.Equals(objectType2, "Cup", StringComparison.CurrentCultureIgnoreCase))
+                            {
+                                //create the collision boxes 
+                                StartCoroutine(checkSceneCollidersParent(child));
+
+                                yield return new WaitForSeconds(creationDelay);
+
+                                if (found == true)
+                                {
+                                    found = false;//reset the found flag
+                                }
+
+                                //create the object in real time to check for later
+                                StartCoroutine(checkSceneCollidersParentTrue(child));
+
+                                yield return new WaitForSeconds(creationDelay);
+
+                                if (found == true)
+                                {
+                                    found = false;//reset the found flag
+                                }
+                            }
+                            //if the object type is a table
+                            else if (string.Equals(objectType2, "Fridge", StringComparison.CurrentCultureIgnoreCase))
+                            {
+                                //create the collision boxes 
+                                StartCoroutine(checkSceneCollidersParent(child));
+
+                                yield return new WaitForSeconds(creationDelay);
+
+                                if (found == true)
+                                {
+                                    found = false;//reset the found flag
+                                }
+
+                                //create the object in real time to check for later
+                                StartCoroutine(checkSceneCollidersParentTrue(child));
+
+                                yield return new WaitForSeconds(creationDelay);
+
+                                if (found == true)
+                                {
+                                    found = false;//reset the found flag
+                                }
+                            }
+                            //if the object type is a table
+                            else if (string.Equals(objectType2, "Lamp", StringComparison.CurrentCultureIgnoreCase))
+                            {
+                                //create the collision boxes 
+                                StartCoroutine(checkSceneCollidersParent(child));
+
+                                yield return new WaitForSeconds(creationDelay);
+
+                                if (found == true)
+                                {
+                                    found = false;//reset the found flag
+                                }
+
+                                //create the object in real time to check for later
+                                StartCoroutine(checkSceneCollidersParentTrue(child));
+
+                                yield return new WaitForSeconds(creationDelay);
+
+                                if (found == true)
+                                {
+                                    found = false;//reset the found flag
+                                }
+                            }
+                            //if the object type is a table
+                            else if (string.Equals(objectType2, "Nightstand", StringComparison.CurrentCultureIgnoreCase))
+                            {
+                                //create the collision boxes 
+                                StartCoroutine(checkSceneCollidersParent(child));
+
+                                yield return new WaitForSeconds(creationDelay);
+
+                                if (found == true)
+                                {
+                                    found = false;//reset the found flag
+                                }
+
+                                //create the object in real time to check for later
+                                StartCoroutine(checkSceneCollidersParentTrue(child));
+
+                                yield return new WaitForSeconds(creationDelay);
+
+                                if (found == true)
+                                {
+                                    found = false;//reset the found flag
+                                }
+                            }
+                            //if the object type is a table
+                            else if (string.Equals(objectType2, "Oven", StringComparison.CurrentCultureIgnoreCase))
+                            {
+                                //create the collision boxes 
+                                StartCoroutine(checkSceneCollidersParent(child));
+
+                                yield return new WaitForSeconds(creationDelay);
+
+                                if (found == true)
+                                {
+                                    found = false;//reset the found flag
+                                }
+
+                                //create the object in real time to check for later
+                                StartCoroutine(checkSceneCollidersParentTrue(child));
+
+                                yield return new WaitForSeconds(creationDelay);
+
+                                if (found == true)
+                                {
+                                    found = false;//reset the found flag
+                                }
+                            }
+                            //if the object type is a table
+                            else if (string.Equals(objectType2, "Sofa", StringComparison.CurrentCultureIgnoreCase))
+                            {
+                                //create the collision boxes 
+                                StartCoroutine(checkSceneCollidersParent(child));
+
+                                yield return new WaitForSeconds(creationDelay);
+
+                                if (found == true)
+                                {
+                                    found = false;//reset the found flag
+                                }
+
+                                //create the object in real time to check for later
+                                StartCoroutine(checkSceneCollidersParentTrue(child));
+
+                                yield return new WaitForSeconds(creationDelay);
+
+                                if (found == true)
+                                {
+                                    found = false;//reset the found flag
+                                }
+                            }
+                            //if the object type is a table
+                            else if (string.Equals(objectType2, "Vase", StringComparison.CurrentCultureIgnoreCase))
+                            {
+                                //create the collision boxes 
+                                StartCoroutine(checkSceneCollidersParent(child));
+
+                                yield return new WaitForSeconds(creationDelay);
+
+                                if (found == true)
+                                {
+                                    found = false;//reset the found flag
+                                }
+
+                                //create the object in real time to check for later
+                                StartCoroutine(checkSceneCollidersParentTrue(child));
+
+                                yield return new WaitForSeconds(creationDelay);
+
+                                if (found == true)
+                                {
+                                    found = false;//reset the found flag
+                                }
                             }
                             else if (string.Equals(objectType2, "Sphere", StringComparison.CurrentCultureIgnoreCase))
                             {
@@ -1811,6 +3144,39 @@ public class Test : MonoBehaviour
         
     }
 
+    //used to change the rotation of the objects
+    public void changeTreeRotations(IDictionary<Node, Node[]> tree, Node node)
+    {
+        //iterate through the tree
+        foreach (KeyValuePair<Node, Node[]> entry in tree)
+        {
+            //check if the current node is equal to the node needed
+            if (entry.Key.ToString().Equals(node.ToString()))
+            {
+                float rotation = node.getRotation();
+
+                //update the rotation of the object
+                entry.Key.setRotation(rotation);
+            }
+        }
+
+
+        ////get the current children of the parentNode
+        //Node[] currentChildren = TreeSet[node];
+
+        ////iterate through the Tree, delete all instances of the node
+        //tree.Remove(node);
+
+        ////add a new record in the Tree with the children, it should be updated with the new coordinates
+
+        //tree[node] = currentChildren;
+
+        //foreach (Node currentNode in currentChildren) {
+        //    addChildren(tempTree, node, currentNode);
+        //}
+
+    }
+
     public void setCoordinates(IDictionary<Node, Node[]> tree)
     {
         //check if the tree has objects in it
@@ -1881,6 +3247,34 @@ public class Test : MonoBehaviour
         }
     }
 
+    //used to recalculate the rotations of the gameobjects
+    public void setRotations(IDictionary<Node, Node[]> tree)
+    {
+        //check if the tree has objects in it
+        if (tree.Count() == 0)
+        {
+            placeholder.text = "No objects have been created";
+            placeholder.color = Color.red;
+        }
+        else
+        {
+            //iterate through the Tree
+            foreach (KeyValuePair<Node, Node[]> entry in tree)
+            {
+                //checking if it has children
+                if (entry.Value.Length != 0)
+                {
+                    //iterate through the children
+                    foreach (Node child in entry.Value)
+                    {
+                        //recalculate the rotations
+                        calculateRotations(entry.Key, child);
+                    }
+                }
+            }
+        }
+    }
+
     //method to create an object
     public void creator(Node node)
     {
@@ -1909,15 +3303,37 @@ public class Test : MonoBehaviour
         }
     }
 
+    //recalculating rotations
+    public void calculateRotations(Node parent, Node child)
+    {
+        //getting the parent rotation
+        float rotationParent = parent.getRotation();
+
+        //getting the child rotation
+        float rotationChild = child.getRotation();
+
+        //update the child rotation
+        rotationChild = rotationChild + rotationParent;
+
+        //set the new child rotation
+        child.setRotation(rotationChild);
+    }
+
     public void calculatePrepositionCoordinates(Node parent, Node child)
     {
-        //get the increments depending on the object
+        //spacing between objects
+        float spacing = 0.25f;
+
+        //get the increments depending on the object (How much the child object must be moved irrelevant of the child object's size)
         ObjectDim currentObject = parent.getObject();
 
         //store the increments for height, length and width
         float height = currentObject.getHeight();
         float length = currentObject.getLength();
         float width = currentObject.getWidth();
+
+        //child object to include the object size in the calculation of the coordinates
+        ObjectDim childObject = child.getObject();
 
         string preposition = child.getPreposition();
 
@@ -1936,7 +3352,7 @@ public class Test : MonoBehaviour
 
         if (preposition.Equals("left_of"))
         {
-            coordx = coordX - currentObject.getLength(); ; //movement on the x-axis
+            coordx = coordX - currentObject.getLength() - childObject.getLength() - spacing; //movement on the x-axis
             coordy = coordY;
             coordz = coordZ;
 
@@ -1948,7 +3364,7 @@ public class Test : MonoBehaviour
         }
         else if (preposition.Equals("right_of"))
         {
-            coordx = coordX + currentObject.getLength(); ; //movement on the x-axis
+            coordx = coordX + currentObject.getLength() + childObject.getLength() + spacing; //movement on the x-axis
             coordy = coordY;
             coordz = coordZ;
 
@@ -1986,7 +3402,7 @@ public class Test : MonoBehaviour
         {
             coordx = coordX;
             coordy = coordY; //movement on the y-axis
-            coordz = coordZ - 2;
+            coordz = coordZ - currentObject.getWidth() - childObject.getWidth() - spacing;
 
             //adding the coordinates
             coordinates = new float[3] { coordx, coordy, coordz };
@@ -1998,7 +3414,7 @@ public class Test : MonoBehaviour
         {
             coordx = coordX;
             coordy = coordY;
-            coordz = coordZ + 2;//movement on the z-axis
+            coordz = coordZ + currentObject.getWidth() + childObject.getWidth() + spacing;//movement on the z-axis
 
             //adding the coordinates
             coordinates = new float[3] { coordx, coordy, coordz };
@@ -2404,6 +3820,42 @@ public class Test : MonoBehaviour
                         {
                             parent.setObject("fridge");
                         }
+                        else if (objectTypeWithNo[0].Equals("bed", StringComparison.OrdinalIgnoreCase))
+                        {
+                            parent.setObject("bed");
+                        }
+                        else if (objectTypeWithNo[0].Equals("armchair", StringComparison.OrdinalIgnoreCase))
+                        {
+                            parent.setObject("armchair");
+                        }
+                        else if (objectTypeWithNo[0].Equals("carpet", StringComparison.OrdinalIgnoreCase))
+                        {
+                            parent.setObject("carpet");
+                        }
+                        else if (objectTypeWithNo[0].Equals("lamp", StringComparison.OrdinalIgnoreCase))
+                        {
+                            parent.setObject("lamp");
+                        }
+                        else if (objectTypeWithNo[0].Equals("vase", StringComparison.OrdinalIgnoreCase))
+                        {
+                            parent.setObject("vase");
+                        }
+                        else if (objectTypeWithNo[0].Equals("nightstand", StringComparison.OrdinalIgnoreCase))
+                        {
+                            parent.setObject("nightstand");
+                        }
+                        else if (objectTypeWithNo[0].Equals("oven", StringComparison.OrdinalIgnoreCase))
+                        {
+                            parent.setObject("oven");
+                        }
+                        else if (objectTypeWithNo[0].Equals("wallvertical", StringComparison.OrdinalIgnoreCase))
+                        {
+                            parent.setObject("wallvertical");
+                        }
+                        else if (objectTypeWithNo[0].Equals("wallhorizontal", StringComparison.OrdinalIgnoreCase))
+                        {
+                            parent.setObject("wallhorizontal");
+                        }
 
                         parent.setPreposition(preposition);
                         parent.setCoordinates(floatCoordinates);
@@ -2476,6 +3928,42 @@ public class Test : MonoBehaviour
                             {
                                 child.setObject("fridge");
                             }
+                            else if (objectTypeWithNo[0].Equals("bed", StringComparison.OrdinalIgnoreCase))
+                            {
+                                child.setObject("bed");
+                            }
+                            else if (objectTypeWithNo[0].Equals("armchair", StringComparison.OrdinalIgnoreCase))
+                            {
+                                child.setObject("armchair");
+                            }
+                            else if (objectTypeWithNo[0].Equals("carpet", StringComparison.OrdinalIgnoreCase))
+                            {
+                                child.setObject("carpet");
+                            }
+                            else if (objectTypeWithNo[0].Equals("lamp", StringComparison.OrdinalIgnoreCase))
+                            {
+                                child.setObject("lamp");
+                            }
+                            else if (objectTypeWithNo[0].Equals("vase", StringComparison.OrdinalIgnoreCase))
+                            {
+                                child.setObject("vase");
+                            }
+                            else if (objectTypeWithNo[0].Equals("nightstand", StringComparison.OrdinalIgnoreCase))
+                            {
+                                child.setObject("nightstand");
+                            }
+                            else if (objectTypeWithNo[0].Equals("oven", StringComparison.OrdinalIgnoreCase))
+                            {
+                                child.setObject("oven");
+                            }
+                            else if (objectTypeWithNo[0].Equals("wallvertical", StringComparison.OrdinalIgnoreCase))
+                            {
+                                child.setObject("wallvertical");
+                            }
+                            else if (objectTypeWithNo[0].Equals("wallhorizontal", StringComparison.OrdinalIgnoreCase))
+                            {
+                                child.setObject("wallhorizontal");
+                            }
 
                             child.setPreposition(preposition);
                             child.setCoordinates(floatCoordinates);
@@ -2527,4 +4015,137 @@ public class Test : MonoBehaviour
         Menu.SetActive(false);
         CameraMenu.SetActive(true);
     }
+
+    //to change the status of the boolean flag
+    public void ChangeCollisionBoxStatus() {
+        //change the flag when method is called
+        if (collisionBoxFlag)
+        {
+            collisionBoxFlag = false;
+        }
+        else
+        {
+            collisionBoxFlag = true;
+        }
+
+        CollisionBoxStatus();
+    }
+
+    //to call the required methods depending on the status of the boolean flag
+    public void CollisionBoxStatus() {
+        //reference to the current scene
+        Scene currentScene = SceneManager.GetActiveScene();
+
+        //get a list of all the gameobjects
+        GameObject[] gameObjects = GameObject.FindGameObjectsWithTag("Enemy")
+            .Concat(GameObject.FindGameObjectsWithTag("Final"))
+            .ToArray();
+
+        //show the collision boxes
+        if (collisionBoxFlag)
+        {
+            EnableCollisionBoxes(gameObjects);
+        }
+        //hide the collision boxes
+        else
+        {
+            DisableCollisionBoxes(gameObjects);
+        }
+    }
+
+    public void DisableCollisionBoxes(GameObject[] gameObjects)
+    {
+        //get the name of the material to be compared to
+        String materialName = materialCollisionBox.name;
+
+        //iterate through the list
+        foreach (GameObject obj in gameObjects)
+        {
+            if (obj.GetComponent<Renderer>() != null)//the object has a renderer
+            {
+                //get the renderer component of the object
+                Renderer renderer = obj.GetComponent<Renderer>();
+
+                //check if it is already inactive
+                if (renderer.enabled)
+                {
+                    //get the material name
+                    Material material = renderer.material;
+                    String materialObjectName = material.name;
+
+                    //remove the '(Instance)' string from the material name
+                    materialObjectName = materialObjectName.Replace(" (Instance)", "");
+
+                    //check if it has the required material
+                    if (renderer != null && materialObjectName.Equals(materialName))
+                    {
+                        //set the renderer to false
+                        renderer.enabled = false;
+                    }
+                }
+            }
+        }
+    }
+
+    public void EnableCollisionBoxes(GameObject[] gameObjects)
+    {
+        //get the name of the material to be compared to
+        String materialName = materialCollisionBox.name;
+
+        //iterate through the list
+        foreach (GameObject obj in gameObjects)
+        {
+            if (obj.GetComponent<Renderer>() != null)//the object has a renderer
+            {
+                //get the renderer component of the object
+                Renderer renderer = obj.GetComponent<Renderer>();
+
+                //check if it is already inactive
+                if (!renderer.enabled)
+                {
+                    //get the material name
+                    Material material = renderer.material;
+                    String materialObjectName = material.name;
+
+                    //remove the '(Instance)' string from the material name
+                    materialObjectName = materialObjectName.Replace(" (Instance)", "");
+
+                    //check if it has the required material
+                    if (renderer != null && materialObjectName.Equals(materialName))
+                    {
+                        //set the renderer to false
+                        renderer.enabled = true;
+                    }
+                }
+            }
+        }
+    }
+
+    ////a utility method used to set the parents of a gameObject to inactive
+    //public void InactiveRecursive(GameObject obj)
+    //{
+    //    // set the gameObject to inactive
+    //    obj.SetActive(false);
+
+    //    // Check if the object has a parent
+    //    if (obj.transform.parent != null)
+    //    {
+    //        // Recursively destroy the parent object
+    //        InactiveRecursive(obj.transform.parent.gameObject);
+    //    }
+    //}
+
+    ////a utility method used to set the parents of a gameObject to active
+    //public void ActiveRecursive(GameObject obj)
+    //{
+    //    // set the gameObject to inactive
+    //    obj.SetActive(true);
+
+    //    // Check if the object has a parent
+    //    if (obj.transform.parent != null)
+    //    {
+    //        // Recursively destroy the parent object
+    //        InactiveRecursive(obj.transform.parent.gameObject);
+    //    }
+    //}
 }
