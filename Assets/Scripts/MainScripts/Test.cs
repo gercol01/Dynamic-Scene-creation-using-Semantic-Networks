@@ -25,11 +25,15 @@ public class Test : MonoBehaviour
     public Button backCameraButton; //change to top camera button
     public Button leftCameraButton; //change to top camera button
     public Button rightCameraButton; //change to top camera button
+    public Button worldCameraButton; //change to top camera button
     public Button cameraButton; //to access the camera menu
     public Button minCameraButton; //to minimise the camera menu
 
     //collision box button
     public Button collisionBoxButton; //button used to enable/disable the collision boxes
+
+    //rotation axis button
+    public Button axisButton; //button used to enable/disable the rotation axis
 
     //cameras
     public Camera topCamera;
@@ -37,12 +41,23 @@ public class Test : MonoBehaviour
     public Camera backCamera;
     public Camera leftCamera;
     public Camera rightCamera;
+    public Camera worldCamera;
+
+    //rotation axis rings
+    public GameObject ringX;
+    public GameObject ringY;
+    public GameObject ringZ;
 
     //GUI elements
     GameObject Menu;
     GameObject CameraMenu;
     GameObject maxButton;
     GameObject minButton;
+
+    //flags to indicate if certain GUI elements show or not
+    protected Boolean nameAndCoordinates;
+    protected Boolean faces;
+    protected Boolean rotationAxis = false;
 
     //materials
     public Material Fabric;
@@ -171,17 +186,26 @@ public class Test : MonoBehaviour
         maxButton = GameObject.Find("MaximiseButton");
         maxButton.SetActive(false);
 
+        //setting the camera menu to inactive
         CameraMenu = GameObject.Find("CameraCanvas");
         CameraMenu.SetActive(false);
 
         //initialising the front camera as the default camera
-        frontCamera.enabled = true;
+        frontCamera.enabled = true;    // enable the top camera
+        frontCamera.tag = "MainCamera";
+
 
         //setting the cameras to false
         topCamera.enabled = false;
         leftCamera.enabled = false;
         rightCamera.enabled = false;
         backCamera.enabled = false;
+        worldCamera.enabled = false;
+
+        //setting the rotation axis to false
+        ringX.SetActive(false);
+        ringY.SetActive(false);
+        ringZ.SetActive(false);
     }
 
     // Update is called once per frame
@@ -197,7 +221,8 @@ public class Test : MonoBehaviour
             float y = temporaryNode.returnY();
             float z = temporaryNode.returnZ();
 
-            Quaternion rotation = Quaternion.Euler(0f, temporaryNode.getRotation(), 0f); // Rotate on the Y-axis
+            //Rotate on the Y-axis
+            Quaternion rotation = Quaternion.Euler(temporaryNode.getRotationX(), temporaryNode.getRotationY(), temporaryNode.getRotationZ());
 
             //create the cube that will not be destroyed
             Vector3 coordinates = new Vector3(x, y, z);
@@ -205,132 +230,14 @@ public class Test : MonoBehaviour
             //check if the object is already created
             if (GameObject.Find(name + "(Clone)") != null)
             {
-                //check what type of object it is
-                string objectType1 = temporaryNode.getObjectType();
+                //get the gameObject associated with the node, get the enemyObject
+                GameObject enemy = temporaryNode.getObjectTrue();
 
-                //if the object type is a cube
-                if (string.Equals(objectType1, "Cube", StringComparison.CurrentCultureIgnoreCase))
-                {
-                    //giving the cube the name
-                    enemyCube.name = name;
+                //giving the gameObject the name
+                enemy.name = name;
 
-                    //spawn the parent object with specified coordinates
-                    Instantiate(enemyCube, coordinates, rotation);
-                }
-                //if the object type is a table
-                else if (string.Equals(objectType1, "Table", StringComparison.CurrentCultureIgnoreCase))
-                {
-                    //giving the table the name
-                    table.name = name;
-
-                    //spawn the parent object with specified coordinates
-                    Instantiate(table, coordinates, rotation);
-                }
-                //if the object type is a table
-                else if (string.Equals(objectType1, "Fridge", StringComparison.CurrentCultureIgnoreCase))
-                {
-                    //giving the table the name
-                    fridge.name = name;
-
-                    //spawn the parent object with specified coordinates
-                    Instantiate(fridge, coordinates, rotation);
-                }
-                else if (string.Equals(objectType1, "Armchair", StringComparison.CurrentCultureIgnoreCase))
-                {
-                    //giving the table the name
-                    armchair.name = name;
-
-                    //spawn the parent object with specified coordinates
-                    Instantiate(armchair, coordinates, rotation);
-                }
-                else if (string.Equals(objectType1, "Bed", StringComparison.CurrentCultureIgnoreCase))
-                {
-                    //giving the table the name
-                    bed.name = name;
-
-                    //spawn the parent object with specified coordinates
-                    Instantiate(bed, coordinates, rotation);
-                }
-                else if (string.Equals(objectType1, "Carpet", StringComparison.CurrentCultureIgnoreCase))
-                {
-                    //giving the table the name
-                    carpet.name = name;
-
-                    //spawn the parent object with specified coordinates
-                    Instantiate(carpet, coordinates, rotation);
-                }
-                else if (string.Equals(objectType1, "Chair", StringComparison.CurrentCultureIgnoreCase))
-                {
-                    //giving the table the name
-                    chair.name = name;
-
-                    //spawn the parent object with specified coordinates
-                    Instantiate(chair, coordinates, rotation);
-                }
-                else if (string.Equals(objectType1, "Cup", StringComparison.CurrentCultureIgnoreCase))
-                {
-                    //giving the table the name
-                    cup.name = name;
-
-                    //spawn the parent object with specified coordinates
-                    Instantiate(cup, coordinates, rotation);
-                }
-                else if (string.Equals(objectType1, "Lamp", StringComparison.CurrentCultureIgnoreCase))
-                {
-                    //giving the table the name
-                    lamp.name = name;
-
-                    //spawn the parent object with specified coordinates
-                    Instantiate(lamp, coordinates, rotation);
-                }
-                else if (string.Equals(objectType1, "Nightstand", StringComparison.CurrentCultureIgnoreCase))
-                {
-                    //giving the table the name
-                    nightstand.name = name;
-
-                    //spawn the parent object with specified coordinates
-                    Instantiate(nightstand, coordinates, rotation);
-                }
-                else if (string.Equals(objectType1, "Oven", StringComparison.CurrentCultureIgnoreCase))
-                {
-                    //giving the table the name
-                    oven.name = name;
-
-                    //spawn the parent object with specified coordinates
-                    Instantiate(oven, coordinates, rotation);
-                }
-                else if (string.Equals(objectType1, "Sofa", StringComparison.CurrentCultureIgnoreCase))
-                {
-                    //giving the table the name
-                    sofa.name = name;
-
-                    //spawn the parent object with specified coordinates
-                    Instantiate(sofa, coordinates, rotation);
-                }
-                else if (string.Equals(objectType1, "Vase", StringComparison.CurrentCultureIgnoreCase))
-                {
-                    //giving the table the name
-                    vase.name = name;
-
-                    //spawn the parent object with specified coordinates
-                    Instantiate(vase, coordinates, rotation);
-                }
-                else if (string.Equals(objectType1, "wallhorizontal", StringComparison.CurrentCultureIgnoreCase))
-                {
-                    //giving the table the name
-                    wallHorizontal.name = name;
-
-                    //spawn the parent object with specified coordinates
-                    Instantiate(wallHorizontal, coordinates, rotation);
-                }
-                else if (string.Equals(objectType1, "wallvertical", StringComparison.CurrentCultureIgnoreCase))
-                {
-                    //giving the table the name
-                    wallVertical.name = name;
-
-                    //spawn the parent object with specified coordinates
-                    Instantiate(wallVertical, coordinates, rotation);
-                }
+                //spawn the parent object with specified coordinates
+                Instantiate(enemy, coordinates, rotation);
 
                 ////update the position
                 //GameObject obj = GameObject.Find(name + "(Clone)");
@@ -338,133 +245,18 @@ public class Test : MonoBehaviour
             }
             else
             {
-                //check what type of object it is
-                string objectType1 = temporaryNode.getObjectType();
+                //get the gameObject associated with the node, get the enemyObject
+                GameObject enemy = temporaryNode.getObjectTrue();
 
-                //if the object type is a cube
-                if (string.Equals(objectType1, "Cube", StringComparison.CurrentCultureIgnoreCase))
-                {
-                    //giving the cube the name
-                    enemyCube.name = name;
+                //giving the gameObject the name
+                enemy.name = name;
 
-                    //spawn the parent object with specified coordinates
-                    Instantiate(cube, coordinates, rotation);
-                }
-                //if the object type is a table
-                else if (string.Equals(objectType1, "Table", StringComparison.CurrentCultureIgnoreCase))
-                {
-                    //giving the table the name
-                    table.name = name;
-
-                    //spawn the parent object with specified coordinates
-                    Instantiate(table, coordinates, rotation);
-                }
-                //if the object type is a table
-                else if (string.Equals(objectType1, "Fridge", StringComparison.CurrentCultureIgnoreCase))
-                {
-                    //giving the table the name
-                    fridge.name = name;
-
-                    //spawn the parent object with specified coordinates
-                    Instantiate(fridge, coordinates, rotation);
-                }
-                else if (string.Equals(objectType1, "Armchair", StringComparison.CurrentCultureIgnoreCase))
-                {
-                    //giving the table the name
-                    armchair.name = name;
-
-                    //spawn the parent object with specified coordinates
-                    Instantiate(armchair, coordinates, rotation);
-                }
-                else if (string.Equals(objectType1, "Bed", StringComparison.CurrentCultureIgnoreCase))
-                {
-                    //giving the table the name
-                    bed.name = name;
-
-                    //spawn the parent object with specified coordinates
-                    Instantiate(bed, coordinates, rotation);
-                }
-                else if (string.Equals(objectType1, "Carpet", StringComparison.CurrentCultureIgnoreCase))
-                {
-                    //giving the table the name
-                    carpet.name = name;
-
-                    //spawn the parent object with specified coordinates
-                    Instantiate(carpet, coordinates, rotation);
-                }
-                else if (string.Equals(objectType1, "Chair", StringComparison.CurrentCultureIgnoreCase))
-                {
-                    //giving the table the name
-                    chair.name = name;
-
-                    //spawn the parent object with specified coordinates
-                    Instantiate(chair, coordinates, rotation);
-                }
-                else if (string.Equals(objectType1, "Cup", StringComparison.CurrentCultureIgnoreCase))
-                {
-                    //giving the table the name
-                    cup.name = name;
-
-                    //spawn the parent object with specified coordinates
-                    Instantiate(cup, coordinates, rotation);
-                }
-                else if (string.Equals(objectType1, "Lamp", StringComparison.CurrentCultureIgnoreCase))
-                {
-                    //giving the table the name
-                    lamp.name = name;
-
-                    //spawn the parent object with specified coordinates
-                    Instantiate(lamp, coordinates, rotation);
-                }
-                else if (string.Equals(objectType1, "Nightstand", StringComparison.CurrentCultureIgnoreCase))
-                {
-                    //giving the table the name
-                    nightstand.name = name;
-
-                    //spawn the parent object with specified coordinates
-                    Instantiate(nightstand, coordinates, rotation);
-                }
-                else if (string.Equals(objectType1, "Oven", StringComparison.CurrentCultureIgnoreCase))
-                {
-                    //giving the table the name
-                    oven.name = name;
-
-                    //spawn the parent object with specified coordinates
-                    Instantiate(oven, coordinates, rotation);
-                }
-                else if (string.Equals(objectType1, "Sofa", StringComparison.CurrentCultureIgnoreCase))
-                {
-                    //giving the table the name
-                    sofa.name = name;
-
-                    //spawn the parent object with specified coordinates
-                    Instantiate(sofa, coordinates, rotation);
-                }
-                else if (string.Equals(objectType1, "Vase", StringComparison.CurrentCultureIgnoreCase))
-                {
-                    //giving the table the name
-                    vase.name = name;
-
-                    //spawn the parent object with specified coordinates
-                    Instantiate(vase, coordinates, rotation);
-                }
-                else if (string.Equals(objectType1, "wallhorizontal", StringComparison.CurrentCultureIgnoreCase))
-                {
-                    //giving the table the name
-                    wallHorizontal.name = name;
-
-                    //spawn the parent object with specified coordinates
-                    Instantiate(wallHorizontal, coordinates, rotation);
-                }
-                else if (string.Equals(objectType1, "wallvertical", StringComparison.CurrentCultureIgnoreCase))
-                {
-                    //giving the table the name
-                    wallVertical.name = name;
-
-                    //spawn the parent object with specified coordinates
-                    Instantiate(wallVertical, coordinates, rotation);
-                }
+                //spawn the parent object with specified coordinates
+                Instantiate(enemy, coordinates, rotation);
             }
+
+            //resetting the flag
+            canCreate = false;
 
             //resetting the flag
             canCreateTrue = false;
@@ -481,7 +273,7 @@ public class Test : MonoBehaviour
             float y = temporaryNode.returnY();
             float z = temporaryNode.returnZ();
 
-            Quaternion rotation = Quaternion.Euler(0f, temporaryNode.getRotation(), 0f); // Rotate on the Y-axis
+            Quaternion rotation = Quaternion.Euler(temporaryNode.getRotationX(), temporaryNode.getRotationY(), temporaryNode.getRotationZ()); // Rotate on the Y-axis
 
             //create the cube that will not be destroyed
             Vector3 coordinates = new Vector3(x, y, z);
@@ -489,28 +281,14 @@ public class Test : MonoBehaviour
             //check if the object is already created
             if (GameObject.Find(name + "(Clone)") != null)
             {
-                //check what type of object it is
-                string objectType1 = temporaryNode.getObjectType();
+                //get the gameObject associated with the node, get the enemyObject
+                GameObject enemy = temporaryNode.getObjectEnemy();
 
-                //if the object type is a cube
-                if (string.Equals(objectType1, "Cube", StringComparison.CurrentCultureIgnoreCase))
-                {
-                    //giving the cube the name
-                    enemyCube.name = name;
+                //giving the gameObject the name
+                enemy.name = name;
 
-                    //spawn the parent object with specified coordinates
-                    Instantiate(enemyCube, coordinates, rotation);
-                }
-                //if the object type is a table
-                else if (string.Equals(objectType1, "Table", StringComparison.CurrentCultureIgnoreCase))
-                {
-                    //giving the table the name
-                    enemyTable.name = name;
-
-                    //spawn the parent object with specified coordinates
-                    Instantiate(enemyTable, coordinates, rotation);
-                }
-                
+                //spawn the parent object with specified coordinates
+                Instantiate(enemy, coordinates, rotation);
 
                 ////update the position
                 //GameObject obj = GameObject.Find(name + "(Clone)");
@@ -518,132 +296,14 @@ public class Test : MonoBehaviour
             }
             else
             {
-                //check what type of object it is
-                string objectType1 = temporaryNode.getObjectType();
+                //get the gameObject associated with the node, get the enemyObject
+                GameObject enemy = temporaryNode.getObjectEnemy();
 
-                //if the object type is a cube
-                if (string.Equals(objectType1, "Cube", StringComparison.CurrentCultureIgnoreCase))
-                {
-                    //giving the cube the name
-                    enemyCube.name = name;
+                //giving the gameObject the name
+                enemy.name = name;
 
-                    //spawn the parent object with specified coordinates
-                    Instantiate(enemyCube, coordinates, rotation);
-                }
-                //if the object type is a table
-                else if (string.Equals(objectType1, "Table", StringComparison.CurrentCultureIgnoreCase))
-                {
-                    //giving the table the name
-                    enemyTable.name = name;
-
-                    //spawn the parent object with specified coordinates
-                    Instantiate(enemyTable, coordinates, rotation);
-                }
-                //if the object type is a table
-                else if (string.Equals(objectType1, "Fridge", StringComparison.CurrentCultureIgnoreCase))
-                {
-                    //giving the table the name
-                    enemyFridge.name = name;
-
-                    //spawn the parent object with specified coordinates
-                    Instantiate(enemyFridge, coordinates, rotation);
-                }
-                else if (string.Equals(objectType1, "Armchair", StringComparison.CurrentCultureIgnoreCase))
-                {
-                    //giving the table the name
-                    enemyArmchair.name = name;
-
-                    //spawn the parent object with specified coordinates
-                    Instantiate(enemyArmchair, coordinates, rotation);
-                }
-                else if (string.Equals(objectType1, "Bed", StringComparison.CurrentCultureIgnoreCase))
-                {
-                    //giving the table the name
-                    enemyBed.name = name;
-
-                    //spawn the parent object with specified coordinates
-                    Instantiate(enemyBed, coordinates, rotation);
-                }
-                else if (string.Equals(objectType1, "Carpet", StringComparison.CurrentCultureIgnoreCase))
-                {
-                    //giving the table the name
-                    enemyCarpet.name = name;
-
-                    //spawn the parent object with specified coordinates
-                    Instantiate(enemyCarpet, coordinates, rotation);
-                }
-                else if (string.Equals(objectType1, "Chair", StringComparison.CurrentCultureIgnoreCase))
-                {
-                    //giving the table the name
-                    enemyChair.name = name;
-
-                    //spawn the parent object with specified coordinates
-                    Instantiate(enemyChair, coordinates, rotation);
-                }
-                else if (string.Equals(objectType1, "Cup", StringComparison.CurrentCultureIgnoreCase))
-                {
-                    //giving the table the name
-                    enemyCup.name = name;
-
-                    //spawn the parent object with specified coordinates
-                    Instantiate(enemyCup, coordinates, rotation);
-                }
-                else if (string.Equals(objectType1, "Lamp", StringComparison.CurrentCultureIgnoreCase))
-                {
-                    //giving the table the name
-                    enemyLamp.name = name;
-
-                    //spawn the parent object with specified coordinates
-                    Instantiate(enemyLamp, coordinates, rotation);
-                }
-                else if (string.Equals(objectType1, "Nightstand", StringComparison.CurrentCultureIgnoreCase))
-                {
-                    //giving the table the name
-                    enemyNightstand.name = name;
-
-                    //spawn the parent object with specified coordinates
-                    Instantiate(enemyNightstand, coordinates, rotation);
-                }
-                else if (string.Equals(objectType1, "Oven", StringComparison.CurrentCultureIgnoreCase))
-                {
-                    //giving the table the name
-                    enemyOven.name = name;
-
-                    //spawn the parent object with specified coordinates
-                    Instantiate(enemyOven, coordinates, rotation);
-                }
-                else if (string.Equals(objectType1, "Sofa", StringComparison.CurrentCultureIgnoreCase))
-                {
-                    //giving the table the name
-                    enemySofa.name = name;
-
-                    //spawn the parent object with specified coordinates
-                    Instantiate(enemySofa, coordinates, rotation);
-                }
-                else if (string.Equals(objectType1, "Vase", StringComparison.CurrentCultureIgnoreCase))
-                {
-                    //giving the table the name
-                    enemyVase.name = name;
-
-                    //spawn the parent object with specified coordinates
-                    Instantiate(enemyVase, coordinates, rotation);
-                }
-                else if (string.Equals(objectType1, "wallhorizontal", StringComparison.CurrentCultureIgnoreCase))
-                {
-                    //giving the table the name
-                    enemyWallHorizontal.name = name;
-
-                    //spawn the parent object with specified coordinates
-                    Instantiate(enemyWallHorizontal, coordinates, rotation);
-                }
-                else if (string.Equals(objectType1, "wallvertical", StringComparison.CurrentCultureIgnoreCase))
-                {
-                    //giving the table the name
-                    enemyWallVertical.name = name;
-
-                    //spawn the parent object with specified coordinates
-                    Instantiate(enemyWallVertical, coordinates, rotation);
-                }
+                //spawn the parent object with specified coordinates
+                Instantiate(enemy, coordinates, rotation);
             }
 
             //resetting the flag
@@ -661,78 +321,169 @@ public class Test : MonoBehaviour
         minCameraButton.onClick.AddListener(() => maximiseUI());
         viewButton.onClick.AddListener(() => ViewSemanticNetwork());
 
+        //Save/Load Buttons
         saveSceneButton.onClick.AddListener(() => saveScene());
         loadSceneButton.onClick.AddListener(() => loadScene());
 
+        //Camera Buttons
         topCameraButton.onClick.AddListener(() => SwitchTopCamera());
         frontCameraButton.onClick.AddListener(() => SwitchFrontCamera());
         backCameraButton.onClick.AddListener(() => SwitchBackCamera());
         leftCameraButton.onClick.AddListener(() => SwitchLeftCamera());
         rightCameraButton.onClick.AddListener(() => SwitchRightCamera());
+        worldCameraButton.onClick.AddListener(() => SwitchWorldCamera());
 
+        //Camera Menu
         cameraButton.onClick.AddListener(() => getCameras());
 
+        //Axis Button
+        axisButton.onClick.AddListener(() => ChangeRotationAxisStatus());
+
+        //Collision Box Button
         collisionBoxButton.onClick.AddListener(() => ChangeCollisionBoxStatus());
     }
 
     public void SwitchTopCamera()
     {
-        // Toggle the enabled state of the cameras
+        frontCamera.tag = "Untagged";
         frontCamera.enabled = false;
 
-        //setting the cameras to false
         topCamera.enabled = true;
+        topCamera.tag = "MainCamera";
+
         leftCamera.enabled = false;
+        leftCamera.tag = "Untagged";
+
         rightCamera.enabled = false;
+        rightCamera.tag = "Untagged";
+
         backCamera.enabled = false;
+        backCamera.tag = "Untagged";
+
+        worldCamera.enabled = false;
+        worldCamera.tag = "Untagged";
     }
 
     public void SwitchFrontCamera()
     {
-        // Toggle the enabled state of the cameras
+        frontCamera.tag = "MainCamera";
         frontCamera.enabled = true;
 
-        //setting the cameras to false
         topCamera.enabled = false;
+        topCamera.tag = "Untagged";
+
         leftCamera.enabled = false;
+        leftCamera.tag = "Untagged";
+
         rightCamera.enabled = false;
+        rightCamera.tag = "Untagged";
+
         backCamera.enabled = false;
+        backCamera.tag = "Untagged";
+
+        worldCamera.enabled = false;
+        worldCamera.tag = "Untagged";
+    }
+
+    public void ChangeRotationAxisStatus()
+    {
+        rotationAxis = !rotationAxis;
+
+        if (rotationAxis)
+        {
+            ringX.SetActive(true);
+            ringY.SetActive(true);
+            ringZ.SetActive(true);
+        }
+        else {
+            ringX.SetActive(false);
+            ringY.SetActive(false);
+            ringZ.SetActive(false);
+        }
     }
 
     public void SwitchBackCamera()
     {
-        // Toggle the enabled state of the cameras
         frontCamera.enabled = false;
+        frontCamera.tag = "Untagged";
 
-        //setting the cameras to false
         topCamera.enabled = false;
+        topCamera.tag = "Untagged";
+
         leftCamera.enabled = false;
+        leftCamera.tag = "Untagged";
+
         rightCamera.enabled = false;
+        rightCamera.tag = "Untagged";
+
         backCamera.enabled = true;
+        backCamera.tag = "MainCamera";
+
+        worldCamera.enabled = false;
+        worldCamera.tag = "Untagged";
     }
 
     public void SwitchLeftCamera()
     {
-        // Toggle the enabled state of the cameras
         frontCamera.enabled = false;
+        frontCamera.tag = "Untagged";
 
-        //setting the cameras to false
         topCamera.enabled = false;
+        topCamera.tag = "Untagged";
+
         leftCamera.enabled = true;
+        leftCamera.tag = "MainCamera";
+
         rightCamera.enabled = false;
+        rightCamera.tag = "Untagged";
+
         backCamera.enabled = false;
+        backCamera.tag = "Untagged";
+
+        worldCamera.enabled = false;
+        worldCamera.tag = "Untagged";
     }
 
     public void SwitchRightCamera()
     {
-        // Toggle the enabled state of the cameras
         frontCamera.enabled = false;
+        frontCamera.tag = "Untagged";
 
-        //setting the cameras to false
         topCamera.enabled = false;
+        topCamera.tag = "Untagged";
+
         leftCamera.enabled = false;
+        leftCamera.tag = "Untagged";
+
         rightCamera.enabled = true;
+        rightCamera.tag = "MainCamera";
+
         backCamera.enabled = false;
+        backCamera.tag = "Untagged";
+
+        worldCamera.enabled = false;
+        worldCamera.tag = "Untagged";
+    }
+
+    public void SwitchWorldCamera()
+    {
+        frontCamera.enabled = false;
+        frontCamera.tag = "Untagged";
+
+        topCamera.enabled = false;
+        topCamera.tag = "Untagged";
+
+        leftCamera.enabled = false;
+        leftCamera.tag = "Untagged";
+
+        rightCamera.enabled = false;
+        rightCamera.tag = "Untagged";
+
+        backCamera.enabled = false;
+        backCamera.tag = "Untagged";
+
+        worldCamera.enabled = true;
+        worldCamera.tag = "MainCamera";
     }
 
     public void addCommand() {
@@ -757,7 +508,7 @@ public class Test : MonoBehaviour
         //check that the input is not empty
         if (commandBox.text != "")
         {
-            //the sentence is split into words
+            //the sentence is split into words by the spaces
             words = commandBox.text.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
 
             //if the command is Add, flag to 0
@@ -778,22 +529,84 @@ public class Test : MonoBehaviour
                 flag = 2;
             }
 
-            //if the command is Move, flag to 3
+            //if the command is Move, flag to 3, 4, 5, 6
             else if (String.Equals(words[0], "Move", StringComparison.OrdinalIgnoreCase))
             {
-                flag = 3;
+                //check which type of move command it is
+                //Move compound cube_1 to 2,0,0
+                if (String.Equals(words[1], "compound", StringComparison.OrdinalIgnoreCase) && 
+                    String.Equals(words[3], "to", StringComparison.OrdinalIgnoreCase))
+                {
+                    flag = 3;
+                }
+                //Move compound cube_1 on cube_2 or Move compound cube_1 under cube_2
+                else if (String.Equals(words[1], "compound", StringComparison.OrdinalIgnoreCase))
+                {
+                    flag = 4;
+                }
+                //Move simple cube_1 to 2,0,0
+                else if (String.Equals(words[1], "simple", StringComparison.OrdinalIgnoreCase) && 
+                    String.Equals(words[3], "to", StringComparison.OrdinalIgnoreCase))
+                {
+                    flag = 5;
+                }
+                //Move simple cube_1 on cube_2 or Move simple cube_1 under cube_2
+                else if (String.Equals(words[1], "simple", StringComparison.OrdinalIgnoreCase))
+                { 
+                    flag = 6;
+                }
+                else //if it is none of them there is an error
+                { 
+                    flag = -1;
+                }
             }
 
-            //if the command is Change, flag to 4
+            //if the command is Change, flag to 7
             else if (String.Equals(words[0], "Change", StringComparison.OrdinalIgnoreCase))
             {
-                flag = 4;
+                flag = 7;
             }
 
-            //if the command is Rotate, flag to 5
-            else if (String.Equals(words[0], "Rotate", StringComparison.OrdinalIgnoreCase) && String.Equals(words[1], "simple", StringComparison.OrdinalIgnoreCase))
+            //if the command is RotateY, flag to 8, 9
+            else if (String.Equals(words[0], "RotateY", StringComparison.OrdinalIgnoreCase))
             {
-                flag = 5;
+                //check which type of move command it is
+                if (String.Equals(words[1], "simple", StringComparison.OrdinalIgnoreCase))//RotateY simple table_1 by 90
+                {
+                    flag = 8;
+                }
+                else if (String.Equals(words[1], "compound", StringComparison.OrdinalIgnoreCase))//RotateY compound table_1 by 90
+                {
+                    flag = 9;
+                }
+                else {
+                    //if it is none of them there is an error
+                    flag = -1;
+                }
+            }
+
+            //if the command is RotateY, flag to 10
+            else if (String.Equals(words[0], "RotateX", StringComparison.OrdinalIgnoreCase))
+            {
+                flag = 10;
+            }
+
+            //if the command is RotateY, flag to 11
+            else if (String.Equals(words[0], "RotateZ", StringComparison.OrdinalIgnoreCase))
+            {
+                flag = 11;
+            }
+
+            //if the command is Break, flag to 12
+            else if (String.Equals(words[0], "Break", StringComparison.OrdinalIgnoreCase))
+            {
+                flag = 12;
+            }
+
+            //if the command is RotateY, flag to 11
+            else if (String.Equals(words[0], "Reset", StringComparison.OrdinalIgnoreCase))
+            {
+                flag = 13;
             }
 
             //if the command is none of the above, flag to -1
@@ -829,75 +642,33 @@ public class Test : MonoBehaviour
                     //split the string into x, y and z coordnates
                     coordinatesXYZ = words[3].Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
 
+                    //float coordinates array
+                    float[] coords = coordinatesXYZ.Select(float.Parse).ToArray();
+
                     //creating the parent node
                     Node parentNode = new Node(parent);
 
                     //setting the object type 
                     parentNode.setObjectType(objectTypeWithNo[0]);
 
-                    //set the objectGameObject
-                    if (objectTypeWithNo[0].Equals("table", StringComparison.OrdinalIgnoreCase))
-                    {
-                        parentNode.setObject("table");
-                    }
-                    else if (objectTypeWithNo[0].Equals("sofa", StringComparison.OrdinalIgnoreCase))
-                    {
-                        parentNode.setObject("sofa");
-                    }
-                    else if (objectTypeWithNo[0].Equals("cup", StringComparison.OrdinalIgnoreCase))
-                    {
-                        parentNode.setObject("cup");
-                    }
-                    else if (objectTypeWithNo[0].Equals("chair", StringComparison.OrdinalIgnoreCase))
-                    {
-                        parentNode.setObject("chair");
-                    }
-                    else if (objectTypeWithNo[0].Equals("fridge", StringComparison.OrdinalIgnoreCase))
-                    {
-                        parentNode.setObject("fridge");
-                    }
-                    else if (objectTypeWithNo[0].Equals("bed", StringComparison.OrdinalIgnoreCase))
-                    {
-                        parentNode.setObject("bed");
-                    }
-                    else if (objectTypeWithNo[0].Equals("armchair", StringComparison.OrdinalIgnoreCase))
-                    {
-                        parentNode.setObject("armchair");
-                    }
-                    else if (objectTypeWithNo[0].Equals("carpet", StringComparison.OrdinalIgnoreCase))
-                    {
-                        parentNode.setObject("carpet");
-                    }
-                    else if (objectTypeWithNo[0].Equals("lamp", StringComparison.OrdinalIgnoreCase))
-                    {
-                        parentNode.setObject("lamp");
-                    }
-                    else if (objectTypeWithNo[0].Equals("vase", StringComparison.OrdinalIgnoreCase))
-                    {
-                        parentNode.setObject("vase");
-                    }
-                    else if (objectTypeWithNo[0].Equals("nightstand", StringComparison.OrdinalIgnoreCase))
-                    {
-                        parentNode.setObject("nightstand");
-                    }
-                    else if (objectTypeWithNo[0].Equals("oven", StringComparison.OrdinalIgnoreCase))
-                    {
-                        parentNode.setObject("oven");
-                    }
-                    else if (objectTypeWithNo[0].Equals("wallvertical", StringComparison.OrdinalIgnoreCase))
-                    {
-                        parentNode.setObject("wallvertical");
-                    }
-                    else if (objectTypeWithNo[0].Equals("wallhorizontal", StringComparison.OrdinalIgnoreCase))
-                    {
-                        parentNode.setObject("wallhorizontal");
-                    }
+                    //get reference to the gameObject of the node
+                    GameObject obj = parentNode.getObjectTrue();
+
+                    //get the dimensions of the gameObject
+                    Vector3 size = obj.transform.localScale;
+
+                    //given that the unity coordinates are calculated on the centre of the object,
+                    //we need to add half of the object's height to the 'y' coordinate such that
+                    //the bottom of the object touches the ground
+                    coords[1] = coords[1] + ((size.y) / 2);
 
                     //set the initial rotation to 0
-                    parentNode.setRotation(0);
+                    parentNode.setRotationX(0);
+                    parentNode.setRotationY(0);
+                    parentNode.setRotationZ(0);
 
                     //setting the coordinates
-                    parentNode.setCoordinates(coordinatesXYZ.Select(float.Parse).ToArray());
+                    parentNode.setCoordinates(coords);
 
                     //check if there already exists an object with the same name
                     Boolean resultCheckName = graphObject.checkExist(TreeSet, parentNode);
@@ -909,8 +680,10 @@ public class Test : MonoBehaviour
 
                         yield return new WaitForSeconds(creationDelay);
 
+                        //if it does not collide
                         if (found == true)
                         {
+                            //reset the flag
                             found = false;
 
                             Boolean resultAddChildren = graphObject.addChildren(TreeSet, parentNode, null); //adding the first node to the tree - it has no children
@@ -945,147 +718,112 @@ public class Test : MonoBehaviour
 
             }
 
-            //if the command is a Create command and consists of 4 words, that means that it is a single relationship, ex: Create Book_1 under Tree_1
-            else if (words.Length == 4 && flag == 1)
+            //LIMITATION: CANNOT CREATE OBJECT ON OBJECT WITH ROTATION ON X AND Z AXIS
+
+            //if the command is a Create command and consists of 5 words, that means that it is a single relationship, ex: Create touching Book_1 under Tree_1
+            else if (words.Length == 5 && flag == 1)
             {
                 //the parent node
-                string parent = words[3];
+                string parent = words[4];
 
                 //creating the parent node
                 Node parentNode = new Node(parent);
 
                 //the child node
-                string child = words[1];
+                string child = words[2];
 
                 //creating the child node
                 Node childNode = new Node(child);
 
                 //the preposition
-                string preposition = words[2];
+                string preposition = words[3];
 
-                string[] objectTypeWithNo = words[1].Split(new[] { '_' }, StringSplitOptions.RemoveEmptyEntries);
+                string[] objectTypeWithNo = child.Split(new[] { '_' }, StringSplitOptions.RemoveEmptyEntries);
 
+                //setting the spacing for the child
+                childNode.setSpacing(words[1]);
+
+                //setting the preposition for the child
                 childNode.setPreposition(preposition);
+
+                //setting the object type
                 childNode.setObjectType(objectTypeWithNo[0]);
 
-                //set the initial rotation to 0
-                childNode.setRotation(0);
+                //check that the parent gameObject exists
+                if (GameObject.Find(parentNode.ToString() + "temp(Clone)")) {
+                    //check if the parent itself exists
+                    Boolean resultCheckNameParent = graphObject.checkExist(TreeSet, parentNode);
 
-                //set the objectGameObject
-                if (objectTypeWithNo[0].Equals("table", StringComparison.OrdinalIgnoreCase))
-                {
-                    childNode.setObject("table");
-                }
-                else if (objectTypeWithNo[0].Equals("sofa", StringComparison.OrdinalIgnoreCase))
-                {
-                    childNode.setObject("sofa");
-                }
-                else if (objectTypeWithNo[0].Equals("cup", StringComparison.OrdinalIgnoreCase))
-                {
-                    childNode.setObject("cup");
-                }
-                else if (objectTypeWithNo[0].Equals("chair", StringComparison.OrdinalIgnoreCase))
-                {
-                    childNode.setObject("chair");
-                }
-                else if (objectTypeWithNo[0].Equals("fridge", StringComparison.OrdinalIgnoreCase))
-                {
-                    childNode.setObject("fridge");
-                }
-                else if (objectTypeWithNo[0].Equals("bed", StringComparison.OrdinalIgnoreCase))
-                {
-                    childNode.setObject("bed");
-                }
-                else if (objectTypeWithNo[0].Equals("armchair", StringComparison.OrdinalIgnoreCase))
-                {
-                    childNode.setObject("armchair");
-                }
-                else if (objectTypeWithNo[0].Equals("carpet", StringComparison.OrdinalIgnoreCase))
-                {
-                    childNode.setObject("carpet");
-                }
-                else if (objectTypeWithNo[0].Equals("lamp", StringComparison.OrdinalIgnoreCase))
-                {
-                    childNode.setObject("lamp");
-                }
-                else if (objectTypeWithNo[0].Equals("vase", StringComparison.OrdinalIgnoreCase))
-                {
-                    childNode.setObject("vase");
-                }
-                else if (objectTypeWithNo[0].Equals("nightstand", StringComparison.OrdinalIgnoreCase))
-                {
-                    childNode.setObject("nightstand");
-                }
-                else if (objectTypeWithNo[0].Equals("oven", StringComparison.OrdinalIgnoreCase))
-                {
-                    childNode.setObject("oven");
-                }
-                else if (objectTypeWithNo[0].Equals("wallvertical", StringComparison.OrdinalIgnoreCase))
-                {
-                    childNode.setObject("wallvertical");
-                }
-                else if (objectTypeWithNo[0].Equals("wallhorizontal", StringComparison.OrdinalIgnoreCase))
-                {
-                    childNode.setObject("wallhorizontal");
-                }
+                    if (resultCheckNameParent == true)
+                    {//parent exists
 
-                //check if the parent itself exists
-                Boolean resultCheckNameParent = graphObject.checkExist(TreeSet, parentNode);
+                        //check if there is the same preposition for the same parent node
+                        Boolean resultCheckPreposition = graphObject.checkPreposition(TreeSet, parentNode, childNode);
 
-                if (resultCheckNameParent == true)
-                {//parent exists
+                        if (resultCheckPreposition == true)
+                        {//there is no other child with the same preposition
 
-                    //check if there is the same preposition for the same parent node
-                    Boolean resultCheckPreposition = graphObject.checkPreposition(TreeSet, parentNode, childNode);
+                            //check if there already exists a child with the same name
+                            Boolean resultCheckNameChild = graphObject.checkExist(TreeSet, childNode);
 
-                    if (resultCheckPreposition == true)
-                    {//there is no other child with the same preposition
-
-                        //check if there already exists a child with the same name
-                        Boolean resultCheckNameChild = graphObject.checkExist(TreeSet, childNode);
-
-                        if (resultCheckNameChild == false) //object is unique
-                        {
-                            //create a copy of the current Tree
-                            IDictionary<Node, Node[]> tempTree = TreeSet.ToDictionary(entry => entry.Key, entry => entry.Value);
-
-                            //add the new records
-                            graphObject.addChildren(tempTree, parentNode, childNode);
-
-                            //calculate the new coordinates
-                            graphObject.setCoordinates(tempTree);
-
-                            //pass the correct parentNode with coordinates
-                            foreach (KeyValuePair<Node, Node[]> entry in tempTree)
+                            if (resultCheckNameChild == false) //object is unique
                             {
-                                //get name of the parent
-                                string name1 = entry.Key.ToString();
+                                //get reference to the parent object
+                                GameObject parentObj = GameObject.Find(parentNode.ToString() + "temp(Clone)");
 
-                                //checking if the key has been found
-                                if (entry.Key.ToString().Equals(childNode.ToString()))
+                                //set the initial rotation on the Y axis to be the same as the parent
+                                childNode.setRotationY(parentObj.transform.rotation.eulerAngles.y);
+
+                                //initialise other rotations to 0
+                                childNode.setRotationX(0);
+                                childNode.setRotationZ(0);
+
+                                //create a copy of the current Tree
+                                IDictionary<Node, Node[]> tempTree = TreeSet.ToDictionary(entry => entry.Key, entry => entry.Value);
+
+                                //add the new records
+                                graphObject.addChildren(tempTree, parentNode, childNode);
+
+                                //calculate the new coordinates
+                                graphObject.setCoordinatesSimple(tempTree, parentNode, childNode);
+
+                                //pass the correct parentNode with coordinates
+                                foreach (KeyValuePair<Node, Node[]> entry in tempTree)
                                 {
-                                    //check if it collides with any other object
-                                    StartCoroutine(checkSceneCollidersParent(entry.Key));
+                                    //get name of the parent
+                                    string name1 = entry.Key.ToString();
 
-                                    yield return new WaitForSeconds(creationDelay);
-
-                                    if (found == true)
+                                    //checking if the key has been found
+                                    if (entry.Key.ToString().Equals(childNode.ToString()))
                                     {
-                                        found = false;//reset the found flag
+                                        //check if it collides with any other object
+                                        StartCoroutine(checkSceneCollidersParent(entry.Key));
 
-                                        //if correct make current tree equal to the new tree
-                                        TreeSet = tempTree;
+                                        yield return new WaitForSeconds(creationDelay);
 
-                                        //when adding a new object collisions are set to true
-                                        collisionBoxFlag = true;
-                                        CollisionBoxStatus();
-                                    }
-                                    else
-                                    {
-                                        placeholder.text = "Could not add node!";
-                                        placeholder.color = Color.red;
+                                        if (found == true)
+                                        {
+                                            found = false;//reset the found flag
+
+                                            //if correct make current tree equal to the new tree
+                                            TreeSet = tempTree;
+
+                                            //when adding a new object collisions are set to true
+                                            collisionBoxFlag = true;
+                                            CollisionBoxStatus();
+                                        }
+                                        else
+                                        {
+                                            placeholder.text = "Could not add node!";
+                                            placeholder.color = Color.red;
+                                        }
                                     }
                                 }
+                            }
+                            else
+                            {
+                                placeholder.text = "Could not add node!";
+                                placeholder.color = Color.red;
                             }
                         }
                         else
@@ -1105,10 +843,9 @@ public class Test : MonoBehaviour
                     placeholder.text = "Could not add node!";
                     placeholder.color = Color.red;
                 }
-
             }
 
-            //if the command is a Create command and consists of 6 words, that means that it is a double relationship, ex: Create Book_1 under Tree_1 and Man_1
+            //if the command is a Create command and consists of 6 words, that means that it is a double relationship, ex: Create Book_1 between Tree_1 and Man_1
             else if (words.Length == 6 && flag == 1)
             {
                 //TO BE REWRITTEN
@@ -1156,8 +893,10 @@ public class Test : MonoBehaviour
                 //check that the object to be deleted exists
                 Boolean checkResult = checkExist(TreeSet, delNode);
 
+                //if it exists
                 if (checkResult)
                 {
+                    //calling the delete method
                     deleteNode(Tree, delNode);
 
                     //letting the frame pass
@@ -1170,44 +909,61 @@ public class Test : MonoBehaviour
                 }
             }
 
-            //if the command is a Move command and consists of 4 words, ex: Move cube_1 to 2,0,0, Move cube_1 on cube_3
-            else if (words.Length == 4 && flag == 3)
+            //if the command is a Move command and consists of 5 words, ex: Move compound cube_1 to 2,0,0
+            else if (words.Length == 5 && flag == 3)
             {
-                Boolean collisions = false;
-
                 //the parent node
-                string parent = words[1];
+                string parent = words[2];
 
                 //creating the parent node
                 Node parentNode = new Node(parent);
-
-                //getting the string of the coordinates, ex: 2,0,0
-                string coordinates = words[3];
-
-                //contains the coordinates 
-                string[] coordinatesXYZ = { };
-
-                //split the string into x, y and z coordinates
-                coordinatesXYZ = coordinates.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
-
-                //setting the coordinates
-                parentNode.setCoordinates(coordinatesXYZ.Select(float.Parse).ToArray());
-
-                //create a temporary tree and recalculate the coordinates
-                //create a copy of the current Tree
-                IDictionary<Node, Node[]> tempTree = TreeSet.ToDictionary(entry => entry.Key, entry => entry.Value);
-
-                //add the new records
-                changeTree(tempTree, parentNode);
-
-                //calculate the new coordinates
-                setCoordinates(tempTree);
 
                 //check that the object to be moved exists
                 Boolean resultCheckExist = checkExist(TreeSet, parentNode);
 
                 if (resultCheckExist)//if the parent object exists
                 {
+                    //getting the object and removing the number from it, Tree_1 -> Tree, 1
+                    string[] objectTypeWithNo = parent.Split(new[] { '_' }, StringSplitOptions.RemoveEmptyEntries);
+
+                    //setting the object type 
+                    parentNode.setObjectType(objectTypeWithNo[0]);
+
+                    //getting the string of the coordinates, ex: 2,0,0
+                    string coordinates = words[4];
+
+                    //contains the coordinates 
+                    string[] coordinatesXYZ = { };
+
+                    //split the string into x, y and z coordinates
+                    coordinatesXYZ = coordinates.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+
+                    //float coordinates array
+                    float[] coords = coordinatesXYZ.Select(float.Parse).ToArray();
+
+                    //get reference to the gameObject of the node
+                    GameObject obj = parentNode.getObjectTrue();
+
+                    //get the dimensions of the gameObject
+                    Vector3 size = obj.transform.localScale;
+
+                    //given that the unity coordinates are calculated on the centre of the object,
+                    //we need to add half of the object's height to the 'y' coordinate such that
+                    //the bottom of the object touches the ground
+                    coords[1] = coords[1] + ((size.y) / 2);
+
+                    //setting the new coordinates of the object
+                    parentNode.setCoordinates(coords);
+                    //create a temporary tree and recalculate the coordinates
+                    //create a copy of the current Tree
+                    IDictionary<Node, Node[]> tempTree = TreeSet.ToDictionary(entry => entry.Key, entry => entry.Value);
+
+                    //break relationship for the parentNode with its parents
+                    tempTree = removeNodeAsChild(tempTree, parentNode);
+
+                    //change the coordinates of the parent node in the tree datastructure
+                    changeTreeCoordinates(tempTree, parentNode);
+
                     //List to store all the nodes involved
                     List<Node> nodesToMove = new List<Node>();
 
@@ -1217,24 +973,34 @@ public class Test : MonoBehaviour
                         //first thing to do is spawn the parent
                         if (entry.Key.ToString().Equals(parentNode.ToString()))
                         {
-                            Node newNodeCopy = entry.Key.Copy();
+                            Node newNodeCopy = entry.Key.CopyDeep();
                             nodesToMove.Add(newNodeCopy);
                         }
                     }
 
-                    //get all the objects involved through iteration
+                    //get all the objects involved through iteration-----
 
                     //start with the children of the parentNode
-                    Node[] temp = tempTree[parentNode];
+                    Node[] temp = null;
+
+                    foreach (KeyValuePair<Node, Node[]> entry in tempTree)
+                    {
+                        //if the current node is equal to the parentNode
+                        if (entry.Key.ToString().Equals(parentNode.ToString()))
+                        {
+                            //intialise the temp
+                            temp = tempTree[entry.Key];
+                        }
+                    }
 
                     //getting the first nodes from the array
                     foreach (Node tempNode in temp)
                     {
-                        Node newNodeCopy = tempNode.Copy();
+                        Node newNodeCopy = tempNode.CopyDeep();
                         nodesToMove.Add(newNodeCopy);
                     }
 
-                    //list to compare
+                    //list used to compare and check if any new nodes have been added
                     List<Node> nodesToMoveCopy = new List<Node>(nodesToMove);
 
                     Boolean repeat = true;
@@ -1243,18 +1009,29 @@ public class Test : MonoBehaviour
                     {
                         foreach (Node tNode in nodesToMove)
                         {
+                            Node[] temporary = null;
+
                             //get the children and add them to the list
-                            Node[] temporary = tempTree[tNode];
+                            foreach (KeyValuePair<Node, Node[]> entry in tempTree)
+                            {
+                                //if the current node is equal to the parentNode
+                                if (entry.Key.ToString().Equals(tNode.ToString()))
+                                {
+                                    //intialise the temp
+                                    temporary = tempTree[entry.Key];
+                                }
+                            }
 
                             //check if it has children
                             foreach (Node tempNode in temporary)
                             {
                                 //check if the nodes are not already in the list
-                                Boolean checkNode = nodesToMove.Contains(tempNode);
+                                Boolean checkNode = nodesToMove.Any(x => x.ToString().Equals(tempNode.ToString()));
+
 
                                 if (checkNode == false)
                                 {
-                                    Node newNodeCopy = tempNode.Copy();
+                                    Node newNodeCopy = tempNode.CopyDeep();
                                     nodesToMoveCopy.Add(newNodeCopy);//add the new children (if any)
                                 }
 
@@ -1278,20 +1055,22 @@ public class Test : MonoBehaviour
                         listOfObjects.Add(node.ToString());
                     }
 
+                    //calculate the coordinates of the gameobjects
+                    nodesToMove = setCoordinatesCompound(tempTree, nodesToMove);
+
                     //check that the new coordinates are not the same as the old coordinates
-                    GameObject obj = GameObject.Find(parentNode.ToString() + "temp(Clone)");
+                    GameObject objOld = GameObject.Find(parentNode.ToString() + "temp(Clone)");
 
                     //current position of the object
-                    Vector3 currentPosition = obj.transform.position;
+                    Vector3 currentPosition = objOld.transform.position;
 
                     float x = parentNode.returnX();
                     float y = parentNode.returnY();
                     float z = parentNode.returnZ();
 
-
                     if (currentPosition != new Vector3(x, y, z))
                     { //if they are not equal
-                      ////check that the object to be moved exists
+                      //check that the object to be moved exists
                       //Boolean resultCheckExist = checkExist(TreeSet, parentNode);
 
                         if (resultCheckExist)//if the object exists
@@ -1299,14 +1078,15 @@ public class Test : MonoBehaviour
                             Boolean create = true;
 
                             //loop through the nodes to be moved
-
                             foreach (Node node in nodesToMove)
                             {
+                                Node nodeCopy = node.CopyDeep();
+
                                 //change name as it is a temporary duplicate
-                                node.setValue(node.ToString() + "Copy");
+                                nodeCopy.setValue(node.ToString() + "Copy");
 
                                 //check that the nodes can be moved
-                                StartCoroutine(checkSceneCollidersParent(node));
+                                StartCoroutine(checkSceneCollidersParent(nodeCopy));
 
                                 yield return new WaitForSeconds(creationDelay);//handing control to Update()
 
@@ -1336,25 +1116,25 @@ public class Test : MonoBehaviour
                                 //delete the copies of the objects
                                 foreach (Node node in nodesToMove)
                                 {
-                                    GameObject objToDelete = GameObject.Find(node.ToString() + "temp(Clone)");
+                                    GameObject objToDelete = GameObject.Find(node.ToString() + "Copytemp(Clone)");
 
                                     //destroying the object
                                     Destroy(objToDelete);
 
                                     yield return new WaitForSeconds(creationDelay);
 
-                                    //find the object
-                                    String originalObject = node.ToString().Replace("Copy", "");
+                                    ////find the object
+                                    //String originalObject = node.ToString().Replace("Copy", "");
 
-                                    GameObject objToUpdate = GameObject.Find(originalObject + "temp(Clone)");
+                                    GameObject objToUpdate = GameObject.Find(node.ToString() + "temp(Clone)");
                                     objToUpdate.transform.position = new Vector3(node.returnX(), node.returnY(), node.returnZ());
 
                                     yield return new WaitForSeconds(creationDelay);
 
                                     //find the created
-                                    if (GameObject.Find(originalObject + "(Clone)"))
+                                    if (GameObject.Find(node.ToString() + "(Clone)"))
                                     {
-                                        GameObject objToMove = GameObject.Find(originalObject + "(Clone)");
+                                        GameObject objToMove = GameObject.Find(node.ToString() + "(Clone)");
                                         objToMove.transform.position = new Vector3(node.returnX(), node.returnY(), node.returnZ());
 
                                         yield return new WaitForSeconds(creationDelay);
@@ -1366,68 +1146,22 @@ public class Test : MonoBehaviour
                             }
                             else
                             {
+                                //remember to destroy the nodes
+                                //delete the copies of the objects
+                                foreach (Node node in nodesToMove)
+                                {
+                                    GameObject objToDelete = GameObject.Find(node.ToString() + "Copytemp(Clone)");
+
+                                    //destroying the object
+                                    Destroy(objToDelete);
+
+                                    yield return new WaitForSeconds(creationDelay);
+                                }
+
+
                                 placeholder.text = "Could not add node!";
                                 placeholder.color = Color.red;
                             }
-
-
-                            //if (found == true)//the parent can be moved
-                            //{
-                            //    found = false;//reset the found flag
-
-                            //    Boolean create = true;//boolean to see if there are collisions in all children
-
-                            //    //create a copy of the Tree
-                            //    IDictionary<Node, Node[]> tree = TreeSet.ToDictionary(entry => entry.Key, entry => entry.Value);
-
-                            //    //get the children of the parent node
-                            //    Node[] temp = tree[parentNode];
-
-                            //    //copy of the temp array, used to address the parent Node
-                            //    Node[] myCopy = new Node[temp.Length];
-                            //    Array.Copy(temp, myCopy, temp.Length);
-
-                            //    //recalculate the coordinates of the children in relation to the parent node
-                            //    foreach (Node node in temp)
-                            //    {
-                            //        Node tempNode = node;
-                            //        calculatePrepositionCoordinates(parentNode, tempNode);
-
-                            //        //check the collisions of the children
-                            //        StartCoroutine(checkSceneCollidersParent(tempNode));
-
-                            //        yield return new WaitForSeconds(creationDelay); //handing control to Update()
-
-                            //        if (found == false) //if there is a collision, the rest of the children are ignored
-                            //        {
-                            //            create = false;
-                            //            break;
-                            //        }
-                            //    }
-
-                            //    //if there are no collisions at all
-                            //    if (create == true)
-                            //    {
-                            //        //update the coordinates of the parent node in the tree
-                            //        tree[temp] = parentNode;
-
-                            //        //update the coordinates of the child node in the tree
-
-
-                            //        //update the Tree
-                            //        TreeSet = tree;
-                            //    }
-                            //    else
-                            //    {
-                            //        placeholder.text = "Could not add node!";
-                            //        placeholder.color = Color.red;
-                            //    }
-                            //}
-                            //else
-                            //{
-                            //    placeholder.text = "Could not add node!";
-                            //    placeholder.color = Color.red;
-                            //}
                         }
                         else
                         {
@@ -1449,8 +1183,972 @@ public class Test : MonoBehaviour
                 listOfObjects.Clear();
             }
 
+            //if the command is a Move command and consists of 6 words, ex: Move compound cube_1 on cube_3 0.5
+            else if (words.Length == 6 && flag == 4)
+            {
+                //rotations stay the same
+
+                Boolean collisions = false;
+
+                //the parent node
+                string parent = words[2];
+
+                //creating the parent node
+                Node parentNode = new Node(parent);
+
+                //storing the preposition
+                string preposition = words[3];
+
+                //setting the preposition
+                parentNode.setPreposition(preposition);
+
+                //setting the spacing
+                parentNode.setSpacing(words[5]);
+
+                string[] objectTypeWithNo = parent.Split(new[] { '_' }, StringSplitOptions.RemoveEmptyEntries);
+
+                //setting the object type
+                parentNode.setObjectType(objectTypeWithNo[0]);
+
+                //the name of the node that will be the new parent
+                string newParent = words[4];
+
+                //creating the new parent node
+                Node newParentNode = new Node(newParent);
+
+                string[] objectTypeWithNo1 = parent.Split(new[] { '_' }, StringSplitOptions.RemoveEmptyEntries);
+
+                //setting the object type
+                newParentNode.setObjectType(objectTypeWithNo1[0]);
+
+                //create a temporary tree and recalculate the coordinates
+                //create a copy of the current Tree
+                IDictionary<Node, Node[]> tempTree = TreeSet.ToDictionary(entry => entry.Key, entry => entry.Value);
+
+                //check that the object to be moved exists
+                Boolean resultCheckExistParent = checkExist(TreeSet, parentNode);
+
+                if (resultCheckExistParent)//if the parent object exists
+                {
+                    //check that the object to be moved to exists
+                    Boolean resultCheckExistParentNew = checkExist(TreeSet, newParentNode);
+
+                    if (resultCheckExistParentNew)//if the new parent object exists
+                    {
+                        //break relations with other nodes for the parentNode
+                        tempTree = removeNodeAsChild(tempTree, parentNode);
+
+                        //if the newParentNode is a child of parentNode, we break it
+                        foreach (KeyValuePair<Node, Node[]> entry in tempTree)
+                        {
+                            //if the current node is equal to the parentNode
+                            if (entry.Key.ToString().Equals(parentNode.ToString()))
+                            {
+                                Node[] children = tempTree[entry.Key];
+
+                                //if the newParentNode is a child of the tempTree
+                                if (children.Any(x => x.ToString().Equals(newParentNode.ToString()))){
+                                    //break relations with other nodes for the parentNode
+                                    tempTree = removeNodeAsChild(tempTree, newParentNode);
+                                }
+                            }
+                        }
+
+                        //add the new relationships, the parentNode coordinates have changed
+                        tempTree = changeTreeRelations(tempTree, newParentNode, parentNode);
+
+                        //List to store all the nodes involved
+                        List<Node> nodesToMove = new List<Node>();
+
+                        //add the parentNode as the start
+                        foreach (KeyValuePair<Node, Node[]> entry in tempTree)
+                        {
+                            //first thing to do is spawn the parent
+                            if (entry.Key.ToString().Equals(parentNode.ToString()))
+                            {
+                                Node newNodeCopy = entry.Key.CopyDeep();
+                                nodesToMove.Add(newNodeCopy);
+                            }
+                        }
+
+                        //get all the objects involved through iteration-----
+
+                        //start with the children of the parentNode
+                        Node[] temp = null;
+
+                        foreach (KeyValuePair<Node, Node[]> entry in tempTree)
+                        {
+                            //if the current node is equal to the parentNode
+                            if (entry.Key.ToString().Equals(parentNode.ToString()))
+                            {
+                                //intialise the temp
+                                temp = tempTree[entry.Key];
+                            }
+                        }
+
+                        //getting the first nodes from the array
+                        foreach (Node tempNode in temp)
+                        {
+                            Node newNodeCopy = tempNode.CopyDeep();
+                            nodesToMove.Add(newNodeCopy);
+                        }
+
+                        //list used to compare and check if any new nodes have been added
+                        List<Node> nodesToMoveCopy = new List<Node>(nodesToMove);
+
+                        Boolean repeat = true;
+
+                        while (repeat)
+                        {
+                            foreach (Node tNode in nodesToMove)
+                            {
+                                Node[] temporary = null;
+
+                                //get the children and add them to the list
+                                foreach (KeyValuePair<Node, Node[]> entry in tempTree)
+                                {
+                                    //if the current node is equal to the parentNode
+                                    if (entry.Key.ToString().Equals(tNode.ToString()))
+                                    {
+                                        //intialise the temp
+                                        temporary = tempTree[entry.Key];
+                                    }
+                                }
+
+                                //check if it has children
+                                foreach (Node tempNode in temporary)
+                                {
+                                    //check if the nodes are not already in the list
+                                    Boolean checkNode = nodesToMove.Any(x => x.ToString().Equals(tempNode.ToString()));
+
+
+                                    if (checkNode == false)
+                                    {
+                                        Node newNodeCopy = tempNode.CopyDeep();
+                                        nodesToMoveCopy.Add(newNodeCopy);//add the new children (if any)
+                                    }
+
+                                }
+                            }
+
+                            if (nodesToMove.Count == nodesToMoveCopy.Count)
+                            {
+                                repeat = false;
+                            }
+                            else
+                            {
+                                //update the list with the new Nodes
+                                nodesToMove = new List<Node>(nodesToMoveCopy);
+                                repeat = true;
+                            }
+                        }
+
+                        //update the list of objects that are exempt from collisions
+                        foreach (Node node in nodesToMove)
+                        {
+                            listOfObjects.Add(node.ToString());
+                        }
+
+                        //calculate the coordinates of the gameobjects
+                        nodesToMove = setCoordinatesCompound(tempTree, nodesToMove);
+
+                        //check that the new coordinates are not the same as the old coordinates
+                        GameObject objOld = GameObject.Find(parentNode.ToString() + "temp(Clone)");
+
+                        //current position of the object
+                        Vector3 currentPosition = objOld.transform.position;
+
+                        float x = parentNode.returnX();
+                        float y = parentNode.returnY();
+                        float z = parentNode.returnZ();
+
+                        if (currentPosition != new Vector3(x, y, z))
+                        { //if they are not equal
+                          //check that the object to be moved exists
+                          Boolean resultCheckExist = checkExist(TreeSet, parentNode);
+
+                            if (resultCheckExist)//if the object exists
+                            {
+                                Boolean create = true;
+
+                                //loop through the nodes to be moved
+                                foreach (Node node in nodesToMove)
+                                {
+                                    Node nodeCopy = node.CopyDeep();
+
+                                    //change name as it is a temporary duplicate
+                                    nodeCopy.setValue(node.ToString() + "Copy");
+
+                                    //check that the nodes can be moved
+                                    StartCoroutine(checkSceneCollidersParent(nodeCopy));
+
+                                    yield return new WaitForSeconds(creationDelay);//handing control to Update()
+
+                                    if (found == true)//the node can be moved
+                                    {
+                                        found = false;//reset the found flag
+
+                                        create = true;//boolean to see if there are collisions in all children
+                                    }
+                                    else
+                                    {
+                                        //the objects will not be moved as there is a collision
+                                        create = false;
+
+                                        placeholder.text = "Could not add node!";
+                                        placeholder.color = Color.red;
+
+                                        break;
+                                    }
+                                }
+
+                                //if there are no collisions at all
+                                if (create == true)
+                                {
+                                    //the objects can be moved
+
+                                    //delete the copies of the objects
+                                    foreach (Node node in nodesToMove)
+                                    {
+                                        GameObject objToDelete = GameObject.Find(node.ToString() + "Copytemp(Clone)");
+
+                                        //destroying the object
+                                        Destroy(objToDelete);
+
+                                        yield return new WaitForSeconds(creationDelay);
+
+                                        ////find the object
+                                        //String originalObject = node.ToString().Replace("Copy", "");
+
+                                        GameObject objToUpdate = GameObject.Find(node.ToString() + "temp(Clone)");
+                                        objToUpdate.transform.position = new Vector3(node.returnX(), node.returnY(), node.returnZ());
+
+                                        yield return new WaitForSeconds(creationDelay);
+
+                                        //find the created
+                                        if (GameObject.Find(node.ToString() + "(Clone)"))
+                                        {
+                                            GameObject objToMove = GameObject.Find(node.ToString() + "(Clone)");
+                                            objToMove.transform.position = new Vector3(node.returnX(), node.returnY(), node.returnZ());
+
+                                            yield return new WaitForSeconds(creationDelay);
+                                        }
+                                    }
+
+                                    //update the Tree
+                                    TreeSet = tempTree;
+                                }
+                                else
+                                {
+                                    //remember to destroy the nodes
+                                    //delete the copies of the objects
+                                    foreach (Node node in nodesToMove)
+                                    {
+                                        GameObject objToDelete = GameObject.Find(node.ToString() + "Copytemp(Clone)");
+
+                                        //destroying the object
+                                        Destroy(objToDelete);
+
+                                        yield return new WaitForSeconds(creationDelay);
+                                    }
+
+                                    placeholder.text = "Could not add node!";
+                                    placeholder.color = Color.red;
+                                }
+                            }
+                            else
+                            {
+                                placeholder.text = "Could not add node!";
+                                placeholder.color = Color.red;
+                            }
+                        }
+                    } 
+                }
+
+                ////create a copy of the old parent node for later
+                //Node parentNodeCopy = parentNode.Copy();
+                else
+                {
+                    placeholder.text = "Could not add node!";
+                    placeholder.color = Color.red;
+                }
+
+                //reset the list of objects
+                listOfObjects.Clear();
+            }
+
+            //if the command is a Move command and consists of 6 words, ex: Move compound cube_1 left by 2
+            else if (words.Length == 6 && flag == 5)
+            {
+                //rotations stay the same
+
+                Boolean collisions = false;
+
+                //the parent node
+                string parent = words[2];
+
+                //creating the parent node
+                Node parentNode = new Node(parent);
+
+                //storing the preposition
+                string preposition = words[3];
+
+                //setting the preposition
+                parentNode.setPreposition(preposition);
+
+                //setting the spacing
+                parentNode.setSpacing(words[5]);
+
+                string[] objectTypeWithNo = parent.Split(new[] { '_' }, StringSplitOptions.RemoveEmptyEntries);
+
+                //setting the object type
+                parentNode.setObjectType(objectTypeWithNo[0]);
+
+                //the name of the node that will be the new parent
+                string newParent = words[4];
+
+                //creating the new parent node
+                Node newParentNode = new Node(newParent);
+
+                string[] objectTypeWithNo1 = parent.Split(new[] { '_' }, StringSplitOptions.RemoveEmptyEntries);
+
+                //setting the object type
+                newParentNode.setObjectType(objectTypeWithNo1[0]);
+
+                //create a temporary tree and recalculate the coordinates
+                //create a copy of the current Tree
+                IDictionary<Node, Node[]> tempTree = TreeSet.ToDictionary(entry => entry.Key, entry => entry.Value);
+
+                //check that the object to be moved exists
+                Boolean resultCheckExistParent = checkExist(TreeSet, parentNode);
+
+                if (resultCheckExistParent)//if the parent object exists
+                {
+                    //check that the object to be moved to exists
+                    Boolean resultCheckExistParentNew = checkExist(TreeSet, newParentNode);
+
+                    if (resultCheckExistParentNew)//if the new parent object exists
+                    {
+                        //break relations with other nodes for the parentNode
+                        tempTree = removeNodeAsChild(tempTree, parentNode);
+
+                        //if the newParentNode is a child of parentNode, we break it
+                        foreach (KeyValuePair<Node, Node[]> entry in tempTree)
+                        {
+                            //if the current node is equal to the parentNode
+                            if (entry.Key.ToString().Equals(parentNode.ToString()))
+                            {
+                                Node[] children = tempTree[entry.Key];
+
+                                //if the newParentNode is a child of the tempTree
+                                if (children.Any(x => x.ToString().Equals(newParentNode.ToString())))
+                                {
+                                    //break relations with other nodes for the parentNode
+                                    tempTree = removeNodeAsChild(tempTree, newParentNode);
+                                }
+                            }
+                        }
+
+                        //add the new relationships, the parentNode coordinates have changed
+                        tempTree = changeTreeRelations(tempTree, newParentNode, parentNode);
+
+                        //List to store all the nodes involved
+                        List<Node> nodesToMove = new List<Node>();
+
+                        //add the parentNode as the start
+                        foreach (KeyValuePair<Node, Node[]> entry in tempTree)
+                        {
+                            //first thing to do is spawn the parent
+                            if (entry.Key.ToString().Equals(parentNode.ToString()))
+                            {
+                                Node newNodeCopy = entry.Key.CopyDeep();
+                                nodesToMove.Add(newNodeCopy);
+                            }
+                        }
+
+                        //get all the objects involved through iteration-----
+
+                        //start with the children of the parentNode
+                        Node[] temp = null;
+
+                        foreach (KeyValuePair<Node, Node[]> entry in tempTree)
+                        {
+                            //if the current node is equal to the parentNode
+                            if (entry.Key.ToString().Equals(parentNode.ToString()))
+                            {
+                                //intialise the temp
+                                temp = tempTree[entry.Key];
+                            }
+                        }
+
+                        //getting the first nodes from the array
+                        foreach (Node tempNode in temp)
+                        {
+                            Node newNodeCopy = tempNode.CopyDeep();
+                            nodesToMove.Add(newNodeCopy);
+                        }
+
+                        //list used to compare and check if any new nodes have been added
+                        List<Node> nodesToMoveCopy = new List<Node>(nodesToMove);
+
+                        Boolean repeat = true;
+
+                        while (repeat)
+                        {
+                            foreach (Node tNode in nodesToMove)
+                            {
+                                Node[] temporary = null;
+
+                                //get the children and add them to the list
+                                foreach (KeyValuePair<Node, Node[]> entry in tempTree)
+                                {
+                                    //if the current node is equal to the parentNode
+                                    if (entry.Key.ToString().Equals(tNode.ToString()))
+                                    {
+                                        //intialise the temp
+                                        temporary = tempTree[entry.Key];
+                                    }
+                                }
+
+                                //check if it has children
+                                foreach (Node tempNode in temporary)
+                                {
+                                    //check if the nodes are not already in the list
+                                    Boolean checkNode = nodesToMove.Any(x => x.ToString().Equals(tempNode.ToString()));
+
+
+                                    if (checkNode == false)
+                                    {
+                                        Node newNodeCopy = tempNode.CopyDeep();
+                                        nodesToMoveCopy.Add(newNodeCopy);//add the new children (if any)
+                                    }
+
+                                }
+                            }
+
+                            if (nodesToMove.Count == nodesToMoveCopy.Count)
+                            {
+                                repeat = false;
+                            }
+                            else
+                            {
+                                //update the list with the new Nodes
+                                nodesToMove = new List<Node>(nodesToMoveCopy);
+                                repeat = true;
+                            }
+                        }
+
+                        //update the list of objects that are exempt from collisions
+                        foreach (Node node in nodesToMove)
+                        {
+                            listOfObjects.Add(node.ToString());
+                        }
+
+                        //calculate the coordinates of the gameobjects
+                        nodesToMove = setCoordinatesCompound(tempTree, nodesToMove);
+
+                        //check that the new coordinates are not the same as the old coordinates
+                        GameObject objOld = GameObject.Find(parentNode.ToString() + "temp(Clone)");
+
+                        //current position of the object
+                        Vector3 currentPosition = objOld.transform.position;
+
+                        float x = parentNode.returnX();
+                        float y = parentNode.returnY();
+                        float z = parentNode.returnZ();
+
+                        if (currentPosition != new Vector3(x, y, z))
+                        { //if they are not equal
+                          //check that the object to be moved exists
+                            Boolean resultCheckExist = checkExist(TreeSet, parentNode);
+
+                            if (resultCheckExist)//if the object exists
+                            {
+                                Boolean create = true;
+
+                                //loop through the nodes to be moved
+                                foreach (Node node in nodesToMove)
+                                {
+                                    Node nodeCopy = node.CopyDeep();
+
+                                    //change name as it is a temporary duplicate
+                                    nodeCopy.setValue(node.ToString() + "Copy");
+
+                                    //check that the nodes can be moved
+                                    StartCoroutine(checkSceneCollidersParent(nodeCopy));
+
+                                    yield return new WaitForSeconds(creationDelay);//handing control to Update()
+
+                                    if (found == true)//the node can be moved
+                                    {
+                                        found = false;//reset the found flag
+
+                                        create = true;//boolean to see if there are collisions in all children
+                                    }
+                                    else
+                                    {
+                                        //the objects will not be moved as there is a collision
+                                        create = false;
+
+                                        placeholder.text = "Could not add node!";
+                                        placeholder.color = Color.red;
+
+                                        break;
+                                    }
+                                }
+
+                                //if there are no collisions at all
+                                if (create == true)
+                                {
+                                    //the objects can be moved
+
+                                    //delete the copies of the objects
+                                    foreach (Node node in nodesToMove)
+                                    {
+                                        GameObject objToDelete = GameObject.Find(node.ToString() + "Copytemp(Clone)");
+
+                                        //destroying the object
+                                        Destroy(objToDelete);
+
+                                        yield return new WaitForSeconds(creationDelay);
+
+                                        ////find the object
+                                        //String originalObject = node.ToString().Replace("Copy", "");
+
+                                        GameObject objToUpdate = GameObject.Find(node.ToString() + "temp(Clone)");
+                                        objToUpdate.transform.position = new Vector3(node.returnX(), node.returnY(), node.returnZ());
+
+                                        yield return new WaitForSeconds(creationDelay);
+
+                                        //find the created
+                                        if (GameObject.Find(node.ToString() + "(Clone)"))
+                                        {
+                                            GameObject objToMove = GameObject.Find(node.ToString() + "(Clone)");
+                                            objToMove.transform.position = new Vector3(node.returnX(), node.returnY(), node.returnZ());
+
+                                            yield return new WaitForSeconds(creationDelay);
+                                        }
+                                    }
+
+                                    //update the Tree
+                                    TreeSet = tempTree;
+                                }
+                                else
+                                {
+                                    //remember to destroy the nodes
+                                    //delete the copies of the objects
+                                    foreach (Node node in nodesToMove)
+                                    {
+                                        GameObject objToDelete = GameObject.Find(node.ToString() + "Copytemp(Clone)");
+
+                                        //destroying the object
+                                        Destroy(objToDelete);
+
+                                        yield return new WaitForSeconds(creationDelay);
+                                    }
+
+                                    placeholder.text = "Could not add node!";
+                                    placeholder.color = Color.red;
+                                }
+                            }
+                            else
+                            {
+                                placeholder.text = "Could not add node!";
+                                placeholder.color = Color.red;
+                            }
+                        }
+                    }
+                }
+
+                ////create a copy of the old parent node for later
+                //Node parentNodeCopy = parentNode.Copy();
+                else
+                {
+                    placeholder.text = "Could not add node!";
+                    placeholder.color = Color.red;
+                }
+
+                //reset the list of objects
+                listOfObjects.Clear();
+            }
+
+            //if the command is a Move simple command and consists of 5 words, ex: Move simple cube_1 to 2,0,0
+            else if (words.Length == 5 && flag == 5)
+            {
+
+                //the parent node
+                string parent = words[2];
+
+                //creating the parent node
+                Node parentNode = new Node(parent);
+
+                //getting the object and removing the number from it, Tree_1 -> Tree, 1
+                string[] objectTypeWithNo = words[2].Split(new[] { '_' }, StringSplitOptions.RemoveEmptyEntries);
+
+                //setting the object type 
+                parentNode.setObjectType(objectTypeWithNo[0]);
+
+                //getting the string of the coordinates, ex: 2,0,0
+                string coordinates = words[4];
+
+                //contains the coordinates 
+                string[] coordinatesXYZ = { };
+
+                //split the string into x, y and z coordinates
+                coordinatesXYZ = coordinates.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+
+                //float coordinates array
+                float[] coords = coordinatesXYZ.Select(float.Parse).ToArray();
+
+                //copy of the node
+                Node copyNode = null;
+
+                //check the rotations of the gameobject
+                foreach (KeyValuePair<Node, Node[]> entry in TreeSet)
+                {
+                    //if the current node is equal to the required node
+                    if (entry.Key.ToString().Equals(parentNode.ToString()))
+                    {
+                        copyNode = entry.Key.CopyDeep();
+                    }
+                }
+
+                if (copyNode.getRotationX() != 0 || copyNode.getRotationZ() != 0)
+                {
+                    coords[1] = copyNode.returnY();
+                }
+                else
+                {
+                    //get reference to the gameObject of the node
+                    GameObject obj = parentNode.getObjectTrue();
+
+                    //get the dimensions of the gameObject
+                    Vector3 size = obj.transform.localScale;
+
+                    //given that the unity coordinates are calculated on the centre of the object,
+                    //we need to add half of the object's height to the 'y' coordinate such that
+                    //the bottom of the object touches the ground
+                    coords[1] = coords[1] + ((size.y) / 2);
+                }
+
+                //setting the coordinates
+                parentNode.setCoordinates(coords);
+
+                //create a temporary tree and recalculate the coordinates
+                //create a copy of the current Tree
+                IDictionary<Node, Node[]> tempTree = TreeSet.ToDictionary(entry => entry.Key, entry => entry.Value);
+
+                //check that the object to be moved exists
+                Boolean resultCheckExist = checkExist(TreeSet, parentNode);
+
+                if (resultCheckExist)//if the parent object exists
+                {
+                    //break relationship with parent
+                    tempTree = removeNodeAsChild(tempTree, parentNode);
+
+                    //remove children since it is a simple
+                    tempTree = removeChildren(tempTree, parentNode);
+
+                    //change the coordinates of the parent
+                    changeTreeCoordinates(tempTree, parentNode);
+
+                    Node nodeReference = null;
+
+                    //add the parentNode as the start
+                    foreach (KeyValuePair<Node, Node[]> entry in tempTree)
+                    {
+                        //first thing to do is spawn the parent
+                        if (entry.Key.ToString().Equals(parentNode.ToString()))
+                        {
+                            nodeReference = entry.Key.Copy();
+                        }
+                    }
+
+                    //update the list of objects that are exempt from collisions
+                    listOfObjects.Add(nodeReference.ToString());
+
+                    //check that the new coordinates are not the same as the old coordinates
+                    GameObject objOld = GameObject.Find(parentNode.ToString() + "temp(Clone)");
+
+                    //current position of the object
+                    Vector3 currentPosition = objOld.transform.position;
+
+                    float x = parentNode.returnX();
+                    float y = parentNode.returnY();
+                    float z = parentNode.returnZ();
+
+
+                    if (currentPosition != new Vector3(x, y, z))
+                    { //if they are not equal
+                      ////check that the object to be moved exists
+                      //Boolean resultCheckExist = checkExist(TreeSet, parentNode);
+
+                        if (resultCheckExist)//if the object exists
+                        {
+                            Boolean create = true;
+
+                            //change name as it is a temporary duplicate
+                            nodeReference.setValue(nodeReference.ToString() + "Copy");
+
+                            //check that the nodes can be moved
+                            StartCoroutine(checkSceneCollidersParent(nodeReference));
+
+                            yield return new WaitForSeconds(creationDelay);//handing control to Update()
+
+                            if (found == true)//the node can be moved
+                            {
+                                found = false;//reset the found flag
+
+                                create = true;//boolean to see if there are collisions in all children
+                            }
+                            else
+                            {
+                                //the objects will not be moved as there is a collision
+                                create = false;
+
+                                placeholder.text = "Could not add node!";
+                                placeholder.color = Color.red;
+                            }
+
+                            //if there are no collisions at all
+                            if (create == true)
+                            {
+                                //the objects can be moved
+
+                                GameObject objToDelete = GameObject.Find(nodeReference.ToString() + "temp(Clone)");
+
+                                //destroying the object
+                                Destroy(objToDelete);
+
+                                yield return new WaitForSeconds(creationDelay);
+
+                                //find the object
+                                String originalObject = nodeReference.ToString().Replace("Copy", "");
+
+                                GameObject objToUpdate = GameObject.Find(originalObject + "temp(Clone)");
+                                objToUpdate.transform.position = new Vector3(nodeReference.returnX(), nodeReference.returnY(), nodeReference.returnZ());
+
+                                yield return new WaitForSeconds(creationDelay);
+
+                                //find the created
+                                if (GameObject.Find(originalObject + "(Clone)"))
+                                {
+                                    GameObject objToMove = GameObject.Find(originalObject + "(Clone)");
+                                    objToMove.transform.position = new Vector3(nodeReference.returnX(), nodeReference.returnY(), nodeReference.returnZ());
+
+                                    yield return new WaitForSeconds(creationDelay);
+                                }
+
+                                //update the Tree
+                                TreeSet = tempTree;
+                            }
+                            else
+                            {
+                                //remember to destroy the nodes
+                                GameObject objToDelete = GameObject.Find(nodeReference.ToString() + "temp(Clone)");
+
+                                //destroying the object
+                                Destroy(objToDelete);
+
+                                yield return new WaitForSeconds(creationDelay);
+
+                                placeholder.text = "Could not add node!";
+                                placeholder.color = Color.red;
+                            }
+                        }
+                        else
+                        {
+                            placeholder.text = "Could not add node!";
+                            placeholder.color = Color.red;
+                        }
+                    }
+                }
+
+                ////create a copy of the old parent node for later
+                //Node parentNodeCopy = parentNode.Copy();
+                else
+                {
+                    placeholder.text = "Could not add node!";
+                    placeholder.color = Color.red;
+                }
+
+                //reset the list of objects
+                listOfObjects.Clear();
+            }
+
+            //if the command is a Move simple command and consists of 5 words, ex: Move simple cube_1 on cube_3
+            else if (words.Length == 5 && flag == 6)
+            {
+                //the parent node
+                string parent = words[2];
+
+                //creating the parent node
+                Node parentNode = new Node(parent);
+
+                //storing the preposition
+                string preposition = words[3];
+
+                //setting the preposition
+                parentNode.setPreposition(preposition);
+
+                //the name of the node that will be the new parent
+                string newParent = words[4];
+
+                //creating the new parent node
+                Node newParentNode = new Node(newParent);
+
+                //create a temporary tree and recalculate the coordinates
+                //create a copy of the current Tree
+                IDictionary<Node, Node[]> tempTree = TreeSet.ToDictionary(entry => entry.Key, entry => entry.Value);
+
+                //check that the object to be moved exists
+                Boolean resultCheckExistParent = checkExist(TreeSet, parentNode);
+
+                if (resultCheckExistParent)//if the parent object exists
+                {
+                    //check that the object to be moved to exists
+                    Boolean resultCheckExistParentNew = checkExist(TreeSet, newParentNode);
+
+                    if (resultCheckExistParentNew)//if the new parent object exists
+                    {
+                        //break relations with other nodes for the parentNode
+                        tempTree = removeNodeAsChild(tempTree, parentNode);
+
+                        //remove children since it is a simple
+                        tempTree = removeChildren(tempTree, parentNode);
+
+                        //add the new records and change coordinates for the parent
+                        tempTree = changeTreeRelations(tempTree, newParentNode, parentNode);
+
+                        Node nodeReference = null;
+
+                        //add the parentNode as the start
+                        foreach (KeyValuePair<Node, Node[]> entry in tempTree)
+                        {
+                            //first thing to do is spawn the parent
+                            if (entry.Key.ToString().Equals(parentNode.ToString()))
+                            {
+                                nodeReference = entry.Key.Copy();
+                            }
+                        }
+
+                        //update the list of objects that are exempt from collisions
+                        listOfObjects.Add(nodeReference.ToString());
+
+                        //check that the new coordinates are not the same as the old coordinates
+                        GameObject objOld = GameObject.Find(parentNode.ToString() + "temp(Clone)");
+
+                        //current position of the object
+                        Vector3 currentPosition = objOld.transform.position;
+
+                        float x = parentNode.returnX();
+                        float y = parentNode.returnY();
+                        float z = parentNode.returnZ();
+
+
+                        if (currentPosition != new Vector3(x, y, z))
+                        { //if they are not equal
+                          ////check that the object to be moved exists
+                          //Boolean resultCheckExist = checkExist(TreeSet, parentNode);
+
+                            if (resultCheckExistParent)//if the object exists
+                            {
+                                Boolean create = true;
+
+                                //change name as it is a temporary duplicate
+                                nodeReference.setValue(nodeReference.ToString() + "Copy");
+
+                                //check that the nodes can be moved
+                                StartCoroutine(checkSceneCollidersParent(nodeReference));
+
+                                yield return new WaitForSeconds(creationDelay);//handing control to Update()
+
+                                if (found == true)//the node can be moved
+                                {
+                                    found = false;//reset the found flag
+
+                                    create = true;//boolean to see if there are collisions in all children
+                                }
+                                else
+                                {
+                                    //the objects will not be moved as there is a collision
+                                    create = false;
+
+                                    placeholder.text = "Could not add node!";
+                                    placeholder.color = Color.red;
+                                }
+
+                                //if there are no collisions at all
+                                if (create == true)
+                                {
+                                    //the objects can be moved
+
+                                    GameObject objToDelete = GameObject.Find(nodeReference.ToString() + "temp(Clone)");
+
+                                    //destroying the object
+                                    Destroy(objToDelete);
+
+                                    yield return new WaitForSeconds(creationDelay);
+
+                                    //find the object
+                                    String originalObject = nodeReference.ToString().Replace("Copy", "");
+
+                                    GameObject objToUpdate = GameObject.Find(originalObject + "temp(Clone)");
+                                    objToUpdate.transform.position = new Vector3(nodeReference.returnX(), nodeReference.returnY(), nodeReference.returnZ());
+
+                                    yield return new WaitForSeconds(creationDelay);
+
+                                    //find the created
+                                    if (GameObject.Find(originalObject + "(Clone)"))
+                                    {
+                                        GameObject objToMove = GameObject.Find(originalObject + "(Clone)");
+                                        objToMove.transform.position = new Vector3(nodeReference.returnX(), nodeReference.returnY(), nodeReference.returnZ());
+
+                                        yield return new WaitForSeconds(creationDelay);
+                                    }
+
+                                    //update the Tree
+                                    TreeSet = tempTree;
+                                }
+                                else
+                                {
+                                    //remember to destroy the nodes
+                                    GameObject objToDelete = GameObject.Find(nodeReference.ToString() + "temp(Clone)");
+
+                                    //destroying the object
+                                    Destroy(objToDelete);
+
+                                    yield return new WaitForSeconds(creationDelay);
+
+                                    placeholder.text = "Could not add node!";
+                                    placeholder.color = Color.red;
+                                }
+                            }
+                            else
+                            {
+                                placeholder.text = "Could not add node!";
+                                placeholder.color = Color.red;
+                            }
+                        }
+                    }
+                }
+
+                ////create a copy of the old parent node for later
+                //Node parentNodeCopy = parentNode.Copy();
+                else
+                {
+                    placeholder.text = "Could not add node!";
+                    placeholder.color = Color.red;
+                }
+
+                //reset the list of objects
+                listOfObjects.Clear();
+            }
+
+
+
             //if the command is a Change color command and consists of 4 words, ex: Change cube_1 to red
-            else if (words.Length == 4 && flag == 4)
+            else if (words.Length == 4 && flag == 7)
             {
                 //the object to change
                 string objectToChange = words[1];
@@ -1523,12 +2221,10 @@ public class Test : MonoBehaviour
                 }
             }
 
-            //if the command is a (Simple) Rotate command, ex: Rotate simple table_1 by 180
-            else if (words.Length == 5 && flag == 5)
+            //if the command is a (Simple) Rotate command, ex: RotateY simple table_1 by 90
+            else if (words.Length == 5 && flag == 8)
             {
                 //check on which axis it is being rotated
-
-                Boolean collisions = false;
 
                 //the parent node name
                 string parent = words[2];
@@ -1564,20 +2260,27 @@ public class Test : MonoBehaviour
                     currentRotation = currentRotation % 360;
 
                     //rotation to be
-                    float futureRotation = currentRotation + rotationInteger;
+                    float futureRotation = (currentRotation + rotationInteger) % 360;
 
                     //check if they are the same
                     if (currentRotation != futureRotation) {
 
-                        //setting the rotation
-                        parentNode.setRotation(rotationInteger);
+                        //setting the rotation on the Y axis
+                        parentNode.setRotationY(futureRotation);
+
+                        //keep the other rotations the same
+                        parentNode.setRotationX(currentRotationQuaternion.eulerAngles.x);
+                        parentNode.setRotationZ(currentRotationQuaternion.eulerAngles.z);
 
                         //create a temporary tree and recalculate the rotation
                         //create a copy of the current Tree
                         IDictionary<Node, Node[]> tempTree = TreeSet.ToDictionary(entry => entry.Key, entry => entry.Value);
 
-                        //change the rotation of the parentNode
-                        changeTreeRotations(tempTree, parentNode);
+                        //if the node has children, remove the relationships
+                        tempTree = removeChildren(tempTree, parentNode);
+
+                        //change the rotation of the parentNode in the Tree datastructure
+                        changeTreeRotationsY(tempTree, parentNode);
 
                         //get the node from the temptree with coordinates, object type etc.
                         foreach (KeyValuePair<Node, Node[]> entry in tempTree)
@@ -1586,7 +2289,7 @@ public class Test : MonoBehaviour
                             if (entry.Key.ToString().Equals(parentNode.ToString()))
                             {
                                 //create a copy and add it to the list
-                                parentNode = entry.Key.Copy();
+                                parentNode = entry.Key.CopyDeep();
                             }
                         }
 
@@ -1631,7 +2334,7 @@ public class Test : MonoBehaviour
                             String originalObject = parentNode.ToString().Replace("Copy", "");
 
                             GameObject objToUpdate = GameObject.Find(originalObject + "temp(Clone)");
-                            objToUpdate.transform.rotation = Quaternion.Euler(0f, parentNode.getRotation(), 0f);
+                            objToUpdate.transform.rotation = Quaternion.Euler(parentNode.getRotationX(), parentNode.getRotationY(), parentNode.getRotationZ());
 
                             yield return new WaitForSeconds(creationDelay);
 
@@ -1639,7 +2342,7 @@ public class Test : MonoBehaviour
                             if (GameObject.Find(originalObject + "(Clone)"))
                             {
                                 GameObject objToMove = GameObject.Find(originalObject + "(Clone)");
-                                objToMove.transform.rotation = Quaternion.Euler(0f, parentNode.getRotation(), 0f);
+                                objToMove.transform.rotation = Quaternion.Euler(parentNode.getRotationX(), parentNode.getRotationY(), parentNode.getRotationZ());
 
                                 yield return new WaitForSeconds(creationDelay);
                             }
@@ -1649,6 +2352,14 @@ public class Test : MonoBehaviour
                         }
                         else
                         {
+                            //destroy the copy gameobject
+                            GameObject objToDelete = GameObject.Find(parentNode.ToString() + "temp(Clone)");
+
+                            //destroying the object
+                            Destroy(objToDelete);
+
+                            yield return new WaitForSeconds(creationDelay);
+
                             placeholder.text = "Could not add node!";
                             placeholder.color = Color.red;
                         }
@@ -1664,11 +2375,10 @@ public class Test : MonoBehaviour
                 listOfObjects.Clear();
             }
 
-            //if the command is a (Compound) Rotate command, ex: Rotate compound table_1 by 180
-            else if (words.Length == 5 && flag == 6)
+            //if the command is a (Compound) Rotate command, ex: RotateY compound table_1 by 180
+            else if (words.Length == 5 && flag == 9)
             {
                 //check on which axis it is being rotated
-
                 Boolean collisions = false;
 
                 //the parent node name
@@ -1702,54 +2412,63 @@ public class Test : MonoBehaviour
                     currentRotation = currentRotation % 360;
 
                     //rotation to be
-                    float futureRotation = currentRotation + rotationInteger;
+                    float futureRotation = (currentRotation + rotationInteger) % 360;
 
                     //check if they are the same
                     if (currentRotation != futureRotation)
                     {
+                        //setting the rotation on the Y axis
+                        parentNode.setRotationY(futureRotation);
 
-                        //setting the rotation
-                        parentNode.setRotation(rotationInteger);
+                        //setting the other rotations as they were
+                        parentNode.setRotationX(currentRotationQuaternion.eulerAngles.x);
+                        parentNode.setRotationZ(currentRotationQuaternion.eulerAngles.z);
 
                         //create a temporary tree and recalculate the rotation
                         //create a copy of the current Tree
                         IDictionary<Node, Node[]> tempTree = TreeSet.ToDictionary(entry => entry.Key, entry => entry.Value);
 
                         //change the rotation of the parentNode
-                        changeTreeRotations(tempTree, parentNode);
-
-                        //calculate the new rotations
-                        setRotations(tempTree);
+                        changeTreeRotationsY(tempTree, parentNode);
 
                         //List to store all the nodes involved
                         List<Node> nodesToRotate = new List<Node>();
 
-                        //add the parentNode
+                        //add the parentNode as the start
                         foreach (KeyValuePair<Node, Node[]> entry in tempTree)
                         {
-                            //check the name of each node
+                            //first thing to do is spawn the parent
                             if (entry.Key.ToString().Equals(parentNode.ToString()))
                             {
-                                //create a copy and add it to the list
-                                Node newNodeCopy = entry.Key.Copy();
+                                Node newNodeCopy = entry.Key.CopyDeep();
                                 nodesToRotate.Add(newNodeCopy);
                             }
                         }
 
-                        //get all the objects involved through iteration
+                        //get all the objects involved through iteration-----
 
                         //start with the children of the parentNode
-                        Node[] temp = tempTree[parentNode];
+                        Node[] temp = null;
+
+                        foreach (KeyValuePair<Node, Node[]> entry in tempTree)
+                        {
+                            //if the current node is equal to the parentNode
+                            if (entry.Key.ToString().Equals(parentNode.ToString()))
+                            {
+                                //intialise the temp
+                                temp = tempTree[entry.Key];
+                            }
+                        }
 
                         //getting the first nodes from the array
                         foreach (Node tempNode in temp)
                         {
-                            Node newNodeCopy = tempNode.Copy();
+                            Node newNodeCopy = tempNode.CopyDeep();
                             nodesToRotate.Add(newNodeCopy);
                         }
 
-                        //list to compare
-                        List<Node> nodesToMoveCopy = new List<Node>(nodesToRotate);
+                        //list used to compare and check if any new nodes have been added
+                        List<Node> nodesToRotateCopy = new List<Node>(nodesToRotate);
 
                         Boolean repeat = true;
 
@@ -1768,48 +2487,91 @@ public class Test : MonoBehaviour
 
                                     if (checkNode == false)
                                     {
-                                        Node newNodeCopy = tempNode.Copy();
-                                        nodesToMoveCopy.Add(newNodeCopy);//add the new children (if any)
+                                        Node newNodeCopy = tempNode.CopyDeep();
+                                        nodesToRotateCopy.Add(newNodeCopy);//add the new children (if any)
                                     }
 
                                 }
                             }
 
-                            if (nodesToRotate.Count == nodesToMoveCopy.Count)
+                            if (nodesToRotate.Count == nodesToRotateCopy.Count)
                             {
                                 repeat = false;
                             }
                             else
                             {
                                 //update the list with the new Nodes
-                                nodesToRotate = new List<Node>(nodesToMoveCopy);
+                                nodesToRotate = new List<Node>(nodesToRotateCopy);
                                 repeat = true;
                             }
                         }
 
+                        //update the list of objects that are exempt from collisions
+                        foreach (Node node in nodesToRotate)
+                        {
+                            listOfObjects.Add(node.ToString());
+                        }
 
                         Boolean create = true;
 
-                        //loop through the nodes to be moved
-
+                        //loop through the nodes to be rotated
                         foreach (Node node in nodesToRotate)
                         {
+                            //get the children of the node, so their coords and rotations are updated
+                            Node[] children = null;
+
+                            //get the children and add them to the list
+                            foreach (KeyValuePair<Node, Node[]> entry in tempTree)
+                            {
+                                //if the current node is equal to the parentNode
+                                if (entry.Key.ToString().Equals(node.ToString()))
+                                {
+                                    //intialise the temp
+                                    children = tempTree[entry.Key];
+                                }
+                            }
+
+                            //copy of the node
+                            Node nodeCopy = node.CopyDeep();
+
                             //change name as it is a temporary duplicate
                             node.setValue(node.ToString() + "Copy");
 
                             //check that the nodes can be moved
                             StartCoroutine(checkSceneCollidersParent(node));
 
-                            yield return new WaitForSeconds(creationDelay);//handing control to Update()
+                            //handing control to Update()
+                            yield return new WaitForSeconds(creationDelay);
 
-                            if (found == true)//the node can be moved
+                            //the parent object is created
+
+                            if (found == true)//the node can be rotated
                             {
                                 found = false;//reset the found flag
 
                                 create = true;//boolean to see if there are collisions in all children
+
+                                //iterating through the children so that they are updated
+                                foreach (Node childNode in children)
+                                {
+                                    //for each node, calculate the rotations and coordinates of their children
+                                    calculatePrepositionCoordinatesAndRotations(nodeCopy, childNode, rotationInteger);
+
+                                    //update the nodes in nodesToRotate
+                                    foreach (Node nodeToChange in nodesToRotate) {
+                                        //check if they have the same key
+                                        if (nodeToChange.ToString().Equals(childNode.ToString())) {
+                                            //update the nodes
+                                            nodeToChange.setCoordinates(childNode.getCoordinatesFloat());
+                                            nodeToChange.setRotationY(childNode.getRotationY());
+                                        }
+                                    }
+                                }
                             }
                             else
                             {
+                                
+
                                 //the objects will not be moved as there is a collision
                                 create = false;
 
@@ -1839,7 +2601,8 @@ public class Test : MonoBehaviour
                                 String originalObject = node.ToString().Replace("Copy", "");
 
                                 GameObject objToUpdate = GameObject.Find(originalObject + "temp(Clone)");
-                                objToUpdate.transform.rotation = Quaternion.Euler(0f, node.getRotation(), 0f);
+                                objToUpdate.transform.rotation = Quaternion.Euler(node.getRotationX(), node.getRotationY(), node.getRotationZ());
+                                objToUpdate.transform.position = new Vector3(node.returnX(), node.returnY(), node.returnZ());
 
                                 yield return new WaitForSeconds(creationDelay);
 
@@ -1847,7 +2610,8 @@ public class Test : MonoBehaviour
                                 if (GameObject.Find(originalObject + "(Clone)"))
                                 {
                                     GameObject objToMove = GameObject.Find(originalObject + "(Clone)");
-                                    objToMove.transform.rotation = Quaternion.Euler(0f, node.getRotation(), 0f);
+                                    objToMove.transform.rotation = Quaternion.Euler(node.getRotationX(), node.getRotationY(), node.getRotationZ());
+                                    objToMove.transform.position = new Vector3(node.returnX(), node.returnY(), node.returnZ());
 
                                     yield return new WaitForSeconds(creationDelay);
                                 }
@@ -1858,6 +2622,18 @@ public class Test : MonoBehaviour
                         }
                         else
                         {
+                            //remember to destroy the nodes
+                            //delete the copies of the objects
+                            foreach (Node node in nodesToRotate)
+                            {
+                                GameObject objToDelete = GameObject.Find(node.ToString() + "temp(Clone)");
+
+                                //destroying the object
+                                Destroy(objToDelete);
+
+                                yield return new WaitForSeconds(creationDelay);
+                            }
+
                             placeholder.text = "Could not add node!";
                             placeholder.color = Color.red;
                         }
@@ -1870,221 +2646,463 @@ public class Test : MonoBehaviour
                     placeholder.text = "Could not add node!";
                     placeholder.color = Color.red;
                 }
+
+                //reset the list of objects
+                listOfObjects.Clear();
             }
 
-            //if the command is a Rotate command, ex: Rotate left table_1 by 90
-            else if (words.Length == 5 && flag == 5)
+            //if the command is a Rotate command, ex: RotateX simple table_1 by 90
+            else if (words.Length == 5 && flag == 10)
             {
+
+                //the parent node name
+                string parent = words[2];
+
+                //Add to the list of exempt objects
+                listOfObjects.Add(parent);
+
+                //creating the parent node
+                Node parentNode = new Node(parent);
+
+                //check if the object to be rotated exists
+                Boolean checkObjectExist = checkExist(Tree, parentNode);
+
+                //if the object exists
+                if (checkObjectExist)
+                {
+                    //getting the rotation ex: 180
+                    string rotation = words[4];
+
+                    //normalise the rotation
+                    float rotationInteger = float.Parse(rotation) % 360;
+
+                    //get the current rotation of the gameobject
+                    GameObject obj = GameObject.Find(parentNode.ToString() + "temp(Clone)");
+
+                    //get the dimensions of the gameObject
+                    Vector3 size = obj.transform.localScale;
+
+                    //iterate through the tree
+                    foreach (KeyValuePair<Node, Node[]> entry in TreeSet)
+                    {
+                        //check the name of each node
+                        if (entry.Key.ToString().Equals(parentNode.ToString()))
+                        {
+                            //create a copy and add it to the list
+                            parentNode = entry.Key.CopyDeep();
+                        }
+                    }
+
+                    //get the rotation on the x-axis only
+                    float currentRotation = parentNode.getRotationX();
+
+                    //normalise the current rotation, 450 same as 90
+                    currentRotation = currentRotation % 360;
+
+                    //rotation to be
+                    float futureRotation = (currentRotation + rotationInteger) % 360;
+
+                    //get the current coordinates of the object
+                    Vector3 coordinates = obj.transform.position;
+
+                    //check what the future rotation will be, if it is 0, 180 then reduce the height, else increase
+                    if (futureRotation == 90 || futureRotation == 270) {
+                        //given that the unity coordinates are calculated on the centre of the object,
+                        //we need to add half of the object's height to the 'y' coordinate such that
+                        //the bottom of the object touches the ground
+                        coordinates.y = coordinates.y - ((size.y) / 2) + ((size.z) / 2);
+                    }
+                    else if (futureRotation == 0 || futureRotation == 180) {
+                        //given that the unity coordinates are calculated on the centre of the object,
+                        //we need to add half of the object's height to the 'y' coordinate such that
+                        //the bottom of the object touches the ground
+                        coordinates.y = coordinates.y + ((size.y) / 2) - ((size.z) / 2);
+                    }
+
+                    //check if they are the same
+                    if (currentRotation != futureRotation)
+                    {
+                        //setting the rotation
+                        parentNode.setRotationX(futureRotation);
+
+                        //setting the coordinates
+                        float[] coordinatesFloat = new float[] {coordinates.x, coordinates.y, coordinates.z};
+                        parentNode.setCoordinates(coordinatesFloat);
+
+                        //create a temporary tree and recalculate the rotation
+                        //create a copy of the current Tree
+                        IDictionary<Node, Node[]> tempTree = TreeSet.ToDictionary(entry => entry.Key, entry => entry.Value);
+
+                        //if the node has children, remove the relationships
+                        tempTree = removeChildren(tempTree, parentNode);
+                        tempTree = removeNodeAsChild(tempTree, parentNode);
+
+                        //change the rotation and coordinates of the parentNode in the Tree datastructure
+                        changeTreeRotationsX(tempTree, parentNode);
+
+                        //get the node from the temptree with coordinates, object type etc.
+                        foreach (KeyValuePair<Node, Node[]> entry in tempTree)
+                        {
+                            //check the name of each node
+                            if (entry.Key.ToString().Equals(parentNode.ToString()))
+                            {
+                                //create a copy and add it to the list
+                                parentNode = entry.Key.CopyDeep();
+                            }
+                        }
+
+                        //flag to show if the rotation can be done or not
+                        Boolean create = true;
+
+                        //change name as it is a temporary duplicate
+                        parentNode.setValue(parentNode.ToString() + "Copy");
+
+                        //check that the nodes can be moved
+                        StartCoroutine(checkSceneCollidersParent(parentNode));
+
+                        yield return new WaitForSeconds(creationDelay);//handing control to Update()
+
+                        if (found == true)//the node can be moved
+                        {
+                            found = false;//reset the found flag
+
+                            create = true;//boolean to see if there are collisions in all children
+                        }
+                        else
+                        {
+                            //the objects will not be moved as there is a collision
+                            create = false;
+
+                            placeholder.text = "Could not add node!";
+                            placeholder.color = Color.red;
+                        }
+
+                        //if there are no collisions at all
+                        if (create == true)
+                        {
+                            //the objects can be moved
+                            GameObject objToDelete = GameObject.Find(parentNode.ToString() + "temp(Clone)");
+
+                            //destroying the object
+                            Destroy(objToDelete);
+
+                            yield return new WaitForSeconds(creationDelay);
+
+                            //find the object
+                            String originalObject = parentNode.ToString().Replace("Copy", "");
+
+                            GameObject objToUpdate = GameObject.Find(originalObject + "temp(Clone)");
+                            objToUpdate.transform.rotation = Quaternion.Euler(parentNode.getRotationX(), parentNode.getRotationY(), parentNode.getRotationZ());
+                            objToUpdate.transform.position = new Vector3(parentNode.returnX(), parentNode.returnY(), parentNode.returnZ());
+
+                            yield return new WaitForSeconds(creationDelay);
+
+                            //find the created object
+                            if (GameObject.Find(originalObject + "(Clone)"))
+                            {
+                                GameObject objToMove = GameObject.Find(originalObject + "(Clone)");
+                                objToMove.transform.rotation = Quaternion.Euler(parentNode.getRotationX(), parentNode.getRotationY(), parentNode.getRotationZ());
+                                objToMove.transform.position = new Vector3(parentNode.returnX(), parentNode.returnY(), parentNode.returnZ());
+
+                                yield return new WaitForSeconds(creationDelay);
+                            }
+
+                            //update the Tree
+                            TreeSet = tempTree;
+                        }
+                        else
+                        {
+                            //destroy the copy gameobject
+                            GameObject objToDelete = GameObject.Find(parentNode.ToString() + "temp(Clone)");
+
+                            //destroying the object
+                            Destroy(objToDelete);
+
+                            yield return new WaitForSeconds(creationDelay);
+
+                            placeholder.text = "Could not add node!";
+                            placeholder.color = Color.red;
+                        }
+                    }
+                }
+                else
+                {
+                    placeholder.text = "Could not add node!";
+                    placeholder.color = Color.red;
+                }
+
+                //reset the object list
+                listOfObjects.Clear();
+            }
+
+            //if the command is a Rotate command, ex: RotateZ simple table_1 by 90
+            else if (words.Length == 5 && flag == 11)
+            {
+                //check on which axis it is being rotated
                 Boolean collisions = false;
 
+                //the parent node name
+                string parent = words[2];
+
+                //Add to the list of exempt objects
+                listOfObjects.Add(parent);
+
+                //creating the parent node
+                Node parentNode = new Node(parent);
+
+                //check if the object to be rotated exists
+                Boolean checkObjectExist = checkExist(Tree, parentNode);
+
+                //if the object exists
+                if (checkObjectExist)
+                {
+                    //getting the rotation ex: 180
+                    string rotation = words[4];
+
+                    //normalise the rotation
+                    float rotationInteger = float.Parse(rotation) % 360;
+
+                    //get the current rotation of the gameobject
+                    GameObject obj = GameObject.Find(parentNode.ToString() + "temp(Clone)");
+
+                    //get the dimensions of the gameObject
+                    Vector3 size = obj.transform.localScale;
+
+                    //iterate through the tree
+                    foreach (KeyValuePair<Node, Node[]> entry in TreeSet)
+                    {
+                        //check the name of each node
+                        if (entry.Key.ToString().Equals(parentNode.ToString()))
+                        {
+                            //create a copy and add it to the list
+                            parentNode = entry.Key.CopyDeep();
+                        }
+                    }
+
+                    //get the rotation on the x-axis only
+                    float currentRotation = parentNode.getRotationZ();
+
+                    //normalise the current rotation, 450 same as 90
+                    currentRotation = currentRotation % 360;
+
+                    //rotation to be
+                    float futureRotation = (currentRotation + rotationInteger) % 360;
+
+                    //get the current coordinates of the object
+                    Vector3 coordinates = obj.transform.position;
+
+                    //check what the future rotation will be, if it is 0, 180 then reduce the height, else increase
+                    if (futureRotation == 90 || futureRotation == 270)
+                    {
+                        //given that the unity coordinates are calculated on the centre of the object,
+                        //we need to add half of the object's height to the 'y' coordinate such that
+                        //the bottom of the object touches the ground
+                        coordinates.y = coordinates.y - ((size.y) / 2) + ((size.x) / 2);
+                    }
+                    else if (futureRotation == 0 || futureRotation == 180)
+                    {
+                        //given that the unity coordinates are calculated on the centre of the object,
+                        //we need to add half of the object's height to the 'y' coordinate such that
+                        //the bottom of the object touches the ground
+                        coordinates.y = coordinates.y + ((size.y) / 2) - ((size.x) / 2);
+                    }
+
+                    //check if they are the same
+                    if (currentRotation != futureRotation)
+                    {
+                        //setting the rotation
+                        parentNode.setRotationZ(futureRotation);
+
+                        //setting the coordinates
+                        float[] coordinatesFloat = new float[] { coordinates.x, coordinates.y, coordinates.z };
+                        parentNode.setCoordinates(coordinatesFloat);
+
+                        //create a temporary tree and recalculate the rotation
+                        //create a copy of the current Tree
+                        IDictionary<Node, Node[]> tempTree = TreeSet.ToDictionary(entry => entry.Key, entry => entry.Value);
+
+                        //if the node has children, remove the relationships
+                        tempTree = removeChildren(tempTree, parentNode);
+                        tempTree = removeNodeAsChild(tempTree, parentNode);
+
+                        //change the rotation and coordinates of the parentNode in the Tree datastructure
+                        changeTreeRotationsZ(tempTree, parentNode);
+
+                        //get the node from the temptree with coordinates, object type etc.
+                        foreach (KeyValuePair<Node, Node[]> entry in tempTree)
+                        {
+                            //check the name of each node
+                            if (entry.Key.ToString().Equals(parentNode.ToString()))
+                            {
+                                //create a copy and add it to the list
+                                parentNode = entry.Key.CopyDeep();
+                            }
+                        }
+
+                        //flag to show if the rotation can be done or not
+                        Boolean create = true;
+
+                        //change name as it is a temporary duplicate
+                        parentNode.setValue(parentNode.ToString() + "Copy");
+
+                        //check that the nodes can be moved
+                        StartCoroutine(checkSceneCollidersParent(parentNode));
+
+                        yield return new WaitForSeconds(creationDelay);//handing control to Update()
+
+                        if (found == true)//the node can be moved
+                        {
+                            found = false;//reset the found flag
+
+                            create = true;//boolean to see if there are collisions in all children
+                        }
+                        else
+                        {
+                            //the objects will not be moved as there is a collision
+                            create = false;
+
+                            placeholder.text = "Could not add node!";
+                            placeholder.color = Color.red;
+                        }
+
+                        //if there are no collisions at all
+                        if (create == true)
+                        {
+                            //the objects can be moved
+                            GameObject objToDelete = GameObject.Find(parentNode.ToString() + "temp(Clone)");
+
+                            //destroying the object
+                            Destroy(objToDelete);
+
+                            yield return new WaitForSeconds(creationDelay);
+
+                            //find the object
+                            String originalObject = parentNode.ToString().Replace("Copy", "");
+
+                            GameObject objToUpdate = GameObject.Find(originalObject + "temp(Clone)");
+                            objToUpdate.transform.rotation = Quaternion.Euler(parentNode.getRotationX(), parentNode.getRotationY(), parentNode.getRotationZ());
+                            objToUpdate.transform.position = new Vector3(parentNode.returnX(), parentNode.returnY(), parentNode.returnZ());
+
+                            yield return new WaitForSeconds(creationDelay);
+
+                            //find the created object
+                            if (GameObject.Find(originalObject + "(Clone)"))
+                            {
+                                GameObject objToMove = GameObject.Find(originalObject + "(Clone)");
+                                objToMove.transform.rotation = Quaternion.Euler(parentNode.getRotationX(), parentNode.getRotationY(), parentNode.getRotationZ());
+                                objToMove.transform.position = new Vector3(parentNode.returnX(), parentNode.returnY(), parentNode.returnZ());
+
+                                yield return new WaitForSeconds(creationDelay);
+                            }
+
+                            //update the Tree
+                            TreeSet = tempTree;
+                        }
+                        else
+                        {
+                            //destroy the copy gameobject
+                            GameObject objToDelete = GameObject.Find(parentNode.ToString() + "temp(Clone)");
+
+                            //destroying the object
+                            Destroy(objToDelete);
+
+                            yield return new WaitForSeconds(creationDelay);
+
+                            placeholder.text = "Could not add node!";
+                            placeholder.color = Color.red;
+                        }
+                    }
+                }
+                else
+                {
+                    placeholder.text = "Could not add node!";
+                    placeholder.color = Color.red;
+                }
+
+                //reset the object list
+                listOfObjects.Clear();
+            }
+
+            //if the command is a Break command, ex: Break table_1
+            else if (words.Length == 2 && flag == 12)
+            {
                 //the parent node
                 string parent = words[1];
 
                 //creating the parent node
                 Node parentNode = new Node(parent);
 
-                //getting the 
-
-                //getting the string of the coordinates, ex: 2,0,0
-                string coordinates = words[3];
-
-                //contains the coordinates 
-                string[] coordinatesXYZ = { };
-
-                //split the string into x, y and z coordinates
-                coordinatesXYZ = coordinates.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
-
-                //setting the coordinates
-                parentNode.setCoordinates(coordinatesXYZ.Select(float.Parse).ToArray());
-
-                //create a temporary tree and recalculate the coordinates
                 //create a copy of the current Tree
                 IDictionary<Node, Node[]> tempTree = TreeSet.ToDictionary(entry => entry.Key, entry => entry.Value);
 
-                //add the new records
-                changeTree(tempTree, parentNode);
+                //check that the object to break exists
+                Boolean checkObjectExists = checkExist(TreeSet, parentNode);
 
-                //calculate the new coordinates
-                setCoordinates(tempTree);
+                if (checkObjectExists) {
+                    //call the break method
+                    tempTree = breakRelationships(tempTree, parentNode);
 
-                //check that the object to be moved exists
-                Boolean resultCheckExist = checkExist(TreeSet, parentNode);
-
-                if (resultCheckExist)//if the parent object exists
-                {
-                    //List to store all the nodes involved
-                    List<Node> nodesToMove = new List<Node>();
-
-                    //add the parentNode as the start
-                    foreach (KeyValuePair<Node, Node[]> entry in tempTree)
-                    {
-                        //first thing to do is spawn the parent
-                        if (entry.Key.ToString().Equals(parentNode.ToString()))
-                        {
-                            Node newNodeCopy = entry.Key.Copy();
-                            nodesToMove.Add(newNodeCopy);
-                        }
-                    }
-
-                    //get all the objects involved through iteration
-
-                    //start with the children of the parentNode
-                    Node[] temp = tempTree[parentNode];
-
-                    //getting the first nodes from the array
-                    foreach (Node tempNode in temp)
-                    {
-                        Node newNodeCopy = tempNode.Copy();
-                        nodesToMove.Add(newNodeCopy);
-                    }
-
-                    //list to compare
-                    List<Node> nodesToMoveCopy = new List<Node>(nodesToMove);
-
-                    Boolean repeat = true;
-
-                    while (repeat)
-                    {
-                        foreach (Node tNode in nodesToMove)
-                        {
-                            //get the children and add them to the list
-                            Node[] temporary = tempTree[tNode];
-
-                            //check if it has children
-                            foreach (Node tempNode in temporary)
-                            {
-                                //check if the nodes are not already in the list
-                                Boolean checkNode = nodesToMove.Contains(tempNode);
-
-                                if (checkNode == false)
-                                {
-                                    Node newNodeCopy = tempNode.Copy();
-                                    nodesToMoveCopy.Add(newNodeCopy);//add the new children (if any)
-                                }
-
-                            }
-                        }
-
-                        if (nodesToMove.Count == nodesToMoveCopy.Count)
-                        {
-                            repeat = false;
-                        }
-                        else
-                        {
-                            //update the list with the new Nodes
-                            nodesToMove = new List<Node>(nodesToMoveCopy);
-                            repeat = true;
-                        }
-                    }
-
-                    //check that the new coordinates are not the same as the old coordinates
-                    GameObject obj = GameObject.Find(parentNode.ToString() + "temp(Clone)");
-
-                    //current position of the object
-                    Vector3 currentPosition = obj.transform.position;
-
-                    float x = parentNode.returnX();
-                    float y = parentNode.returnY();
-                    float z = parentNode.returnZ();
-
-
-                    if (currentPosition != new Vector3(x, y, z))
-                    { //if they are not equal
-                      ////check that the object to be moved exists
-                      //Boolean resultCheckExist = checkExist(TreeSet, parentNode);
-
-                        if (resultCheckExist)//if the object exists
-                        {
-                            Boolean create = true;
-
-                            //loop through the nodes to be moved
-
-                            foreach (Node node in nodesToMove)
-                            {
-                                //change name as it is a temporary duplicate
-                                node.setValue(node.ToString() + "Copy");
-
-                                //check that the nodes can be moved
-                                StartCoroutine(checkSceneCollidersParent(node));
-
-                                yield return new WaitForSeconds(creationDelay);//handing control to Update()
-
-                                if (found == true)//the node can be moved
-                                {
-                                    found = false;//reset the found flag
-
-                                    create = true;//boolean to see if there are collisions in all children
-                                }
-                                else
-                                {
-                                    //the objects will not be moved as there is a collision
-                                    create = false;
-
-                                    placeholder.text = "Could not add node!";
-                                    placeholder.color = Color.red;
-
-                                    break;
-                                }
-                            }
-
-                            //if there are no collisions at all
-                            if (create == true)
-                            {
-                                //the objects can be moved
-
-                                //delete the copies of the objects
-                                foreach (Node node in nodesToMove)
-                                {
-                                    GameObject objToDelete = GameObject.Find(node.ToString() + "temp(Clone)");
-
-                                    //destroying the object
-                                    Destroy(objToDelete);
-
-                                    yield return new WaitForSeconds(creationDelay);
-
-                                    //find the object
-                                    String originalObject = node.ToString().Replace("Copy", "");
-
-                                    GameObject objToUpdate = GameObject.Find(originalObject + "temp(Clone)");
-                                    objToUpdate.transform.position = new Vector3(node.returnX(), node.returnY(), node.returnZ());
-
-                                    yield return new WaitForSeconds(creationDelay);
-
-                                    //find the created
-                                    if (GameObject.Find(originalObject + "(Clone)"))
-                                    {
-                                        GameObject objToMove = GameObject.Find(originalObject + "(Clone)");
-                                        objToMove.transform.position = new Vector3(node.returnX(), node.returnY(), node.returnZ());
-
-                                        yield return new WaitForSeconds(creationDelay);
-                                    }
-                                }
-
-                                //update the Tree
-                                TreeSet = tempTree;
-                            }
-                            else
-                            {
-                                placeholder.text = "Could not add node!";
-                                placeholder.color = Color.red;
-                            }
-                        }
-                        else
-                        {
-                            placeholder.text = "Could not add node!";
-                            placeholder.color = Color.red;
-                        }
-                    }
+                    TreeSet = tempTree;
                 }
-
-                ////create a copy of the old parent node for later
-                //Node parentNodeCopy = parentNode.Copy();
-                else
-                {
-                    placeholder.text = "Could not add node!";
+                else {
+                    placeholder.text = "Incorrect input!";
                     placeholder.color = Color.red;
                 }
             }
+
+            ////if the command is a Break command, ex: Reset rotations table_1
+            //else if (words.Length == 3 && flag == 13)
+            //{
+            //    //the parent node
+            //    string parent = words[2];
+
+            //    //Add to the list of exempt objects
+            //    listOfObjects.Add(parent);
+
+            //    //creating the parent node
+            //    Node parentNode = new Node(parent);
+
+            //    //set the objectType
+            //    parentNode.setObjectType(parent);
+
+            //    //get the gameObject
+            //    GameObject parentObj = parentNode.getObjectTrue();
+
+            //    //create coordinates
+            //    float[] parentObj.transform.position
+
+            //    //create a copy of the current Tree
+            //    IDictionary<Node, Node[]> tempTree = TreeSet.ToDictionary(entry => entry.Key, entry => entry.Value);
+
+            //    //check that the object to break exists
+            //    Boolean checkObjectExists = checkExist(TreeSet, parentNode);
+
+            //    if (checkObjectExists)
+            //    {
+            //        //iterate through the tree
+            //        foreach (KeyValuePair<Node, Node[]> entry in TreeSet)
+            //        {
+            //            //check the name of each node
+            //            if (entry.Key.ToString().Equals(parentNode.ToString()))
+            //            {
+            //                //change rotations
+            //                entry.Key.setRotationX(0f);
+            //                entry.Key.setRotationY(0f);
+            //                entry.Key.setRotationZ(0f);
+
+            //                //reset the coordinates
+            //                entry.Key.setCoordinates();
+            //            }
+            //        }
+
+            //        TreeSet = tempTree;
+            //    }
+            //    else
+            //    {
+            //        placeholder.text = "Incorrect input!";
+            //        placeholder.color = Color.red;
+            //    }
+            //}
 
             //if the command is not a valid input
             else
@@ -2126,7 +3144,7 @@ public class Test : MonoBehaviour
     //method to check if the node already exists
     public Boolean checkExist(IDictionary<Node, Node[]> tree, Node node) {
         //Checking if the parent already exists
-        if (tree.ContainsKey(node))
+        if ((tree.Keys.Any(x => x.ToString().Equals(node.ToString()))))
         {
             return true;//exists an object with the same name
         }
@@ -2157,29 +3175,41 @@ public class Test : MonoBehaviour
         return true;// not found
     }
 
-    //method used to add nodes
+    //method used to add new nodes to the tree
     public Boolean addChildren(IDictionary<Node, Node[]> tree, Node parent, Node child)
     {
         Node[] temp = new Node[] { }; //utility array
 
-        //Checking if the parent already exists
-        if (tree.ContainsKey(parent))
+        Node nodeReference = null;
+
+        //parent exists, i.e. to add children
+        if (tree.Keys.Any(x => x.ToString().Equals(parent.ToString())))
         {
             //Check if there already exists an object with the same preposition, ex: book is *left_of table*, man is *left_of table*
 
             string preposition = child.getPreposition();//getting the preposition of the child
 
-            //get the current children
-            temp = tree[parent];
+            //iterate through the tree to find the parentNode
+            foreach (KeyValuePair<Node, Node[]> entry in tree)
+            {
+                //if they are equal
+                if (entry.Key.ToString().Equals(parent.ToString())){
+                    //initialise the reference
+                    nodeReference = entry.Key;
+
+                    //get the current children
+                    temp = tree[entry.Key];
+                }
+            }
 
             //add the new child
             temp = temp.Append(child).ToArray();
 
             //overwrite the current children
-            tree[parent] = temp;
+            tree[nodeReference] = temp;
 
             //in the case of the between preposition
-            if (tree.ContainsKey(child) == false)
+            if (!tree.Keys.Any(x => x.ToString().Equals(child.ToString())))
             {
                 //create new record with null children
                 tree[child] = new Node[] { };
@@ -2188,7 +3218,7 @@ public class Test : MonoBehaviour
             return true; //successful creation
         }
         else
-        {//if it is the first time adding a relationship
+        {//parent does not exist, i.e. to add parents
             if (parent.getCoordinatesNotNull() == true)
             { //if the node is a starter node, it must have predefined coordinates 
                 tree[parent] = new Node[] { };
@@ -2202,6 +3232,103 @@ public class Test : MonoBehaviour
                 return false; //unsuccessful creation
             }
         }
+    }
+
+    //method used to make a node no longer a child of a parent
+    public IDictionary<Node, Node[]> removeNodeAsChild(IDictionary<Node, Node[]> tree, Node child)
+    {
+        //create a copy of the temporary tree
+        IDictionary<Node, Node[]> treeCopy = tree.ToDictionary(entry => entry.Key, entry => entry.Value);
+
+        Node[] temp = new Node[] { }; //utility array
+
+        //Checking if the child exists
+        if (tree.ContainsKey(child))
+        {
+            //iterate through the tree
+            foreach (KeyValuePair<Node, Node[]> entry in tree)
+            {
+                //get the current children
+                temp = tree[entry.Key];
+
+                //create a list to keep all the children apart from the one to be deleted
+                List<Node> listToKeep = new List<Node>();
+
+                //iterate through the array
+                foreach (Node childNode in temp) {
+
+                    //if our node is a child of the current parent node
+                    if (!childNode.ToString().Equals(child.ToString())){
+                        //remove the node from an array
+                        listToKeep.Add(childNode);
+                    }
+                }
+                //overwrite the current children
+                treeCopy[entry.Key] = listToKeep.ToArray();
+            }
+        }
+
+        return treeCopy; //successful creation
+    }
+
+    //method used to remove the children of a node
+    public IDictionary<Node, Node[]> removeChildren(IDictionary<Node, Node[]> tree, Node parent)
+    {
+        //create a copy of the temporary tree
+        IDictionary<Node, Node[]> treeCopy = tree.ToDictionary(entry => entry.Key, entry => entry.Value);
+
+        //Checking if the child exists
+        if (tree.ContainsKey(parent))
+        {
+            //delete the node's relationships with children-----
+            treeCopy[parent] = new Node[] { };
+        }
+
+        return treeCopy; //successful creation
+    }
+
+    //method used to break a node free from all relationships
+    public IDictionary<Node, Node[]> breakRelationships(IDictionary<Node, Node[]> tree, Node child)
+    {
+        //create a copy of the temporary tree
+        IDictionary<Node, Node[]> treeCopy = tree.ToDictionary(entry => entry.Key, entry => entry.Value);
+
+        Node[] temp = new Node[] { }; //utility array
+
+        //Checking if the node exists
+        if (tree.ContainsKey(child))
+        {
+            //break the node from its current parent-----
+
+            //iterate through the tree
+            foreach (KeyValuePair<Node, Node[]> entry in tree)
+            {
+                //get the current children of the current parent node
+                temp = tree[entry.Key];
+
+                //create a list to keep all the children apart from the one to be deleted
+                List<Node> listToKeep = new List<Node>();
+
+                //iterate through the children array
+                foreach (Node childNode in temp)
+                {
+
+                    //if our node is a child of the current parent node
+                    if (!childNode.ToString().Equals(child.ToString()))
+                    {
+                        //remove the node from an array
+                        listToKeep.Add(childNode);
+                    }
+                }
+                //overwrite the current children
+                treeCopy[entry.Key] = listToKeep.ToArray();
+            }
+
+            //delete the node's relationships with children-----
+            treeCopy[child] = new Node[] { };
+        }
+
+        return treeCopy; //successful creation
     }
 
     public void createScene()
@@ -2236,741 +3363,27 @@ public class Test : MonoBehaviour
                 //object does not already exist if false
                 if (existsFlag1 == false)
                 {
-                    //get x coordinate
-                    float x = entry.Key.returnX();
-                    float y = entry.Key.returnY();
-                    float z = entry.Key.returnZ();
+                    //create the collision boxes 
+                    StartCoroutine(checkSceneCollidersParent(entry.Key));
 
-                    //create coordinates for the object
-                    Vector3 coordinates1 = new Vector3(x, y, z);
+                    yield return new WaitForSeconds(creationDelay);
 
-                    //check what type of object it is
-                    string objectType1 = entry.Key.getObjectType();
-
-                    //if the object type is a cube
-                    if (string.Equals(objectType1, "Cube", StringComparison.CurrentCultureIgnoreCase))
+                    if (found == true)
                     {
-                        //giving the cube the name
-                        cube.name = name1;
-
-                        //spawn the parent object with specified coordinates
-                        Instantiate(cube, coordinates1, cube.transform.rotation);
-
-                        //giving the cube the name
-                        enemyCube.name = name1 + "temp";
-
-                        //spawn the parent object with specified coordinates
-                        Instantiate(enemyCube, coordinates1, enemyCube.transform.rotation);
+                        found = false;//reset the found flag
                     }
-                    //if the object type is a table
-                    else if (string.Equals(objectType1, "Table", StringComparison.CurrentCultureIgnoreCase))
+
+                    //create the object in real time to check for later
+                    StartCoroutine(checkSceneCollidersParentTrue(entry.Key));
+
+                    yield return new WaitForSeconds(creationDelay);
+
+                    if (found == true)
                     {
-                        //create the collision boxes 
-                        StartCoroutine(checkSceneCollidersParent(entry.Key));
-
-                        yield return new WaitForSeconds(creationDelay);
-
-                        if (found == true)
-                        {
-                            found = false;//reset the found flag
-                        }
-
-                        //create the object in real time to check for later
-                        StartCoroutine(checkSceneCollidersParentTrue(entry.Key));
-
-                        yield return new WaitForSeconds(creationDelay);
-
-                        if (found == true)
-                        {
-                            found = false;//reset the found flag
-                        }
-                    }
-                    //if the object type is a table
-                    else if (string.Equals(objectType1, "Table", StringComparison.CurrentCultureIgnoreCase))
-                    {
-                        //create the collision boxes 
-                        StartCoroutine(checkSceneCollidersParent(entry.Key));
-
-                        yield return new WaitForSeconds(creationDelay);
-
-                        if (found == true)
-                        {
-                            found = false;//reset the found flag
-                        }
-
-                        //create the object in real time to check for later
-                        StartCoroutine(checkSceneCollidersParentTrue(entry.Key));
-
-                        yield return new WaitForSeconds(creationDelay);
-
-                        if (found == true)
-                        {
-                            found = false;//reset the found flag
-                        }
-                    }
-                    //if the object type is a table
-                    else if (string.Equals(objectType1, "Armchair", StringComparison.CurrentCultureIgnoreCase))
-                    {
-                        //create the collision boxes 
-                        StartCoroutine(checkSceneCollidersParent(entry.Key));
-
-                        yield return new WaitForSeconds(creationDelay);
-
-                        if (found == true)
-                        {
-                            found = false;//reset the found flag
-                        }
-
-                        //create the object in real time to check for later
-                        StartCoroutine(checkSceneCollidersParentTrue(entry.Key));
-
-                        yield return new WaitForSeconds(creationDelay);
-
-                        if (found == true)
-                        {
-                            found = false;//reset the found flag
-                        }
-                    }
-                    //if the object type is a table
-                    else if (string.Equals(objectType1, "Bed", StringComparison.CurrentCultureIgnoreCase))
-                    {
-                        //create the collision boxes 
-                        StartCoroutine(checkSceneCollidersParent(entry.Key));
-
-                        yield return new WaitForSeconds(creationDelay);
-
-                        if (found == true)
-                        {
-                            found = false;//reset the found flag
-                        }
-
-                        //create the object in real time to check for later
-                        StartCoroutine(checkSceneCollidersParentTrue(entry.Key));
-
-                        yield return new WaitForSeconds(creationDelay);
-
-                        if (found == true)
-                        {
-                            found = false;//reset the found flag
-                        }
-                    }
-                    //if the object type is a table
-                    else if (string.Equals(objectType1, "Carpet", StringComparison.CurrentCultureIgnoreCase))
-                    {
-                        //create the collision boxes 
-                        StartCoroutine(checkSceneCollidersParent(entry.Key));
-
-                        yield return new WaitForSeconds(creationDelay);
-
-                        if (found == true)
-                        {
-                            found = false;//reset the found flag
-                        }
-
-                        //create the object in real time to check for later
-                        StartCoroutine(checkSceneCollidersParentTrue(entry.Key));
-
-                        yield return new WaitForSeconds(creationDelay);
-
-                        if (found == true)
-                        {
-                            found = false;//reset the found flag
-                        }
-                    }
-                    //if the object type is a table
-                    else if (string.Equals(objectType1, "Chair", StringComparison.CurrentCultureIgnoreCase))
-                    {
-                        //create the collision boxes 
-                        StartCoroutine(checkSceneCollidersParent(entry.Key));
-
-                        yield return new WaitForSeconds(creationDelay);
-
-                        if (found == true)
-                        {
-                            found = false;//reset the found flag
-                        }
-
-                        //create the object in real time to check for later
-                        StartCoroutine(checkSceneCollidersParentTrue(entry.Key));
-
-                        yield return new WaitForSeconds(creationDelay);
-
-                        if (found == true)
-                        {
-                            found = false;//reset the found flag
-                        }
-                    }
-                    //if the object type is a table
-                    else if (string.Equals(objectType1, "Cup", StringComparison.CurrentCultureIgnoreCase))
-                    {
-                        //create the collision boxes 
-                        StartCoroutine(checkSceneCollidersParent(entry.Key));
-
-                        yield return new WaitForSeconds(creationDelay);
-
-                        if (found == true)
-                        {
-                            found = false;//reset the found flag
-                        }
-
-                        //create the object in real time to check for later
-                        StartCoroutine(checkSceneCollidersParentTrue(entry.Key));
-
-                        yield return new WaitForSeconds(creationDelay);
-
-                        if (found == true)
-                        {
-                            found = false;//reset the found flag
-                        }
-                    }
-                    //if the object type is a table
-                    else if (string.Equals(objectType1, "Fridge", StringComparison.CurrentCultureIgnoreCase))
-                    {
-                        //create the collision boxes 
-                        StartCoroutine(checkSceneCollidersParent(entry.Key));
-
-                        yield return new WaitForSeconds(creationDelay);
-
-                        if (found == true)
-                        {
-                            found = false;//reset the found flag
-                        }
-
-                        //create the object in real time to check for later
-                        StartCoroutine(checkSceneCollidersParentTrue(entry.Key));
-
-                        yield return new WaitForSeconds(creationDelay);
-
-                        if (found == true)
-                        {
-                            found = false;//reset the found flag
-                        }
-                    }
-                    //if the object type is a table
-                    else if (string.Equals(objectType1, "Lamp", StringComparison.CurrentCultureIgnoreCase))
-                    {
-                        //create the collision boxes 
-                        StartCoroutine(checkSceneCollidersParent(entry.Key));
-
-                        yield return new WaitForSeconds(creationDelay);
-
-                        if (found == true)
-                        {
-                            found = false;//reset the found flag
-                        }
-
-                        //create the object in real time to check for later
-                        StartCoroutine(checkSceneCollidersParentTrue(entry.Key));
-
-                        yield return new WaitForSeconds(creationDelay);
-
-                        if (found == true)
-                        {
-                            found = false;//reset the found flag
-                        }
-                    }
-                    //if the object type is a table
-                    else if (string.Equals(objectType1, "Nightstand", StringComparison.CurrentCultureIgnoreCase))
-                    {
-                        //create the collision boxes 
-                        StartCoroutine(checkSceneCollidersParent(entry.Key));
-
-                        yield return new WaitForSeconds(creationDelay);
-
-                        if (found == true)
-                        {
-                            found = false;//reset the found flag
-                        }
-
-                        //create the object in real time to check for later
-                        StartCoroutine(checkSceneCollidersParentTrue(entry.Key));
-
-                        yield return new WaitForSeconds(creationDelay);
-
-                        if (found == true)
-                        {
-                            found = false;//reset the found flag
-                        }
-                    }
-                    //if the object type is a table
-                    else if (string.Equals(objectType1, "Oven", StringComparison.CurrentCultureIgnoreCase))
-                    {
-                        //create the collision boxes 
-                        StartCoroutine(checkSceneCollidersParent(entry.Key));
-
-                        yield return new WaitForSeconds(creationDelay);
-
-                        if (found == true)
-                        {
-                            found = false;//reset the found flag
-                        }
-
-                        //create the object in real time to check for later
-                        StartCoroutine(checkSceneCollidersParentTrue(entry.Key));
-
-                        yield return new WaitForSeconds(creationDelay);
-
-                        if (found == true)
-                        {
-                            found = false;//reset the found flag
-                        }
-                    }
-                    //if the object type is a table
-                    else if (string.Equals(objectType1, "Sofa", StringComparison.CurrentCultureIgnoreCase))
-                    {
-                        //create the collision boxes 
-                        StartCoroutine(checkSceneCollidersParent(entry.Key));
-
-                        yield return new WaitForSeconds(creationDelay);
-
-                        if (found == true)
-                        {
-                            found = false;//reset the found flag
-                        }
-
-                        //create the object in real time to check for later
-                        StartCoroutine(checkSceneCollidersParentTrue(entry.Key));
-
-                        yield return new WaitForSeconds(creationDelay);
-
-                        if (found == true)
-                        {
-                            found = false;//reset the found flag
-                        }
-                    }
-                    //if the object type is a table
-                    else if (string.Equals(objectType1, "Vase", StringComparison.CurrentCultureIgnoreCase))
-                    {
-                        //create the collision boxes 
-                        StartCoroutine(checkSceneCollidersParent(entry.Key));
-
-                        yield return new WaitForSeconds(creationDelay);
-
-                        if (found == true)
-                        {
-                            found = false;//reset the found flag
-                        }
-
-                        //create the object in real time to check for later
-                        StartCoroutine(checkSceneCollidersParentTrue(entry.Key));
-
-                        yield return new WaitForSeconds(creationDelay);
-
-                        if (found == true)
-                        {
-                            found = false;//reset the found flag
-                        }
-                    }
-                    else if (string.Equals(objectType1, "Sphere", StringComparison.CurrentCultureIgnoreCase))
-                    {
-                        //giving the sphere the name
-                        sphere.name = name1;
-
-                        //spawn the parent object with specified coordinates
-                        Instantiate(sphere, coordinates1, sphere.transform.rotation);
-                    }
-                    else if (string.Equals(objectType1, "Cylinder", StringComparison.CurrentCultureIgnoreCase))
-                    {
-                        //giving the cylinder the name
-                        cylinder.name = name1;
-
-                        //spawn the parent object with specified coordinates
-                        Instantiate(cylinder, coordinates1, cylinder.transform.rotation);
-                    }
-                }
-
-
-                //checking if it has children
-                if (entry.Value.Length != 0)
-                {
-                    //iterate through the children
-                    foreach (Node child in entry.Value)
-                    {
-                        //spawn the children objects
-
-                        //get name of the child
-                        string name2 = child.ToString();
-
-                        //Check if the object has already been created
-                        Boolean existsFlag2 = checkScene(name2 + "(Clone)");
-
-                        //object does not already exist if false
-                        if (existsFlag2 == false)
-                        {
-                            //get the coordinates - this is done by calling preposition method
-                            //check which type of method is needed depending on the preposition of the object
-
-                            string preposition = child.getPreposition();
-
-                            //if the preposition is 'between', that means that the that it has two parents
-                            if (preposition.Equals("between"))
-                            {
-
-                                //array to store the parents of the node
-                                Node[] parents = new Node[] { };
-
-                                //there should be 2 records in dictionary if the preposition is 'between'
-                                foreach (KeyValuePair<Node, Node[]> possibleParent in Tree)
-                                {
-                                    //get the values of the current record
-                                    Node[] tempArray = possibleParent.Value;
-
-                                    //checking if the child is in the list of values of the current record
-                                    if (tempArray.Contains(child))
-                                    {
-                                        //if found, that means a parent has been found
-                                        parents = parents.Append(possibleParent.Key).ToArray();
-                                    }
-                                }
-
-                                //calculate the coordinates
-                                calculatePrepositionCoordinates2Parents(parents[0], parents[1], child);
-                            }
-                            else
-                            {
-                                //calculate the coordinates
-                                calculatePrepositionCoordinates(entry.Key, child);
-                            }
-
-                            //get x coordinate
-                            float X = child.returnX();
-                            float Y = child.returnY();
-                            float Z = child.returnZ();
-
-                            //create coordinates for the object
-                            Vector3 coordinates2 = new Vector3(X, Y, Z);
-
-                            //check what type of object it is
-                            string objectType2 = entry.Key.getObjectType();
-
-                            //if the object type is a cube
-                            if (string.Equals(objectType2, "Cube", StringComparison.CurrentCultureIgnoreCase))
-                            {
-                                //giving the cube the name
-                                cube.name = name2;
-
-                                //spawn the parent object
-                                Instantiate(cube, coordinates2, cube.transform.rotation);
-
-                                //giving the cube the name
-                                enemyCube.name = name2 + "temp";
-
-                                //spawn the parent object with specified coordinates
-                                Instantiate(enemyCube, coordinates2, enemyCube.transform.rotation);
-
-                            }
-                            //if the object type is a table
-                            else if (string.Equals(objectType2, "Table", StringComparison.CurrentCultureIgnoreCase))
-                            {
-
-                                //create the collision boxes 
-                                StartCoroutine(checkSceneCollidersParent(child));
-
-                                yield return new WaitForSeconds(creationDelay);
-
-                                if (found == true)
-                                {
-                                    found = false;//reset the found flag
-                                }
-
-                                //create the object in real time to check for later
-                                StartCoroutine(checkSceneCollidersParentTrue(child));
-
-                                yield return new WaitForSeconds(creationDelay);
-
-                                if (found == true)
-                                {
-                                    found = false;//reset the found flag
-                                }
-
-
-                                ////giving the cube the name
-                                //table.name = name2;
-
-                                ////spawn the parent object with specified coordinates
-                                //Instantiate(table, coordinates2, table.transform.rotation);
-
-                                ////giving the table the name
-                                //enemyTable.name = name2 + "temp";
-
-                                ////spawn the parent object with specified coordinates
-                                //Instantiate(enemyTable, coordinates2, enemyTable.transform.rotation);
-                            }
-                            //if the object type is a table
-                            else if (string.Equals(objectType2, "Armchair", StringComparison.CurrentCultureIgnoreCase))
-                            {
-                                //create the collision boxes 
-                                StartCoroutine(checkSceneCollidersParent(child));
-
-                                yield return new WaitForSeconds(creationDelay);
-
-                                if (found == true)
-                                {
-                                    found = false;//reset the found flag
-                                }
-
-                                //create the object in real time to check for later
-                                StartCoroutine(checkSceneCollidersParentTrue(child));
-
-                                yield return new WaitForSeconds(creationDelay);
-
-                                if (found == true)
-                                {
-                                    found = false;//reset the found flag
-                                }
-                            }
-                            //if the object type is a table
-                            else if (string.Equals(objectType2, "Bed", StringComparison.CurrentCultureIgnoreCase))
-                            {
-                                //create the collision boxes 
-                                StartCoroutine(checkSceneCollidersParent(child));
-
-                                yield return new WaitForSeconds(creationDelay);
-
-                                if (found == true)
-                                {
-                                    found = false;//reset the found flag
-                                }
-
-                                //create the object in real time to check for later
-                                StartCoroutine(checkSceneCollidersParentTrue(child));
-
-                                yield return new WaitForSeconds(creationDelay);
-
-                                if (found == true)
-                                {
-                                    found = false;//reset the found flag
-                                }
-                            }
-                            //if the object type is a table
-                            else if (string.Equals(objectType2, "Carpet", StringComparison.CurrentCultureIgnoreCase))
-                            {
-                                //create the collision boxes 
-                                StartCoroutine(checkSceneCollidersParent(child));
-
-                                yield return new WaitForSeconds(creationDelay);
-
-                                if (found == true)
-                                {
-                                    found = false;//reset the found flag
-                                }
-
-                                //create the object in real time to check for later
-                                StartCoroutine(checkSceneCollidersParentTrue(child));
-
-                                yield return new WaitForSeconds(creationDelay);
-
-                                if (found == true)
-                                {
-                                    found = false;//reset the found flag
-                                }
-                            }
-                            //if the object type is a table
-                            else if (string.Equals(objectType2, "Chair", StringComparison.CurrentCultureIgnoreCase))
-                            {
-                                //create the collision boxes 
-                                StartCoroutine(checkSceneCollidersParent(child));
-
-                                yield return new WaitForSeconds(creationDelay);
-
-                                if (found == true)
-                                {
-                                    found = false;//reset the found flag
-                                }
-
-                                //create the object in real time to check for later
-                                StartCoroutine(checkSceneCollidersParentTrue(child));
-
-                                yield return new WaitForSeconds(creationDelay);
-
-                                if (found == true)
-                                {
-                                    found = false;//reset the found flag
-                                }
-                            }
-                            //if the object type is a table
-                            else if (string.Equals(objectType2, "Cup", StringComparison.CurrentCultureIgnoreCase))
-                            {
-                                //create the collision boxes 
-                                StartCoroutine(checkSceneCollidersParent(child));
-
-                                yield return new WaitForSeconds(creationDelay);
-
-                                if (found == true)
-                                {
-                                    found = false;//reset the found flag
-                                }
-
-                                //create the object in real time to check for later
-                                StartCoroutine(checkSceneCollidersParentTrue(child));
-
-                                yield return new WaitForSeconds(creationDelay);
-
-                                if (found == true)
-                                {
-                                    found = false;//reset the found flag
-                                }
-                            }
-                            //if the object type is a table
-                            else if (string.Equals(objectType2, "Fridge", StringComparison.CurrentCultureIgnoreCase))
-                            {
-                                //create the collision boxes 
-                                StartCoroutine(checkSceneCollidersParent(child));
-
-                                yield return new WaitForSeconds(creationDelay);
-
-                                if (found == true)
-                                {
-                                    found = false;//reset the found flag
-                                }
-
-                                //create the object in real time to check for later
-                                StartCoroutine(checkSceneCollidersParentTrue(child));
-
-                                yield return new WaitForSeconds(creationDelay);
-
-                                if (found == true)
-                                {
-                                    found = false;//reset the found flag
-                                }
-                            }
-                            //if the object type is a table
-                            else if (string.Equals(objectType2, "Lamp", StringComparison.CurrentCultureIgnoreCase))
-                            {
-                                //create the collision boxes 
-                                StartCoroutine(checkSceneCollidersParent(child));
-
-                                yield return new WaitForSeconds(creationDelay);
-
-                                if (found == true)
-                                {
-                                    found = false;//reset the found flag
-                                }
-
-                                //create the object in real time to check for later
-                                StartCoroutine(checkSceneCollidersParentTrue(child));
-
-                                yield return new WaitForSeconds(creationDelay);
-
-                                if (found == true)
-                                {
-                                    found = false;//reset the found flag
-                                }
-                            }
-                            //if the object type is a table
-                            else if (string.Equals(objectType2, "Nightstand", StringComparison.CurrentCultureIgnoreCase))
-                            {
-                                //create the collision boxes 
-                                StartCoroutine(checkSceneCollidersParent(child));
-
-                                yield return new WaitForSeconds(creationDelay);
-
-                                if (found == true)
-                                {
-                                    found = false;//reset the found flag
-                                }
-
-                                //create the object in real time to check for later
-                                StartCoroutine(checkSceneCollidersParentTrue(child));
-
-                                yield return new WaitForSeconds(creationDelay);
-
-                                if (found == true)
-                                {
-                                    found = false;//reset the found flag
-                                }
-                            }
-                            //if the object type is a table
-                            else if (string.Equals(objectType2, "Oven", StringComparison.CurrentCultureIgnoreCase))
-                            {
-                                //create the collision boxes 
-                                StartCoroutine(checkSceneCollidersParent(child));
-
-                                yield return new WaitForSeconds(creationDelay);
-
-                                if (found == true)
-                                {
-                                    found = false;//reset the found flag
-                                }
-
-                                //create the object in real time to check for later
-                                StartCoroutine(checkSceneCollidersParentTrue(child));
-
-                                yield return new WaitForSeconds(creationDelay);
-
-                                if (found == true)
-                                {
-                                    found = false;//reset the found flag
-                                }
-                            }
-                            //if the object type is a table
-                            else if (string.Equals(objectType2, "Sofa", StringComparison.CurrentCultureIgnoreCase))
-                            {
-                                //create the collision boxes 
-                                StartCoroutine(checkSceneCollidersParent(child));
-
-                                yield return new WaitForSeconds(creationDelay);
-
-                                if (found == true)
-                                {
-                                    found = false;//reset the found flag
-                                }
-
-                                //create the object in real time to check for later
-                                StartCoroutine(checkSceneCollidersParentTrue(child));
-
-                                yield return new WaitForSeconds(creationDelay);
-
-                                if (found == true)
-                                {
-                                    found = false;//reset the found flag
-                                }
-                            }
-                            //if the object type is a table
-                            else if (string.Equals(objectType2, "Vase", StringComparison.CurrentCultureIgnoreCase))
-                            {
-                                //create the collision boxes 
-                                StartCoroutine(checkSceneCollidersParent(child));
-
-                                yield return new WaitForSeconds(creationDelay);
-
-                                if (found == true)
-                                {
-                                    found = false;//reset the found flag
-                                }
-
-                                //create the object in real time to check for later
-                                StartCoroutine(checkSceneCollidersParentTrue(child));
-
-                                yield return new WaitForSeconds(creationDelay);
-
-                                if (found == true)
-                                {
-                                    found = false;//reset the found flag
-                                }
-                            }
-                            else if (string.Equals(objectType2, "Sphere", StringComparison.CurrentCultureIgnoreCase))
-                            {
-                                //giving the cube the name
-                                sphere.name = name2;
-
-                                //spawn the parent object
-                                Instantiate(sphere, coordinates2, sphere.transform.rotation);
-                            }
-                            else if (string.Equals(objectType2, "Cylinder", StringComparison.CurrentCultureIgnoreCase))
-                            {
-                                //giving the cube the name
-                                cylinder.name = name2;
-
-                                //spawn the parent object
-                                Instantiate(cylinder, coordinates2, cylinder.transform.rotation);
-                            }
-                        }
+                        found = false;//reset the found flag
                     }
                 }
             }
-
-            //change enemy tags to 'Final'
         }
     }
 
@@ -3110,7 +3523,7 @@ public class Test : MonoBehaviour
         //Destroy(obj);
     }
 
-    public void changeTree(IDictionary<Node, Node[]> tree, Node node) {
+    public void changeTreeCoordinates(IDictionary<Node, Node[]> tree, Node node) {
         //iterate through the tree
         foreach (KeyValuePair<Node, Node[]> entry in tree)
         {
@@ -3121,31 +3534,66 @@ public class Test : MonoBehaviour
                 float z = node.returnZ();
 
                 //adding the coordinates
-                float[] coordinates = new float[3] { x,y,z};
+                float[] coordinates = new float[3] {x,y,z};
 
                 entry.Key.setCoordinates(coordinates);
             }
         }
+    }
 
+    //used to add an already created node as a child of another
+    public IDictionary<Node, Node[]> changeTreeRelations(IDictionary<Node, Node[]> tree, Node newParentNode, Node futureChildNode)
+    {
+        //runner object to use methods
+        Test graphObject = new Test();
 
-        ////get the current children of the parentNode
-        //Node[] currentChildren = TreeSet[node];
+        //create a copy of the temporary tree
+        IDictionary<Node, Node[]> tempTree = tree.ToDictionary(entry => entry.Key, entry => entry.Value);
 
-        ////iterate through the Tree, delete all instances of the node
-        //tree.Remove(node);
+        //iterate through the tree to find the newParentNode
+        foreach (KeyValuePair<Node, Node[]> entry in tree)
+        {
+            //find the new parent node
+            if (entry.Key.ToString().Equals(newParentNode.ToString()))
+            {
+                //iterate through the tree to find the parent node
+                foreach (KeyValuePair<Node, Node[]> entry2 in tree)
+                {
+                    //find the parent node
+                    if (entry2.Key.ToString().Equals(futureChildNode.ToString()))
+                    {
+                        //change the preposition
+                        entry2.Key.setPreposition(futureChildNode.getPreposition());
 
-        ////add a new record in the Tree with the children, it should be updated with the new coordinates
+                        //change the spacing
+                        entry2.Key.setSpacing(futureChildNode.getSpacing());
 
-        //tree[node] = currentChildren;
+                        //Add the parentNode as a child of the newParentNode
+                        graphObject.addChildren(tempTree, entry.Key, entry2.Key);
 
-        //foreach (Node currentNode in currentChildren) {
-        //    addChildren(tempTree, node, currentNode);
-        //}
-        
+                        //change the coordinates of the node
+                        float[] coordinates = calculatePrepositionCoordinates(entry.Key, entry2.Key);
+
+                        //iterate through the tree to find the child node
+                        foreach (KeyValuePair<Node, Node[]> entry3 in tree)
+                        {
+                            //find the child node
+                            if (entry3.Key.ToString().Equals(futureChildNode.ToString()))
+                            {
+                                entry3.Key.setCoordinates(coordinates);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        //set the temporary tree to the copy
+        return tempTree;
     }
 
     //used to change the rotation of the objects
-    public void changeTreeRotations(IDictionary<Node, Node[]> tree, Node node)
+    public void changeTreeRotationsY(IDictionary<Node, Node[]> tree, Node node)
     {
         //iterate through the tree
         foreach (KeyValuePair<Node, Node[]> entry in tree)
@@ -3153,31 +3601,239 @@ public class Test : MonoBehaviour
             //check if the current node is equal to the node needed
             if (entry.Key.ToString().Equals(node.ToString()))
             {
-                float rotation = node.getRotation();
+                float rotation = node.getRotationY();
 
                 //update the rotation of the object
-                entry.Key.setRotation(rotation);
+                entry.Key.setRotationY(rotation);
+
+                //pass it to every instance 
+                foreach (KeyValuePair<Node, Node[]> entry2 in tree)
+                {
+                    //get the children
+                    Node[] children = tree[entry2.Key];
+
+                    //iterate through the children
+                    foreach (Node entry3 in children)
+                    {
+                        //if it is equal to the required node
+                        if (entry3.ToString().Equals(node.ToString())) {
+                            entry3.setRotationY(rotation);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    //used to change the rotation and coordinates of objects
+    public void changeTreeRotationsX(IDictionary<Node, Node[]> tree, Node node)
+    {
+        //iterate through the tree
+        foreach (KeyValuePair<Node, Node[]> entry in tree)
+        {
+            //check if the current node is equal to the node needed
+            if (entry.Key.ToString().Equals(node.ToString()))
+            {
+                //get the rotation
+                float rotation = node.getRotationX();
+
+                //get the coordinates
+                float x = node.returnX();
+                float y = node.returnY();
+                float z = node.returnZ();
+
+                //update the coordinates of the object
+                entry.Key.setCoordinates(new float[] { x, y, z });
+
+                //update the rotation of the object
+                entry.Key.setRotationX(rotation);
+
+                //pass it to every instance 
+                foreach (KeyValuePair<Node, Node[]> entry2 in tree)
+                {
+                    //get the children
+                    Node[] children = tree[entry2.Key];
+
+                    //iterate through the children
+                    foreach (Node entry3 in children)
+                    {
+                        //if it is equal to the required node
+                        if (entry3.ToString().Equals(node.ToString()))
+                        {
+                            entry3.setRotationX(rotation);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    //used to change the rotation and coordinates of objects
+    public void changeTreeRotationsZ(IDictionary<Node, Node[]> tree, Node node)
+    {
+        //iterate through the tree
+        foreach (KeyValuePair<Node, Node[]> entry in tree)
+        {
+            //check if the current node is equal to the node needed
+            if (entry.Key.ToString().Equals(node.ToString()))
+            {
+                //get the rotation
+                float rotation = node.getRotationZ();
+
+                //get the coordinates
+                float x = node.returnX();
+                float y = node.returnY();
+                float z = node.returnZ();
+
+                //update the coordinates of the object
+                entry.Key.setCoordinates(new float[] { x, y, z });
+
+                //update the rotation of the object
+                entry.Key.setRotationZ(rotation);
+
+                //pass it to every instance 
+                foreach (KeyValuePair<Node, Node[]> entry2 in tree)
+                {
+                    //get the children
+                    Node[] children = tree[entry2.Key];
+
+                    //iterate through the children
+                    foreach (Node entry3 in children)
+                    {
+                        //if it is equal to the required node
+                        if (entry3.ToString().Equals(node.ToString()))
+                        {
+                            entry3.setRotationZ(rotation);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    //used for simple parent to child operations
+    public void setCoordinatesSimple(IDictionary<Node, Node[]> tree, Node parentNode, Node childNode) {
+        //check if the tree has objects in it
+        if (tree.Count() == 0)
+        {
+            placeholder.text = "No objects have been created";
+            placeholder.color = Color.red;
+        }
+        else
+        {
+            //check if 'node' is null or not
+            if (parentNode != null && childNode != null)
+            {
+                //iterate through the Tree to find the parentNode
+                foreach (KeyValuePair<Node, Node[]> entry in tree)
+                {
+                    //check if the current node is equal to the parent node
+                    if (entry.Key.ToString().Equals(parentNode.ToString()))
+                    {
+                        //iterate through the children
+                        foreach (Node child in entry.Value)
+                        {
+                            //check if the current node is equal to the child node
+                            if (child.ToString().Equals(childNode.ToString()))
+                            {
+                                //get the coordinates
+                                string preposition = child.getPreposition();
+
+                                float[] coordinates = null;
+
+                                //the preposition must not be equal to between
+                                if (!preposition.Equals("between"))
+                                {
+                                    //calculate the coordinates
+                                    coordinates = calculatePrepositionCoordinates(entry.Key, child);
+
+                                    //apply to all instances of the child node
+                                    foreach (KeyValuePair<Node, Node[]> entry2 in tree)
+                                    {
+                                        //check if the current node is equal to the parent node
+                                        if (entry2.Key.ToString().Equals(childNode.ToString()))
+                                        {
+                                            //setting the coordinates
+                                            entry2.Key.setCoordinates(coordinates);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    //used for compound parent to children operations
+    public List<Node> setCoordinatesCompound(IDictionary<Node, Node[]> tree, List<Node> nodes)
+    {
+        //create a copy of the list
+        List<Node> updatedList = new List<Node>();
+
+        //check if the tree has objects in it
+        if (tree.Count() == 0)
+        {
+            placeholder.text = "No objects have been created";
+            placeholder.color = Color.red;
+        }
+        else
+        {
+            //check if 'nodes' is null or not
+            if (nodes != null)
+            {
+                //iterate through the list
+                foreach (Node node in nodes)
+                {
+                    foreach (KeyValuePair<Node, Node[]> entry in tree)
+                    {
+                        //check if the current node is equal to the required node
+                        if (entry.Key.ToString().Equals(node.ToString()))
+                        {
+                            //iterate through the children
+                            foreach (Node child in entry.Value)
+                            {
+                                float[] coordinates = null;
+
+                                //calculate the coordinates
+                                coordinates = calculatePrepositionCoordinates(entry.Key, child);
+
+                                //apply to all instances of the child node
+                                foreach (KeyValuePair<Node, Node[]> entry2 in tree)
+                                {
+                                    //check if the current node is equal to the parent node
+                                    if (entry2.Key.ToString().Equals(child.ToString()))
+                                    {
+                                        //setting the coordinates
+                                        entry2.Key.setCoordinates(coordinates);
+                                    }
+                                }
+
+                                //update the list
+                                updatedList.Add(child);
+                            }
+                        }
+                    }
+                }
             }
         }
 
+        //check that all nodes are included in the updatedList
+        //iterate through the list
+        foreach (Node node in nodes)
+        {
+            //if the node is not in the list, add it
+            if (!updatedList.Exists(x => x.ToString().Equals(node.ToString()))) {
+                updatedList.Add(node);
+            }
+        }
 
-        ////get the current children of the parentNode
-        //Node[] currentChildren = TreeSet[node];
-
-        ////iterate through the Tree, delete all instances of the node
-        //tree.Remove(node);
-
-        ////add a new record in the Tree with the children, it should be updated with the new coordinates
-
-        //tree[node] = currentChildren;
-
-        //foreach (Node currentNode in currentChildren) {
-        //    addChildren(tempTree, node, currentNode);
-        //}
-
+        return updatedList;
     }
 
-    public void setCoordinates(IDictionary<Node, Node[]> tree)
+    //pass a list instead
+    public void setCoordinates(IDictionary<Node, Node[]> tree, Node node)
     {
         //check if the tree has objects in it
         if (tree.Count() == 0)
@@ -3187,6 +3843,67 @@ public class Test : MonoBehaviour
         }
         else
         {
+            //check if 'node' is null or not
+            if (node != null)
+            {
+                //start by setting the coords for the children of the given node
+                //iterate through the Tree
+                foreach (KeyValuePair<Node, Node[]> entry in tree)
+                {
+                    //check if the current node is equal to the required node
+                    if (entry.Key.ToString().Equals(node.ToString())) {
+
+                        //checking if it has children
+                        if (entry.Value.Length != 0)
+                        {
+                            //iterate through the children
+                            foreach (Node child in entry.Value)
+                            {
+                                //spawn the children objects
+
+                                //get name of the child
+                                string name2 = child.ToString();
+
+                                //get the coordinates - this is done by calling preposition method
+                                //check which type of method is needed depending on the preposition of the object
+
+                                string preposition = child.getPreposition();
+
+                                //if the preposition is 'between', that means that the that it has two parents
+                                if (preposition.Equals("between"))
+                                {
+
+                                    //array to store the parents of the node
+                                    Node[] parents = new Node[] { };
+
+                                    //there should be 2 records in dictionary if the preposition is 'between'
+                                    foreach (KeyValuePair<Node, Node[]> possibleParent in tree)
+                                    {
+                                        //get the values of the current record
+                                        Node[] tempArray = possibleParent.Value;
+
+                                        //checking if the child is in the list of values of the current record
+                                        if (tempArray.Contains(child))
+                                        {
+                                            //if found, that means a parent has been found
+                                            parents = parents.Append(possibleParent.Key).ToArray();
+                                        }
+                                    }
+
+                                    //calculate the coordinates
+                                    calculatePrepositionCoordinates2Parents(parents[0], parents[1], child);
+                                }
+                                else
+                                {
+                                    //calculate the coordinates
+                                    calculatePrepositionCoordinates(entry.Key, child);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
             //iterate through the Tree
             foreach (KeyValuePair<Node, Node[]> entry in tree)
             {
@@ -3307,121 +4024,339 @@ public class Test : MonoBehaviour
     public void calculateRotations(Node parent, Node child)
     {
         //getting the parent rotation
-        float rotationParent = parent.getRotation();
+        float rotationParent = parent.getRotationY();
 
         //getting the child rotation
-        float rotationChild = child.getRotation();
+        float rotationChild = child.getRotationY();
 
         //update the child rotation
         rotationChild = rotationChild + rotationParent;
 
         //set the new child rotation
-        child.setRotation(rotationChild);
+        child.setRotationY(rotationChild);
+
+        //change the coordinates as well
     }
 
-    public void calculatePrepositionCoordinates(Node parent, Node child)
-    {
+    public void calculatePrepositionCoordinatesAndRotations(Node parent, Node child, float rotation) {
+        //reference to the already rotated gameObject
+        GameObject objCreated = GameObject.Find(parent.ToString() + "Copytemp(Clone)");
+
+        //get the current rotation of the child
+        float rotationChild = child.getRotationY() % 360;
+
+        //the new rotation on the y axis
+        float newRotationChild = rotationChild + rotation;
+
+        //update the child
+        child.setRotationY(newRotationChild);
+
         //spacing between objects
-        float spacing = 0.25f;
+        float spacing;
 
-        //get the increments depending on the object (How much the child object must be moved irrelevant of the child object's size)
-        ObjectDim currentObject = parent.getObject();
+        //Check if the spacing is string or float
+        if (float.TryParse(child.getSpacing(), out float result))//it is a number
+        {
+            //convert string to float
+            spacing = float.Parse(child.getSpacing());
+        }
+        else //input string is a word
+        {
+            if (child.getSpacing().Equals("Touching", StringComparison.OrdinalIgnoreCase))
+            {
+                spacing = 0f;
+            }
+            else if (child.getSpacing().Equals("near", StringComparison.OrdinalIgnoreCase))
+            {
+                spacing = 0.5f;
+            }
+            else
+            {//if none set spacing to 0
+                spacing = 0f;
+            }
+        }
 
-        //store the increments for height, length and width
-        float height = currentObject.getHeight();
-        float length = currentObject.getLength();
-        float width = currentObject.getWidth();
+        //important that the true gameObject and the enemy gameObject are the same
 
-        //child object to include the object size in the calculation of the coordinates
-        ObjectDim childObject = child.getObject();
+        //reference to the original cube that we want to create our new cube infront_of, left_of, right_of etc.
+        GameObject currentObject = parent.getObjectTrue();
 
+        //reference to the actual instance of the second cube that we create in front of the original cube.
+        GameObject childObject = child.getObjectTrue();
+
+        //get the size of each object respectively
+        Vector3 sizeCurrentObj = currentObject.transform.localScale;
+
+        Vector3 sizeChildObj = childObject.transform.localScale;
+
+        //get the dimensions of currentObj-------
+
+        //infront, behind
+        float widthCurrent = sizeCurrentObj.z;
+
+        //left, right
+        float lengthCurrent = sizeCurrentObj.x;
+
+        //on, under
+        float heightCurrent = sizeCurrentObj.y;
+
+        //get the dimensions of childObj-------
+
+        //infront, behind
+        float widthChild = sizeChildObj.z;
+
+        //left, right
+        float lengthChild = sizeChildObj.x;
+
+        //on, under
+        float heightChild = sizeChildObj.y;
+
+        //get the preposition for the relationship between the objects
         string preposition = child.getPreposition();
 
-        //get the coordinates of the first parent
-        float coordX = parent.returnX();
-        float coordY = parent.returnY();
-        float coordZ = parent.returnZ();
-
-        //creating values to store the coordinates of the child
-        float coordx;
-        float coordy;
-        float coordz;
+        //object vector3
+        Vector3 coords;
 
         //array to store the new coordinates
         float[] coordinates;
 
+        //depending on the preposition
         if (preposition.Equals("left_of"))
         {
-            coordx = coordX - currentObject.getLength() - childObject.getLength() - spacing; //movement on the x-axis
-            coordy = coordY;
-            coordz = coordZ;
+            Vector3 vector = objCreated.transform.right;
+            vector.x = Mathf.Abs(vector.x);
+            vector.y = Mathf.Abs(vector.y);
+            vector.z = Mathf.Abs(vector.z);
 
-            //adding the coordinates
-            coordinates = new float[3] { coordx, coordy, coordz };
+            coords = new Vector3(parent.returnX(), parent.returnY(), parent.returnZ()) + ((spacing + (lengthCurrent / 2) + (lengthChild / 2)) * objCreated.transform.right);
+
+            //remember that the height of the objects can be different
+            coords.y = (coords.y - (heightCurrent / 2)) + (heightChild / 2);
+
+            coordinates = new float[3] { coords.x, coords.y, coords.z };
 
             //setting the calculated coordinates to the child
             child.setCoordinates(coordinates);
         }
         else if (preposition.Equals("right_of"))
         {
-            coordx = coordX + currentObject.getLength() + childObject.getLength() + spacing; //movement on the x-axis
-            coordy = coordY;
-            coordz = coordZ;
+            Vector3 vector = objCreated.transform.right;
+            vector.x = Mathf.Abs(vector.x);
+            vector.y = Mathf.Abs(vector.y);
+            vector.z = Mathf.Abs(vector.z);
 
-            //adding the coordinates
-            coordinates = new float[3] { coordx, coordy, coordz };
+            coords = new Vector3(parent.returnX(), parent.returnY(), parent.returnZ()) - ((spacing + (lengthCurrent / 2) + (lengthChild / 2)) * objCreated.transform.right);
+
+            //remember that the height of the objects can be different
+            coords.y = (coords.y - (heightCurrent / 2)) + (heightChild / 2);
+
+            coordinates = new float[3] { coords.x, coords.y, coords.z };
 
             //setting the calculated coordinates to the child
             child.setCoordinates(coordinates);
         }
         else if (preposition.Equals("on"))
         {
-            coordx = coordX;
-            coordy = coordY + currentObject.getHeight(); //movement on the y-axis
-            coordz = coordZ;
+            coords = new Vector3(parent.returnX(), parent.returnY(), parent.returnZ()) + (((heightCurrent / 2) + (heightChild / 2)) * objCreated.transform.up);
 
-            //adding the coordinates
-            coordinates = new float[3] { coordx, coordy, coordz };
+            coordinates = new float[3] { coords.x, coords.y, coords.z };
 
             //setting the calculated coordinates to the child
             child.setCoordinates(coordinates);
         }
         else if (preposition.Equals("under"))
         {
-            coordx = coordX;
-            coordy = coordY; //movement on the y-axis
-            coordz = coordZ;
+            coords = new Vector3(parent.returnX(), parent.returnY(), parent.returnZ());
 
-            //adding the coordinates
-            coordinates = new float[3] { coordx, coordy, coordz };
+            //remember that the height of the objects can be different
+            coords.y = (coords.y - (heightCurrent / 2)) + (heightChild / 2);
+
+            coordinates = new float[3] { coords.x, coords.y, coords.z };
 
             //setting the calculated coordinates to the child
             child.setCoordinates(coordinates);
         }
         else if (preposition.Equals("infront"))
         {
-            coordx = coordX;
-            coordy = coordY; //movement on the y-axis
-            coordz = coordZ - currentObject.getWidth() - childObject.getWidth() - spacing;
+            Vector3 vector = objCreated.transform.right;
+            vector.x = Mathf.Abs(vector.x);
+            vector.y = Mathf.Abs(vector.y);
+            vector.z = Mathf.Abs(vector.z);
 
-            //adding the coordinates
-            coordinates = new float[3] { coordx, coordy, coordz };
+            coords = new Vector3(parent.returnX(), parent.returnY(), parent.returnZ()) + ((spacing + (widthCurrent / 2) + (widthChild / 2)) * objCreated.transform.forward);
+
+            //remember that the height of the objects can be different
+            coords.y = (coords.y - (heightCurrent / 2)) + (heightChild / 2);
+
+            coordinates = new float[3] { coords.x, coords.y, coords.z };
 
             //setting the calculated coordinates to the child
             child.setCoordinates(coordinates);
         }
         else if (preposition.Equals("behind"))
         {
-            coordx = coordX;
-            coordy = coordY;
-            coordz = coordZ + currentObject.getWidth() + childObject.getWidth() + spacing;//movement on the z-axis
+            coords = new Vector3(parent.returnX(), parent.returnY(), parent.returnZ()) - ((spacing + (widthCurrent / 2) + (widthChild / 2)) * objCreated.transform.forward);
 
-            //adding the coordinates
-            coordinates = new float[3] { coordx, coordy, coordz };
+            //remember that the height of the objects can be different
+            coords.y = (coords.y - (heightCurrent / 2)) + (heightChild / 2);
+
+            coordinates = new float[3] { coords.x, coords.y, coords.z };
 
             //setting the calculated coordinates to the child
             child.setCoordinates(coordinates);
         }
+    }
+
+
+    public float[] calculatePrepositionCoordinates(Node parent, Node child)
+    {
+        //spacing between objects
+        float spacing;
+
+        //Check if the spacing is string or float
+        if (float.TryParse(child.getSpacing(), out float result))//it is a number
+        {
+            //convert string to float
+            spacing = float.Parse(child.getSpacing());
+        }
+        else //input string is a word
+        {
+            if (child.getSpacing().Equals("Touching", StringComparison.OrdinalIgnoreCase)) {
+                spacing = 0f;
+            }
+            else if (child.getSpacing().Equals("near", StringComparison.OrdinalIgnoreCase)) {
+                spacing = 0.5f;
+            }
+            else {//if none set spacing to 0
+                spacing = 1f;
+            }
+        }
+
+        //coordinates of the parentObject
+        float X = parent.returnX();
+        float Y = parent.returnY();
+        float Z = parent.returnZ();
+
+        //important that the true gameObject and the enemy gameObject are the same
+
+        //reference to the original cube that we want to create our new cube infront_of, left_of, right_of etc.
+        GameObject parentObject = parent.getObjectTrue();
+
+        //reference to the actual instance of the second cube that we create in front of the original cube.
+        GameObject childObject = child.getObjectTrue();
+
+        //get the size of each object respectively----
+
+        Vector3 sizeParentObj = parentObject.transform.localScale;
+
+        Vector3 sizeChildObj = childObject.transform.localScale;
+
+        //get the dimensions of parentObj----
+
+        //infront, behind
+        float widthParent = sizeParentObj.z;
+
+        //left, right
+        float lengthParent = sizeParentObj.x;
+
+        //on, under
+        float heightParent = sizeParentObj.y;
+
+        //get the dimensions of childObj----
+
+        //infront, behind
+        float widthChild = sizeChildObj.z;
+
+        //left, right
+        float lengthChild = sizeChildObj.x;
+
+        //on, under
+        float heightChild = sizeChildObj.y;
+
+        //get the preposition for the relationship between the objects
+        string preposition = child.getPreposition();
+
+        //get reference to the parent gameObject so that we have a reference to the faces
+        GameObject parentGameObject = GameObject.Find(parent.ToString() + "temp" + "(Clone)");
+
+        //object vector3
+        Vector3 coords;
+
+        //array to store the new coordinates
+        float[] coordinates = null;
+
+        //depending on the preposition
+        if (preposition.Equals("left_of"))
+        {
+            coords = new Vector3(X, Y, Z) + ((spacing + (lengthParent/ 2) + (lengthChild/ 2)) * parentGameObject.transform.right);
+
+            //remember that the height of the objects can be different
+            coords.y = (coords.y - (heightParent/2)) + (heightChild/2);
+
+            coordinates = new float[3] { coords.x, coords.y, coords.z };
+
+            //setting the calculated coordinates to the child
+            child.setCoordinates(coordinates);
+        }
+        else if (preposition.Equals("right_of"))
+        {
+            coords = new Vector3(X, Y, Z) - ((spacing + (lengthParent/ 2) + (lengthChild/ 2)) * parentGameObject.transform.right);
+
+            //remember that the height of the objects can be different
+            coords.y = (coords.y - (heightParent / 2)) + (heightChild / 2);
+
+            coordinates = new float[3] { coords.x, coords.y, coords.z };
+
+            //setting the calculated coordinates to the child
+            child.setCoordinates(coordinates);
+        }
+        else if (preposition.Equals("on"))
+        {
+            coords = new Vector3(X, Y, Z) + (((heightParent/ 2) + (heightChild/ 2)) * parentGameObject.transform.up);
+
+            coordinates = new float[3] { coords.x, coords.y, coords.z };
+
+            //setting the calculated coordinates to the child
+            child.setCoordinates(coordinates);
+        }
+        else if (preposition.Equals("under"))
+        {
+            coords = new Vector3(X, Y, Z);
+
+            //remember that the height of the objects can be different
+            coords.y = (coords.y - (heightParent / 2)) + (heightChild / 2);
+
+            coordinates = new float[3] { coords.x, coords.y, coords.z };
+
+            //setting the calculated coordinates to the child
+            child.setCoordinates(coordinates);
+        }
+        else if (preposition.Equals("infront"))
+        {
+            coords = new Vector3(X, Y, Z) + ((spacing + (widthParent/ 2) + (widthChild/ 2)) * parentGameObject.transform.forward);
+
+            //remember that the height of the objects can be different
+            coords.y = (coords.y - (heightParent / 2)) + (heightChild / 2);
+
+            coordinates = new float[3] { coords.x, coords.y, coords.z };
+
+            //setting the calculated coordinates to the child
+            child.setCoordinates(coordinates);
+        }
+        else if (preposition.Equals("behind"))
+        {
+            coords = new Vector3(X, Y, Z) - ((spacing + (widthParent/ 2) + (widthChild/ 2)) * parentGameObject.transform.forward);
+
+            //remember that the height of the objects can be different
+            coords.y = (coords.y - (heightParent / 2)) + (heightChild / 2);
+
+            coordinates = new float[3] { coords.x, coords.y, coords.z };
+
+            //setting the calculated coordinates to the child
+            child.setCoordinates(coordinates);
+        }
+
+        return coordinates;
     }
 
     IEnumerator CheckAllNodes(Node[] nodesArray)
@@ -3433,43 +4368,16 @@ public class Test : MonoBehaviour
     }
 
     public void deleteNode(IDictionary<Node, Node[]> tree, Node node) {
-        IDictionary<Node, Node[]> tempTree = tree.ToDictionary(entry => entry.Key,
-                                               entry => entry.Value);
+        IDictionary<Node, Node[]> tempTree = tree.ToDictionary(entry => entry.Key, entry => entry.Value);
+
+        //remove the children of the node
+        tempTree = removeChildren(tempTree, node);
+
+        //remove the node as a child
+        tempTree = removeNodeAsChild(tempTree, node);
 
         //iterate through the Tree, delete all instances of the node
         tempTree.Remove(node);
-
-        // Create a list of nodes to be deleted
-        List<Node> nodesToDelete = new List<Node>();
-
-        // Iterate through the original dictionary to find all instances of the node to be deleted
-        foreach (KeyValuePair<Node, Node[]> entry in tree)
-        {
-            // Iterate through the children
-            for (int i = 0; i < entry.Value.Length; i++)
-            {
-                Node child = entry.Value[i];
-                if (child.Equals(node))
-                {
-                    // Add the node to the list of nodes to be deleted
-                    nodesToDelete.Add(node);
-
-                    // Remove the node from the parent's child array
-                    List<Node> tempList = new List<Node>(entry.Value);
-                    tempList.RemoveAt(i);
-
-                    // Add the updated child array back to the dictionary
-                    tempTree.Remove(entry.Key);
-                    tempTree.Add(entry.Key, tempList.ToArray());
-                }
-            }
-        }
-
-        // Delete all nodes from the list of nodes to be deleted
-        foreach (Node nodeToDelete in nodesToDelete)
-        {
-            tree.Remove(nodeToDelete);
-        }
 
         // Set the original dictionary to the modified dictionary
         TreeSet = tempTree;
@@ -3745,6 +4653,9 @@ public class Test : MonoBehaviour
 
     public void loadScene()
     {
+        //Just in case
+        //Tree.Keys.Any(x => x.ToString().Equals(parent.ToString());
+
         //runner object to use methods
         Test graphObject = new Test();
 
@@ -3771,6 +4682,8 @@ public class Test : MonoBehaviour
                 string name = "";
                 Node parent = new Node(name);
 
+                Node newNodeCopyParent = null;
+
                 //iterate through the keys and values
                 for (int i = 0; i < KeyAndValue.Length; i++)
                 {
@@ -3787,87 +4700,42 @@ public class Test : MonoBehaviour
                         string preposition = NameCoordinatesPrepositionRotation[2];
 
                         //setting rotation, Ex: 90, 180, 270
-                        string rotation = NameCoordinatesPrepositionRotation[3];
-                        int intRotation = int.Parse(rotation);
+                        string rotationString = NameCoordinatesPrepositionRotation[3];
+                        string[] rotation = rotationString.Split(new[] { 'v' }, StringSplitOptions.RemoveEmptyEntries);
+                        float[] intRotation = Array.ConvertAll(rotation, float.Parse);
 
                         //setting coordinatesString
                         string coordinatesString = NameCoordinatesPrepositionRotation[1];
                         string[] coordinates = coordinatesString.Split(new[] { 'v' }, StringSplitOptions.RemoveEmptyEntries);
                         float[] floatCoordinates = Array.ConvertAll(coordinates, float.Parse);
 
+                        //setting the spacing
+                        string spacing = NameCoordinatesPrepositionRotation[4];
+
                         //setting value
                         parent.setValue(NameCoordinatesPrepositionRotation[0]);
                         parent.setObjectType(objectTypeWithNo[0]);
+                        parent.setSpacing(spacing);
 
-                        //set the objectGameObject
-                        if (objectTypeWithNo[0].Equals("table", StringComparison.OrdinalIgnoreCase))
-                        {
-                            parent.setObject("table");
-                        }
-                        else if (objectTypeWithNo[0].Equals("sofa", StringComparison.OrdinalIgnoreCase))
-                        {
-                            parent.setObject("sofa");
-                        }
-                        else if (objectTypeWithNo[0].Equals("cup", StringComparison.OrdinalIgnoreCase))
-                        {
-                            parent.setObject("cup");
-                        }
-                        else if (objectTypeWithNo[0].Equals("chair", StringComparison.OrdinalIgnoreCase))
-                        {
-                            parent.setObject("chair");
-                        }
-                        else if (objectTypeWithNo[0].Equals("fridge", StringComparison.OrdinalIgnoreCase))
-                        {
-                            parent.setObject("fridge");
-                        }
-                        else if (objectTypeWithNo[0].Equals("bed", StringComparison.OrdinalIgnoreCase))
-                        {
-                            parent.setObject("bed");
-                        }
-                        else if (objectTypeWithNo[0].Equals("armchair", StringComparison.OrdinalIgnoreCase))
-                        {
-                            parent.setObject("armchair");
-                        }
-                        else if (objectTypeWithNo[0].Equals("carpet", StringComparison.OrdinalIgnoreCase))
-                        {
-                            parent.setObject("carpet");
-                        }
-                        else if (objectTypeWithNo[0].Equals("lamp", StringComparison.OrdinalIgnoreCase))
-                        {
-                            parent.setObject("lamp");
-                        }
-                        else if (objectTypeWithNo[0].Equals("vase", StringComparison.OrdinalIgnoreCase))
-                        {
-                            parent.setObject("vase");
-                        }
-                        else if (objectTypeWithNo[0].Equals("nightstand", StringComparison.OrdinalIgnoreCase))
-                        {
-                            parent.setObject("nightstand");
-                        }
-                        else if (objectTypeWithNo[0].Equals("oven", StringComparison.OrdinalIgnoreCase))
-                        {
-                            parent.setObject("oven");
-                        }
-                        else if (objectTypeWithNo[0].Equals("wallvertical", StringComparison.OrdinalIgnoreCase))
-                        {
-                            parent.setObject("wallvertical");
-                        }
-                        else if (objectTypeWithNo[0].Equals("wallhorizontal", StringComparison.OrdinalIgnoreCase))
-                        {
-                            parent.setObject("wallhorizontal");
-                        }
-
+                        //setting the preposition
                         parent.setPreposition(preposition);
+
+                        //setting the coordinates
                         parent.setCoordinates(floatCoordinates);
-                        parent.setRotation(intRotation);
 
-                        //check if the Tree already contains the node
-                        if (Tree.ContainsKey(parent) == false)
+                        //setting the rotations
+                        parent.setRotationX(intRotation[0]);
+                        parent.setRotationY(intRotation[1]);
+                        parent.setRotationZ(intRotation[2]);
+
+                        //create a deep copy of the node
+                        newNodeCopyParent = parent.CopyDeep();
+
+                        //the parent node should not already exist
+                        if (!Tree.Keys.Any(x => x.ToString().Equals(parent.ToString())))
                         {
-                            Node newNodeCopy = parent.Copy();
-
                             //Add the node to the Tree
-                            Boolean resultAddChildren = graphObject.addChildren(Tree, newNodeCopy, null); //adding the first node to the tree - it has no children
+                            Boolean resultAddChildren = graphObject.addChildren(Tree, newNodeCopyParent, null); //adding the first node to the tree - it has no children
 
                             if (resultAddChildren == false)
                             {
@@ -3884,7 +4752,8 @@ public class Test : MonoBehaviour
                         //split the values by the '|'
                         string[] values = KeyAndValue[i].Split(new[] { '|' }, StringSplitOptions.RemoveEmptyEntries);
 
-                        foreach (string value in values){
+                        foreach (string value in values)
+                        {
                             //split the key/value into name, coordinates and preposition
                             string[] NameCoordinatesPrepositionRotation = value.Split(new[] { '*' }, StringSplitOptions.RemoveEmptyEntries);
 
@@ -3895,87 +4764,37 @@ public class Test : MonoBehaviour
                             string preposition = NameCoordinatesPrepositionRotation[2];
 
                             //setting rotation, Ex: 90, 180, 270
-                            string rotation = NameCoordinatesPrepositionRotation[3];
-                            int intRotation = int.Parse(rotation);
+                            string rotationString = NameCoordinatesPrepositionRotation[3];
+                            string[] rotation = rotationString.Split(new[] { 'v' }, StringSplitOptions.RemoveEmptyEntries);
+                            float[] intRotation = Array.ConvertAll(rotation, float.Parse);
 
                             //setting coordinatesString
                             string coordinatesString = NameCoordinatesPrepositionRotation[1];
                             string[] coordinates = coordinatesString.Split(new[] { 'v' }, StringSplitOptions.RemoveEmptyEntries);
                             float[] floatCoordinates = Array.ConvertAll(coordinates, float.Parse);
 
+                            //setting the spacing
+                            string spacing = NameCoordinatesPrepositionRotation[4];
+
                             //setting value
                             child.setValue(NameCoordinatesPrepositionRotation[0]);
                             child.setObjectType(objectTypeWithNo[0]);
-
-                            //set the objectGameObject
-                            if (objectTypeWithNo[0].Equals("table", StringComparison.OrdinalIgnoreCase))
-                            {
-                                child.setObject("table");
-                            }
-                            else if (objectTypeWithNo[0].Equals("sofa", StringComparison.OrdinalIgnoreCase))
-                            {
-                                child.setObject("sofa");
-                            }
-                            else if (objectTypeWithNo[0].Equals("cup", StringComparison.OrdinalIgnoreCase))
-                            {
-                                child.setObject("cup");
-                            }
-                            else if (objectTypeWithNo[0].Equals("chair", StringComparison.OrdinalIgnoreCase))
-                            {
-                                child.setObject("chair");
-                            }
-                            else if (objectTypeWithNo[0].Equals("fridge", StringComparison.OrdinalIgnoreCase))
-                            {
-                                child.setObject("fridge");
-                            }
-                            else if (objectTypeWithNo[0].Equals("bed", StringComparison.OrdinalIgnoreCase))
-                            {
-                                child.setObject("bed");
-                            }
-                            else if (objectTypeWithNo[0].Equals("armchair", StringComparison.OrdinalIgnoreCase))
-                            {
-                                child.setObject("armchair");
-                            }
-                            else if (objectTypeWithNo[0].Equals("carpet", StringComparison.OrdinalIgnoreCase))
-                            {
-                                child.setObject("carpet");
-                            }
-                            else if (objectTypeWithNo[0].Equals("lamp", StringComparison.OrdinalIgnoreCase))
-                            {
-                                child.setObject("lamp");
-                            }
-                            else if (objectTypeWithNo[0].Equals("vase", StringComparison.OrdinalIgnoreCase))
-                            {
-                                child.setObject("vase");
-                            }
-                            else if (objectTypeWithNo[0].Equals("nightstand", StringComparison.OrdinalIgnoreCase))
-                            {
-                                child.setObject("nightstand");
-                            }
-                            else if (objectTypeWithNo[0].Equals("oven", StringComparison.OrdinalIgnoreCase))
-                            {
-                                child.setObject("oven");
-                            }
-                            else if (objectTypeWithNo[0].Equals("wallvertical", StringComparison.OrdinalIgnoreCase))
-                            {
-                                child.setObject("wallvertical");
-                            }
-                            else if (objectTypeWithNo[0].Equals("wallhorizontal", StringComparison.OrdinalIgnoreCase))
-                            {
-                                child.setObject("wallhorizontal");
-                            }
+                            child.setSpacing(spacing);
 
                             child.setPreposition(preposition);
                             child.setCoordinates(floatCoordinates);
-                            child.setRotation(intRotation);
 
-                            //check if the Tree already contains the node
-                            if (Tree.ContainsKey(child) == false)
+                            //setting the rotations
+                            child.setRotationX(intRotation[0]);
+                            child.setRotationY(intRotation[1]);
+                            child.setRotationZ(intRotation[2]);
+
+                            //create a deep copy of the child
+                            Node newNodeCopy = child.CopyDeep();
+
+                            //to add the child node, the parent node must exist
+                            if (Tree.Keys.Any(x => x.ToString().Equals(parent.ToString())))
                             {
-                                Node newNodeCopyParent = parent.Copy();
-
-                                Node newNodeCopy = child.Copy();
-
                                 Boolean resultAddChildren = graphObject.addChildren(Tree, newNodeCopyParent, newNodeCopy);
 
                                 if (resultAddChildren == false)
@@ -4119,6 +4938,31 @@ public class Test : MonoBehaviour
                 }
             }
         }
+    }
+
+    public String getObjectCoordinates(String objectName) {
+        foreach (KeyValuePair<Node, Node[]> entry in TreeSet)
+        {
+            if (entry.Key.ToString().Equals(objectName)) {
+                return entry.Key.getCoordinatesUI();
+            }
+        }
+
+        return "not found";
+    }
+
+    public Boolean getNameAndCoordsStatus() {
+        return nameAndCoordinates;
+    }
+
+    public Boolean getFacesStatus()
+    {
+        return faces;
+    }
+
+    public Boolean getRotationStatus()
+    {
+        return rotationAxis;
     }
 
     ////a utility method used to set the parents of a gameObject to inactive

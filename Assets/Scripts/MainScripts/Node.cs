@@ -20,13 +20,20 @@ public class Node
     protected String Preposition = "null"; //preposition of the node with its parent
     protected int Level; //number to show how many parents the node has
 
+    //coordinates of the gameObject
     protected Nullable<float> x = null;
     protected Nullable<float> y = null;
     protected Nullable<float> z = null;
 
-    protected float rotation = 0; //initialised to 0
+    protected float rotationX = 0; //initialised to 0
+    protected float rotationY = 0; //initialised to 0
+    protected float rotationZ = 0; //initialised to 0
 
-    protected ObjectDim Obj = new ObjectDim(); //object 
+    protected NodeObject Obj = new NodeObject(); //object 
+
+    private ObjectList objectListScript;
+
+    protected string spacing = "null";
 
     public Node(String value)//constructor for the node object
     {
@@ -38,20 +45,20 @@ public class Node
         Value = value;
     }
 
+    public override String ToString()
+    {
+        return Value;
+    }
+
     public void addChild(Node child, String preposition)
     {
         Children.Add(child);
         Preposition = preposition;
     }
 
-    public override String ToString()
-    {
-        return Value;
-    }
-
     public String ToStringWithLocationAndPreposition()
     {
-        return ToString() + "*" + getCoordinates() + "*" + getPrepositionForString() + "*" + getRotation(); //cube_9*0.1.0*on*90
+        return ToString() + "*" + getCoordinates() + "*" + getPrepositionForString() + "*" + getRotations() + "*" + getSpacing(); //cube_9*0v1v0*on*0v90v90*near
     }
 
     public String ToStringPrep()
@@ -79,6 +86,24 @@ public class Node
         return (Node)this.MemberwiseClone();
     }
 
+    public Node CopyDeep()
+    {
+        //creating a new node
+        Node newNode = new Node(this.Value);
+
+        //passing on all the attributes
+        newNode.setObjectType(this.objectType);
+        newNode.setSpacing(this.spacing);
+        newNode.setPreposition(this.Preposition);
+        newNode.setCoordinates(this.coordinates);
+        newNode.setRotationX(this.rotationX);
+        newNode.setRotationY(this.rotationY);
+        newNode.setRotationZ(this.rotationZ);
+
+        //returning the node
+        return newNode;
+    }
+
     public void setCoordinates(float[] coordinates)
     {
         this.coordinates = coordinates;
@@ -87,19 +112,161 @@ public class Node
         z = coordinates[2];
     }
 
+    public float[] getCoordinatesFloat() {
+        return this.coordinates;
+    }
+
     public string getCoordinates()
     {
         return x + "v" + y + "v" + z;
     }
 
+    public string getCoordinatesUI()
+    {
+        return x + "(x)," + y + "(y)," + z + "(z),";
+    }
+
     public void setObjectType(String ObjectType)
     {
         this.objectType = ObjectType;
+
+        //calling the method to set the enemy and true gameobjects for the node
+        setObject(ObjectType);
     }
 
     public String getObjectType()
     {
         return objectType;
+    }
+
+    public void setObject(String obj)
+    {
+        GameObject listObject = GameObject.Find("ObjectListObject");
+        objectListScript = listObject.GetComponent<ObjectList>();
+
+        if (string.Equals(obj, "table", StringComparison.CurrentCultureIgnoreCase))
+        {
+            //setting the true object
+            Obj.setTrueObject(objectListScript.table);
+
+            //setting the enemy object
+            Obj.setEnemyObject(objectListScript.enemyTable);
+        }
+        if (string.Equals(obj, "fridge", StringComparison.CurrentCultureIgnoreCase))
+        {
+            //setting the true object
+            Obj.setTrueObject(objectListScript.fridge);
+
+            //setting the enemy object
+            Obj.setEnemyObject(objectListScript.enemyFridge);
+        }
+        else if (string.Equals(obj, "sofa", StringComparison.CurrentCultureIgnoreCase))
+        {
+            //setting the true object
+            Obj.setTrueObject(objectListScript.sofa);
+
+            //setting the enemy object
+            Obj.setEnemyObject(objectListScript.enemySofa);
+
+        }
+        else if (string.Equals(obj, "armchair", StringComparison.CurrentCultureIgnoreCase))
+        {
+            //setting the true object
+            Obj.setTrueObject(objectListScript.armchair);
+
+            //setting the enemy object
+            Obj.setEnemyObject(objectListScript.enemyArmchair);
+        }
+        else if (string.Equals(obj, "bed", StringComparison.CurrentCultureIgnoreCase))
+        {
+            //setting the true object
+            Obj.setTrueObject(objectListScript.bed);
+
+            //setting the enemy object
+            Obj.setEnemyObject(objectListScript.enemyBed);
+        }
+        else if (string.Equals(obj, "carpet", StringComparison.CurrentCultureIgnoreCase))
+        {
+            //setting the true object
+            Obj.setTrueObject(objectListScript.carpet);
+
+            //setting the enemy object
+            Obj.setEnemyObject(objectListScript.enemyCarpet);
+        }
+        else if (string.Equals(obj, "chair", StringComparison.CurrentCultureIgnoreCase))
+        {
+            //setting the true object
+            Obj.setTrueObject(objectListScript.chair);
+
+            //setting the enemy object
+            Obj.setEnemyObject(objectListScript.enemyChair);
+        }
+        else if (string.Equals(obj, "cup", StringComparison.CurrentCultureIgnoreCase))
+        {
+            //setting the true object
+            Obj.setTrueObject(objectListScript.cup);
+
+            //setting the enemy object
+            Obj.setEnemyObject(objectListScript.enemyCup);
+        }
+        else if (string.Equals(obj, "lamp", StringComparison.CurrentCultureIgnoreCase))
+        {
+            //setting the true object
+            Obj.setTrueObject(objectListScript.lamp);
+
+            //setting the enemy object
+            Obj.setEnemyObject(objectListScript.enemyLamp);
+        }
+        else if (string.Equals(obj, "nightstand", StringComparison.CurrentCultureIgnoreCase))
+        {
+            //setting the true object
+            Obj.setTrueObject(objectListScript.nightstand);
+
+            //setting the enemy object
+            Obj.setEnemyObject(objectListScript.enemyNightstand);
+        }
+        else if (string.Equals(obj, "oven", StringComparison.CurrentCultureIgnoreCase))
+        {
+            //setting the true object
+            Obj.setTrueObject(objectListScript.oven);
+
+            //setting the enemy object
+            Obj.setEnemyObject(objectListScript.enemyOven);
+        }
+        else if (string.Equals(obj, "vase", StringComparison.CurrentCultureIgnoreCase))
+        {
+            //setting the true object
+            Obj.setTrueObject(objectListScript.vase);
+
+            //setting the enemy object
+            Obj.setEnemyObject(objectListScript.enemyVase);
+        }
+        else if (string.Equals(obj, "wallvertical", StringComparison.CurrentCultureIgnoreCase))
+        {
+            //setting the true object
+            Obj.setTrueObject(objectListScript.wallVertical);
+
+            //setting the enemy object
+            Obj.setEnemyObject(objectListScript.enemyWallVertical);
+        }
+        else if (string.Equals(obj, "wallhorizontal", StringComparison.CurrentCultureIgnoreCase))
+        {
+            //setting the true object
+            Obj.setTrueObject(objectListScript.wallHorizontal);
+
+            //setting the enemy object
+            Obj.setEnemyObject(objectListScript.enemyWallHorizontal);
+        }
+    }
+
+    public GameObject getObjectTrue()
+    {
+        return Obj.getTrueObject();
+    }
+
+    public GameObject getObjectEnemy()
+    {
+        return Obj.getEnemyObject();
     }
 
     public float returnX()
@@ -151,66 +318,6 @@ public class Node
         Preposition = preposition;
     }
 
-    public void setObject(String obj)
-    {
-        if (string.Equals(obj, "table", StringComparison.CurrentCultureIgnoreCase)) {
-            Obj = new Table();
-        }
-        else if (string.Equals(obj, "sofa", StringComparison.CurrentCultureIgnoreCase))
-        {
-            Obj = new Sofa();
-        }
-        else if (string.Equals(obj, "armchair", StringComparison.CurrentCultureIgnoreCase))
-        {
-            Obj = new Armchair();
-        }
-        else if (string.Equals(obj, "bed", StringComparison.CurrentCultureIgnoreCase))
-        {
-            Obj = new Bed();
-        }
-        else if (string.Equals(obj, "carpet", StringComparison.CurrentCultureIgnoreCase))
-        {
-            Obj = new Carpet();
-        }
-        else if (string.Equals(obj, "chair", StringComparison.CurrentCultureIgnoreCase))
-        {
-            Obj = new Chair();
-        }
-        else if (string.Equals(obj, "cup", StringComparison.CurrentCultureIgnoreCase))
-        {
-            Obj = new Cup();
-        }
-        else if (string.Equals(obj, "lamp", StringComparison.CurrentCultureIgnoreCase))
-        {
-            Obj = new Lamp();
-        }
-        else if (string.Equals(obj, "nightstand", StringComparison.CurrentCultureIgnoreCase))
-        {
-            Obj = new Nightstand();
-        }
-        else if (string.Equals(obj, "oven", StringComparison.CurrentCultureIgnoreCase))
-        {
-            Obj = new Oven();
-        }
-        else if (string.Equals(obj, "vase", StringComparison.CurrentCultureIgnoreCase))
-        {
-            Obj = new vase();
-        }
-        else if (string.Equals(obj, "wallvertical", StringComparison.CurrentCultureIgnoreCase))
-        {
-            Obj = new WallVertical();
-        }
-        else if (string.Equals(obj, "wallhorizontal", StringComparison.CurrentCultureIgnoreCase))
-        {
-            Obj = new WallHorizontal();
-        }
-    }
-
-    public ObjectDim getObject()
-    {
-        return Obj;
-    }
-
     public override bool Equals(object obj)
     {
         return Value.Equals((obj as Node).Value);
@@ -221,12 +328,44 @@ public class Node
         return Value.GetHashCode();
     }
 
-    public float getRotation() {
-        return rotation;
+    public string getRotations() 
+    {
+        return rotationX + "v" + rotationY + "v" + rotationZ;
     }
 
-    public void setRotation(float Rotation) {
-        rotation = Rotation;
+    public float getRotationX()
+    {
+        return rotationX;
     }
 
+    public void setRotationX(float Rotation)
+    {
+        rotationX = Rotation;
+    }
+
+    public float getRotationY() {
+        return rotationY;
+    }
+
+    public void setRotationY(float Rotation) {
+        rotationY = Rotation;
+    }
+
+    public float getRotationZ()
+    {
+        return rotationZ;
+    }
+
+    public void setRotationZ(float Rotation)
+    {
+        rotationZ = Rotation;
+    }
+
+    public void setSpacing(string Spacing) {
+        this.spacing = Spacing;
+    }
+
+    public String getSpacing() {
+        return this.spacing;
+    }
 }
