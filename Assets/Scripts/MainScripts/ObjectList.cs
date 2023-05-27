@@ -22,6 +22,9 @@ public class ObjectList : MonoBehaviour
     public GameObject wallVertical; //wall object
     public GameObject wallHorizontal; //wall object
 
+    public GameObject wall1; //wall object
+    public GameObject wall2; //wall object
+
     //enemy Gameobjects
     public GameObject enemyCube;
     public GameObject enemyFridge; //fridge object
@@ -39,4 +42,8 @@ public class ObjectList : MonoBehaviour
 
     public GameObject enemyWallVertical; //wall object
     public GameObject enemyWallHorizontal; //wall object
+
+    public GameObject enemyWalls; //walls object
+    public GameObject enemyWall1; //wall object
+    public GameObject enemyWall2; //wall object
 }

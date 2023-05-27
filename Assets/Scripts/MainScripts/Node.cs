@@ -16,6 +16,8 @@ public class Node
 
     protected float[] coordinates = new float[3]; //position array, instantiated with 3 null coordinates
 
+    protected float[] fakeCoordinates = new float[3]; //Array which stores the coordinates of the bottom face of an object
+
     protected Boolean visited = false; //if the node has been visited or not
     protected String Preposition = "null"; //preposition of the node with its parent
     protected int Level; //number to show how many parents the node has
@@ -56,9 +58,16 @@ public class Node
         Preposition = preposition;
     }
 
-    public String ToStringWithLocationAndPreposition()
+    //for accuracy
+    public String AccuToStringWithLocationAndPreposition()
     {
         return ToString() + "*" + getCoordinates() + "*" + getPrepositionForString() + "*" + getRotations() + "*" + getSpacing(); //cube_9*0v1v0*on*0v90v90*near
+    }
+
+    //for aesthetics
+    public String AestToStringWithLocationAndPreposition()
+    {
+        return ToString() + "*" + roundCoordinates() + "*" + getPrepositionForString() + "*" + getRotations() + "*" + getSpacing(); //cube_9*0v1v0*on*0v90v90*near
     }
 
     public String ToStringPrep()
@@ -96,6 +105,7 @@ public class Node
         newNode.setSpacing(this.spacing);
         newNode.setPreposition(this.Preposition);
         newNode.setCoordinates(this.coordinates);
+        newNode.setFakeCoordinates(this.fakeCoordinates);
         newNode.setRotationX(this.rotationX);
         newNode.setRotationY(this.rotationY);
         newNode.setRotationZ(this.rotationZ);
@@ -112,6 +122,16 @@ public class Node
         z = coordinates[2];
     }
 
+    public float[] getFakeCoordinates() {
+        return fakeCoordinates;
+    }
+
+    //set function for fake coordinates
+    public void setFakeCoordinates(float[] FakeCoordinates)
+    {
+        this.fakeCoordinates = FakeCoordinates;
+    }
+
     public float[] getCoordinatesFloat() {
         return this.coordinates;
     }
@@ -120,6 +140,13 @@ public class Node
     {
         return x + "v" + y + "v" + z;
     }
+
+    //method used to round the coordinates
+    public string roundCoordinates()
+    {
+        return (float)Math.Round((decimal)fakeCoordinates[0], 3) + "v" + (float)Math.Round((decimal)fakeCoordinates[1], 3) + "v" + (float)Math.Round((decimal)fakeCoordinates[2], 3);
+    }
+
 
     public string getCoordinatesUI()
     {
@@ -256,6 +283,27 @@ public class Node
 
             //setting the enemy object
             Obj.setEnemyObject(objectListScript.enemyWallHorizontal);
+        }
+        else if (string.Equals(obj, "walls", StringComparison.CurrentCultureIgnoreCase))
+        {
+            //setting the enemy object
+            Obj.setEnemyObject(objectListScript.enemyWalls);
+        }
+        else if (string.Equals(obj, "wall1", StringComparison.CurrentCultureIgnoreCase))
+        {
+            //setting the true object
+            Obj.setTrueObject(objectListScript.wall1);
+
+            //setting the enemy object
+            Obj.setEnemyObject(objectListScript.enemyWall1);
+        }
+        else if (string.Equals(obj, "wall2", StringComparison.CurrentCultureIgnoreCase))
+        {
+            //setting the true object
+            Obj.setTrueObject(objectListScript.wall2);
+
+            //setting the enemy object
+            Obj.setEnemyObject(objectListScript.enemyWall2);
         }
     }
 
